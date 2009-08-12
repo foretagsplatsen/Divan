@@ -64,11 +64,14 @@ namespace Trivial
             db.SaveDocument(car);
             Console.WriteLine("Modified last Car with id " + car.Id);
 
-            // Load a Car by known id, class to instantiate using generics 
+            // Load a Car by known id (we just pick it from car), the class to instantiate is given using generics (Car) 
             var sameCar = db.GetDocument<Car>(car.Id);
             Console.WriteLine("Loaded last Car " + sameCar.Make + " " + sameCar.Model + " now with " + sameCar.HorsePowers + "hps.");
 
-            // Load all Cars, class to instantiate using generics
+            // Load all Cars. QueryAllDocuments() gives us a CouchQuery which we can configure. We tell it to IncludeDocuments()
+            // which means that we will get back not only ids but the actual documents too. GetResult() will perform the
+            // HTTP request to CouchDB and return a CouchGenericViewResult which we in turn can ask to produce objects from JSON,
+            // in this case we pick out the actual documents and instantiate them as instances of the class Car.
             var cars = db.QueryAllDocuments().IncludeDocuments().GetResult().Documents<Car>();
             Console.WriteLine("Loaded all Cars: " + cars.Count);
 
