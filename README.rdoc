@@ -1,28 +1,33 @@
 = Divan, a C# library for CouchDB
 
-Divan is a C# library for using CouchDB (http://www.couchdb.org). It should be more or less API complete
-including bulk operations, attachments, views and design documents etc. It is quite fast and designed
-to be flexible but not bloated. 
+Divan is a C# library under the MIT license for using CouchDB (http://www.couchdb.org).
+It should be more or less API complete including bulk operations, attachments, views
+and design documents etc. It is quite fast and designed to be flexible but not bloated. 
 
-Divan has been developed in-house at Foretagsplatsen AB (www.foretagsplatsen.se) and is being used in
-the new core system at Foretagsplatsen. It has unit tests (although could benefit from more) and at least
-one sample console project included.
+Divan has been developed in-house at Foretagsplatsen AB (www.foretagsplatsen.se) and is
+being used in the new core system at Foretagsplatsen. It has unit tests (although could
+benefit from more) and at least one sample console project included.
+
+== License
+
+Divan is under the MIT-license, see file LICENSE.txt.
 
 == Does it work under Mono?
 
-You bet. Foretagsplatsen uses mainly windows (Visual Studio 2008 and .Net 3.5) but Divan is meant to
-work fine in Mono too.
+You bet. Foretagsplatsen uses mainly windows (Visual Studio 2008 and .Net 3.5) but Divan
+is meant to work fine in Mono too.
 
 == What about documentation?
 
-At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs and there
-is at least one sample project showing basic usage. One more sample with more advanced usage is coming soon.
+At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs
+and there is at least one sample project showing basic usage. One more sample with more
+advanced usage is coming soon.
 
 == Dependencies
 
 The only dependencies and their tested versions are:
 
-* Newtonsoft.JSON (3.5 Beta 4), MIT-licensed fast library for JSON reading and writing, see: http://json.codeplex.com
+* Newtonsoft.JSON (3.5 Beta 4), MIT-licensed fast library for JSON, see: http://json.codeplex.com
 * NUnit (2.4.8). Unit testing framework, see: http://www.nunit.org
 * CouchDB (0.9.1, 0.9). Running on a server somewhere, see: http://www.couchdb.org
 
