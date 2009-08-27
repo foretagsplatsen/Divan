@@ -14,26 +14,41 @@ namespace Divan
     /// </summary>
     public class CouchDatabase
     {
-        public CouchDatabase() : this("default", new CouchServer())
+        private string name;
+
+        public CouchDatabase()
         {
+            Name = "default";
         }
 
-        public CouchDatabase(string name) : this(name, new CouchServer())
+        public CouchDatabase(CouchServer server) : this()
         {
-        }
-
-        public CouchDatabase(CouchServer server) : this("default", server)
-        {
+            Server = server;
         }
 
         public CouchDatabase(string name, CouchServer server)
         {
-            Name = server.DatabasePrefix + name;
+            Name = name;
             Server = server;
         }
 
+        public string Name
+        {
+            get
+            {
+                if (Server == null)
+                    return name;
+                return Server.DatabasePrefix + name;
+            }
+            set {
+                name = value;
+            }
+        }
+
         public CouchServer Server { get; set; }
-        public string Name { get; set; }
+
+
+
 
         public CouchRequest Request()
         {
@@ -383,18 +398,18 @@ namespace Divan
 
         public void TouchViews(List<CouchViewDefinition> views)
         {
-            var timer = new Stopwatch();
+            //var timer = new Stopwatch();
             if (views != null)
             {
                 foreach (CouchViewDefinition view in views)
                 {
                     if (view != null)
                     {
-                        timer.Reset();
-                        timer.Start();
+                        //timer.Reset();
+                        //timer.Start();
                         view.Touch();
-                        timer.Stop();
-                        Trace.WriteLine("Update view " + view.Path() + ":" + timer.ElapsedMilliseconds + " ms");
+                        //timer.Stop();
+                        //Server.Debug("Update view " + view.Path() + ":" + timer.ElapsedMilliseconds + " ms");
                     }
                 }
             }
