@@ -38,6 +38,11 @@ namespace Divan
             Obj = new JObject();
         }
 
+        public string ToString()
+        {
+            return Obj.ToString();
+        }
+
         public JObject Obj { get; set; }
 
         #region ICouchDocument Members

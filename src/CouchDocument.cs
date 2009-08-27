@@ -11,9 +11,11 @@ namespace Divan
     /// This is a base class that domain objects can inherit in order to get 
     /// Id and Rev instance variables. You can also implement ICouchDocument yourself if
     /// you are not free to pick this class as your base. Some static methods to read and write
-    /// CouchDB documents are also kept here. 
+    /// CouchDB documents are also kept here.
     /// 
-    /// See sample subclasses to understand how to use this class
+    /// This class can also be used if you only need to retrieve id and revision from CouchDB.
+    /// 
+    /// See sample subclasses to understand how to use this class.
     /// </summary>
     public class CouchDocument : ICouchDocument
     {

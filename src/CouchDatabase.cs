@@ -71,13 +71,38 @@ namespace Divan
         }
 
         /// <summary>
-        /// Read all documents in database.
+        /// Return all documents in the database as CouchJsonDocuments.
+        /// This method is only practical for testing purposes.
         /// </summary>
-        /// <returns>List of documents in database.</returns>
-        public IList<CouchDocument> GetAllDocuments()
+        /// <returns>A list of all documents.</returns>
+        public IList<CouchJsonDocument> GetAllDocuments()
         {
+            return QueryAllDocuments().IncludeDocuments().GetResult().Documents<CouchJsonDocument>();
+        }
+
+        /// <summary>
+        /// Return all documents in the database using a supplied
+        /// document type implementing ICouchDocument.
+        /// This method is only practical for testing purposes.
+        /// </summary>
+        /// <typeparam name="T">The document type to use.</typeparam>
+        /// <returns>A list of all documents.</returns>
+        public IList<T> GetAllDocuments<T>() where T : ICouchDocument, new()
+        {
+            return QueryAllDocuments().IncludeDocuments().GetResult().Documents<T>();
+        }
+
+        /// <summary>
+        /// Return all documents in the database, but only with id and revision.
+        /// CouchDocument does not contain the actual content.
+        /// </summary>
+        /// <returns>List of documents</returns>
+        public IList<CouchDocument> GetAllDocumentsWithoutContent()
+        {
+            QueryAllDocuments().GetResult().ValueDocuments<CouchDocument>();
+
             var list = new List<CouchDocument>();
-            JObject json = Request("_all_docs").Parse();
+            JObject json = RequestAllDocuments().Parse();
             foreach (JObject row in json["rows"])
             {
                 list.Add(new CouchDocument(row["id"].ToString(), (row["value"])["rev"].ToString()));
@@ -120,14 +145,14 @@ namespace Divan
         }
 
         /// <summary>
-        /// Write a CouchDocument, it may already exist in db and will then be overwritten.
+        /// Write a document given as plain JSON and a document id. A document may already exist in db and will then be overwritten.
         /// </summary>
-        /// <param name="json">Document as Json</param>
+        /// <param name="json">Document as a JSON string</param>
         /// <param name="documentId">Document identifier</param>
-        /// <returns>A new CouchDocument</returns>
+        /// <returns>A new CouchJsonDocument</returns>
         public ICouchDocument WriteDocument(string json, string documentId)
         {
-            return WriteDocument(new CouchDocument(json, documentId));
+            return WriteDocument(new CouchJsonDocument(json, documentId));
         }
 
         /// <summary>
@@ -482,7 +507,10 @@ namespace Divan
                 return null;
             }
         }
-
+        /// <summary>
+        /// Query a view by name (that we know exists in CouchDB). This method then creates
+        /// a CouchViewDefinition on the fly. Better to use existing CouchViewDefinitions.
+        /// </summary>
         public CouchQuery Query(string designName, string viewName)
         {
             return Query(new CouchViewDefinition(viewName, new DesignCouchDocument(designName, this)));
