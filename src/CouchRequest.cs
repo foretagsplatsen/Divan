@@ -83,6 +83,7 @@ namespace Divan
             return Query(sb.ToString());
         }
 
+        // HEAD requests seem to be problematic under Mono.
         public CouchRequest Head()
         {
             method = "HEAD";

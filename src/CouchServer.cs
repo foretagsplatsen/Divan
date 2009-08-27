@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -28,6 +28,8 @@ namespace Divan
         {
             Host = host;
             Port = port;
+
+            Debug(string.Format("CouchServer({0}:{1})", host, port));
         }
 
         public CouchServer(string host)
@@ -50,11 +52,20 @@ namespace Divan
             return new CouchRequest(this);
         }
 
+        /// <summary>
+        /// Override this method with some other debug logging.
+        /// </summary>
+        public void Debug(string message)
+        {
+            Trace.WriteLine(message);
+        }
+
         public bool HasDatabase(string name)
         {
             //return GetDatabaseNames().Contains(name); // This is too slow when we have thousands of dbs!!!
             try
             {
+                // HEAD requests seem to be problematic in Mono...
                 Request().Path(name).Head().Send();
                 return true;
             }
@@ -65,14 +76,22 @@ namespace Divan
         }
 
         /// <summary>
-        /// Get a CouchDatabase with given name. We create
-        /// the database if needed.
+        /// Get a CouchDatabase with given name.
+        /// We create the database if it does not exist.
         /// </summary>
         public CouchDatabase GetDatabase(string name)
         {
-            var db = new CouchDatabase(name, this);
-            db.Create();
-            return db;
+            return GetDatabase<CouchDatabase>(name);
+        }
+
+        /// <summary>
+        /// Get a new CouchDatabase with given name.
+        /// We check if the database exists and delete
+        /// it if it does, then we recreate it.
+        /// </summary>
+        public CouchDatabase GetNewDatabase(string name)
+        {
+            return GetNewDatabase<CouchDatabase>(name);
         }
 
         /// <summary>
@@ -80,9 +99,9 @@ namespace Divan
         /// We check if the database exists and delete it if it does,
         /// then we recreate it.
         /// </summary>
-        public CouchDatabase GetNewDatabase(string name)
+        public T GetNewDatabase<T>(string name) where T : CouchDatabase, new()
         {
-            var db = new CouchDatabase(name, this);
+            var db = new T { Name = name, Server = this };
             if (db.Exists())
             {
                 db.Delete();
@@ -122,7 +141,7 @@ namespace Divan
 
         /// <summary>
         /// Get specialized subclass of CouchDatabase with given name.
-        /// We create the database if needed.
+        /// We ensure that it is created.
         /// </summary>
         public T GetDatabase<T>(string name) where T : CouchDatabase, new()
         {
@@ -131,6 +150,9 @@ namespace Divan
             return db;
         }
 
+        /// <summary>
+        /// Typically only used from CouchServer.
+        /// </summary>
         public void CreateDatabase(string name)
         {
             try
