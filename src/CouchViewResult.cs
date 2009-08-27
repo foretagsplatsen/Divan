@@ -18,7 +18,7 @@ namespace Divan
             result = obj;
         }
 
-        public int Count()
+        public int TotalCount()
         {
             return result["total_rows"].Value<int>();
         }
@@ -31,6 +31,11 @@ namespace Divan
         public JEnumerable<JToken> Rows()
         {
             return result["rows"].Children();
+        }
+
+        public int Count()
+        {
+            return result["rows"].Value<JArray>().Count;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using Newtonsoft.Json.Linq;
 
 namespace Divan
@@ -47,9 +48,9 @@ namespace Divan
             return this;
         }
 
-        public CouchQuery StartKey(string value)
+        public CouchQuery StartKey(object value)
         {
-            Options["startkey"] = "\"" + value + "\"";
+            Options["startkey"] = JToken.FromObject(value).ToString();
             return this;
         }
 
@@ -65,9 +66,9 @@ namespace Divan
             return this;
         }
 
-        public CouchQuery EndKey(string value)
+        public CouchQuery EndKey(object value)
         {
-            Options["endkey"] = "\"" + value + "\"";
+            Options["endkey"] = JToken.FromObject(value).ToString();
             return this;
         }
 
@@ -144,7 +145,14 @@ namespace Divan
 
         public CouchGenericViewResult GetResult()
         {
-            return GetResult<CouchGenericViewResult>();
+            try
+            {
+                return GetResult<CouchGenericViewResult>();
+            }
+            catch (WebException e)
+            {
+                throw CouchException.Create("Query failed", e);
+            } 
         }
 
         public bool IsCachedAndValid()
