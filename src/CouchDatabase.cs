@@ -633,7 +633,8 @@ namespace Divan
         {
             try
             {
-                Request(documentId).Head().Send();
+                Request(documentId).Get().Send();
+// NOTE: Should use HEAD                Request(documentId).Head().Send();
                 return true;
             }
             catch (WebException)
@@ -646,7 +647,8 @@ namespace Divan
         {
             try
             {
-                Request(documentId + "/attachment").Head().Send();
+                Request(documentId + "/attachment").Get().Send();
+// NOTE: Should use HEAD				Request(documentId + "/attachment").Head().Send();
                 return true;
             }
             catch (WebException)

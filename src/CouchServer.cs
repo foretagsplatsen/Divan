@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -57,7 +58,7 @@ namespace Divan
         /// </summary>
         public void Debug(string message)
         {
-            Trace.WriteLine(message);
+            Console.WriteLine(message);
         }
 
         public bool HasDatabase(string name)
@@ -65,9 +66,10 @@ namespace Divan
             //return GetDatabaseNames().Contains(name); // This is too slow when we have thousands of dbs!!!
             try
             {
-                // HEAD requests seem to be problematic in Mono...
-                Request().Path(name).Head().Send();
-                return true;
+                // NOTE: HEAD requests seem to be problematic in Mono...
+                //Request().Path(name).Head().Send();
+                Request().Path(name).Get().Send();
+				return true;
             }
             catch (WebException)
             {
