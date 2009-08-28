@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Divan
@@ -80,6 +81,29 @@ namespace Divan
                 return Name;
             }
             return Doc.Id + "/_view/" + Name;
+        }
+
+        /// <summary>
+        /// Utility methods to make queries shorter.
+        /// </summary>
+        public IList<T> Key<T>(string key) where T : ICouchDocument, new()
+        {
+            return Query().Key(key).IncludeDocuments().GetResult().Documents<T>();
+        }
+
+        public IList<T> KeyStartEnd<T>(object start, object end) where T : ICouchDocument, new()
+        {
+            return Query().StartKey(start).EndKey(end).IncludeDocuments().GetResult().Documents<T>();
+        }
+
+        public IList<T> KeyStartEnd<T>(object[] start, object[] end) where T : ICouchDocument, new()
+        {
+            return Query().StartKey(start).EndKey(end).IncludeDocuments().GetResult().Documents<T>();
+        }
+
+        public IList<T> All<T>() where T : ICouchDocument, new()
+        {
+            return Query().IncludeDocuments().GetResult().Documents<T>();
         }
     }
 }
