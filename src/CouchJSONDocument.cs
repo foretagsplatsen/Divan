@@ -38,7 +38,7 @@ namespace Divan
             Obj = new JObject();
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return Obj.ToString();
         }

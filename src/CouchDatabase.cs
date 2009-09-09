@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -15,6 +14,7 @@ namespace Divan
     public class CouchDatabase
     {
         private string name;
+        public readonly IList<CouchDesignDocument> DesignDocuments = new List<CouchDesignDocument>();
 
         public CouchDatabase()
         {
@@ -48,7 +48,25 @@ namespace Divan
         public CouchServer Server { get; set; }
 
 
+        public CouchDesignDocument NewDesignDocument(string aName)
+        {
+            var newDoc = new CouchDesignDocument(aName, this);
+            DesignDocuments.Add(newDoc);
+            return newDoc;
+        }
 
+        /// <summary>
+        /// Currently the logic is that the code is always the master.
+        /// And we also do not remove design documents in the database that
+        /// we no longer have in code.
+        /// </summary>
+        public void SynchDesignDocuments()
+        {
+            foreach (var doc in DesignDocuments)
+            {
+                doc.Synch();
+            }
+        }
 
         public CouchRequest Request()
         {
@@ -111,12 +129,12 @@ namespace Divan
         }
 
         /// <summary>
-        /// Initialize CouchDB database by loading design documents into it.
-        /// Override in subclasses.
+        /// Initialize CouchDB database by saving new or changed design documents into it.
+        /// Override if needed in subclasses.
         /// </summary>
         public virtual void Initialize()
         {
-            // Nothing by default
+            SynchDesignDocuments();
         }
 
         public bool Exists()
@@ -513,7 +531,7 @@ namespace Divan
         /// </summary>
         public CouchQuery Query(string designName, string viewName)
         {
-            return Query(new CouchViewDefinition(viewName, new DesignCouchDocument(designName, this)));
+            return Query(new CouchViewDefinition(viewName, NewDesignDocument(designName)));
         }
 
         public CouchQuery Query(CouchViewDefinition view)

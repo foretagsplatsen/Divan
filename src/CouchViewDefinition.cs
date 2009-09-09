@@ -1,20 +1,22 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Divan
 {
     /// <summary>
     /// A definition of a CouchDB view with a name, a map and a reduce function and a reference to the
-    /// owning DesignCouchDocument. 
+    /// owning CouchDesignDocument. 
     /// </summary>
-    public class CouchViewDefinition
+    public class CouchViewDefinition : IEquatable<CouchViewDefinition>
     {
         /// <summary>
         /// Constructor used to create "on the fly" definitions, like for example for "_all_docs".
         /// </summary>
         /// <param name="name">View name used in URI.</param>
         /// <param name="doc">A design doc, can also be created on the fly.</param>
-        public CouchViewDefinition(string name, DesignCouchDocument doc)
+        public CouchViewDefinition(string name, CouchDesignDocument doc)
         {
             Doc = doc;
             Name = name;
@@ -27,7 +29,7 @@ namespace Divan
         /// <param name="map">Map function.</param>
         /// <param name="reduce">Optional reduce function.</param>
         /// <param name="doc">Parent document.</param>
-        public CouchViewDefinition(string name, string map, string reduce, DesignCouchDocument doc)
+        public CouchViewDefinition(string name, string map, string reduce, CouchDesignDocument doc)
         {
             Doc = doc;
             Name = name;
@@ -35,7 +37,7 @@ namespace Divan
             Reduce = reduce;
         }
 
-        public DesignCouchDocument Doc { get; set; }
+        public CouchDesignDocument Doc { get; set; }
         public string Name { get; set; }
         public string Map { get; set; }
         public string Reduce { get; set; }
@@ -62,6 +64,15 @@ namespace Divan
                 writer.WriteValue(Reduce);
             }
             writer.WriteEndObject();
+        }
+
+        public void ReadJson(JObject obj)
+        {
+            Map = obj["map"].Value<string>();
+            if (obj["reduce"] != null)
+            {
+                Reduce = obj["reduce"].Value<string>();
+            }
         }
 
         public CouchQuery Query()
@@ -104,6 +115,11 @@ namespace Divan
         public IList<T> All<T>() where T : ICouchDocument, new()
         {
             return Query().IncludeDocuments().GetResult().Documents<T>();
+        }
+
+        public bool Equals(CouchViewDefinition other)
+        {
+            return Name.Equals(other.Name) && Map.Equals(other.Map) && Reduce.Equals(other.Reduce);
         }
     }
 }

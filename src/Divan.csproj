@@ -64,7 +64,7 @@
     <Compile Include="CouchTest.cs" />
     <Compile Include="CouchViewResult.cs" />
     <Compile Include="CouchViewDefinition.cs" />
-    <Compile Include="DesignCouchDocument.cs" />
+    <Compile Include="CouchDesignDocument.cs" />
     <Compile Include="ICanJson.cs" />
     <Compile Include="ICouchDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
