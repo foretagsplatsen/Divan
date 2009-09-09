@@ -209,7 +209,7 @@ namespace Divan
         [Test]
         public void ShouldUseETagForView()
         {
-            var design = new DesignCouchDocument("computers", db);
+            var design = db.NewDesignDocument("computers");
             design.AddView("by_cpumake",
                 @"function(doc) {
                         emit(doc.CPU, doc);
@@ -247,6 +247,32 @@ namespace Divan
             Assert.That(db.CountDocuments(), Is.EqualTo(1));
             Assert.That(cd.Id, Is.Not.Null);
             Assert.That(cd.Rev, Is.Not.Null);
+        }
+
+        [Test]
+        public void ShouldSyncDesignDocuments()
+        {
+            var design = db.NewDesignDocument("computers");
+            design.AddView("by_cpumake",
+                @"function(doc) {
+                        emit(doc.CPU, doc);
+                    }");
+            db.SynchDesignDocuments();
+
+            var db2 = server.GetDatabase(DbName);
+            design = db2.NewDesignDocument("computers");
+            design.AddView("by_cpumake",
+                @"function(doc) {
+                        emit(doc.CPU, nil);
+                    }");
+            db2.SynchDesignDocuments();
+
+            Assert.That(db.DesignDocuments, Is.EqualTo(db.DesignDocuments));
+            Assert.That(db.GetDocument<CouchDesignDocument>("_design/computers").Definitions[0].Map,
+                        Is.EqualTo(
+                            @"function(doc) {
+                        emit(doc.CPU, nil);
+                    }"));
         }
     }
 }
