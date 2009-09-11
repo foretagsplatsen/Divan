@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
@@ -135,7 +136,15 @@ namespace Divan
             CouchJsonDocument doc1 = db.CreateDocument(doc);
             CouchJsonDocument doc2 = db.CreateDocument(doc);
             var ids = new List<string> {doc1.Id, doc2.Id};
-            IList<CouchJsonDocument> docs = db.GetDocuments(ids);
+
+            // Bulk request for multiple keys.
+            var docs = db.GetDocuments(ids);
+            Assert.That(doc1.Id, Is.EqualTo(docs.First().Id));
+            Assert.That(doc2.Id, Is.EqualTo(docs.Last().Id));
+
+            var keys = new List<object> { doc1.Id, doc2.Id };
+            // Bulk query on a view for multple keys.
+            docs = db.QueryAllDocuments().Keys(keys).IncludeDocuments().GetResult().Documents();
             Assert.That(doc1.Id, Is.EqualTo(docs.First().Id));
             Assert.That(doc2.Id, Is.EqualTo(docs.Last().Id));
         }
@@ -257,7 +266,7 @@ namespace Divan
                 @"function(doc) {
                         emit(doc.CPU, doc);
                     }");
-            db.SynchDesignDocuments();
+            db.SynchDesignDocuments(); // This writes them to the db.
 
             var db2 = server.GetDatabase(DbName);
             design = db2.NewDesignDocument("computers");
@@ -265,14 +274,50 @@ namespace Divan
                 @"function(doc) {
                         emit(doc.CPU, nil);
                     }");
-            db2.SynchDesignDocuments();
+            db2.SynchDesignDocuments(); // This should detect difference and overwrite the one in the db
 
-            Assert.That(db.DesignDocuments, Is.EqualTo(db.DesignDocuments));
             Assert.That(db.GetDocument<CouchDesignDocument>("_design/computers").Definitions[0].Map,
                         Is.EqualTo(
                             @"function(doc) {
                         emit(doc.CPU, nil);
                     }"));
+        }
+
+        /// <summary>
+        /// Test that keys can be given as C# types representing proper JSON values:
+        ///  string, number, true, false, null, JSON array and JSON object.
+        /// </summary>
+        [Test]
+        public void QueryKeyShouldGiveProperJsonValue()
+        {
+            var query = db.Query("test", "test");
+            query.Key("a string");
+            Assert.That(query.Options["key"].Equals("\"a string\""));
+            query.Key(12);
+            Assert.That(query.Options["key"].Equals("12"));
+            query.Key(-12.0);
+            Assert.That(query.Options["key"].Equals("-12.0"));
+            query.Key(true);
+            Assert.That(query.Options["key"].Equals("true"));
+            query.Key(false);
+            Assert.That(query.Options["key"].Equals("false"));
+            query.Key(null);
+            Assert.That(query.Options["key"].Equals("null"));
+
+            query.Key(new[] {"one", "two"});
+            var json = Regex.Replace(query.Options["key"], @"\s", ""); // removes all whitespace
+            Assert.That(json.Equals("[\"one\",\"two\"]"));
+
+            var dict = new Dictionary<string, string>();
+            dict["one"] = "two";
+            dict["three"] = "four";
+            query.Key(dict);
+            json = Regex.Replace(query.Options["key"], @"\s", ""); // removes all whitespace
+            Assert.That(json.Equals("{\"one\":\"two\",\"three\":\"four\"}"));
+
+            query.Key("one", "two");
+            json = Regex.Replace(query.Options["key"], @"\s", ""); // removes all whitespace
+            Assert.That(json.Equals("[\"one\",\"two\"]"));
         }
     }
 }
