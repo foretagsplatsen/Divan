@@ -14,9 +14,7 @@ Divan is under the MIT-license, see file LICENSE.txt.
 
 == Mailinglist
 
-We have a regular Mailman mailinglist for users and developers alike, please subscribe:
-
-   http://krampe.se/mailman/listinfo/divan
+We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/divan] for users and developers alike, please subscribe!
 
 
 == Does it work under Mono?
