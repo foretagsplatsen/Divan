@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
@@ -30,33 +31,73 @@ namespace Divan
             Options = new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// Setting POST data which will automatically trigger the query to be a POST request.
+        /// </summary>
         public CouchQuery Data(string data)
         {
             postData = data;
             return this;
         }
 
-        public CouchQuery Key(string value)
+
+        /// <summary>
+        /// This is a bulk key request, not to be confused with requests using complex keys, see Key().
+        /// </summary>
+        public CouchQuery Keys(object[] keys)
         {
-            Options["key"] = "\"" + value + "\"";
+            var bulk = new CouchBulkKeys(keys);
+            Data(CouchDocument.WriteJson(bulk));
             return this;
         }
 
+        /// <summary>
+        /// This is a bulk key request, not to be confused with requests using complex keys, see Key().
+        /// </summary>
+        public CouchQuery Keys(IList<object> keys)
+        {
+            var bulk = new CouchBulkKeys(keys.ToArray());
+            Data(CouchDocument.WriteJson(bulk));
+            return this;
+        }
+
+        /// <summary>
+        /// Any valid JSON value is a valid key. This means:
+        ///  null, true, false, a string, a number, a Dictionary (JSON object) or an array (JSON array)
+        /// </summary>
+        public CouchQuery Key(object value)
+        {
+            Options["key"] = JToken.FromObject(value).ToString();
+            return this;
+        }
+
+        /// <summary>
+        /// Any valid JSON value is a valid key. This means:
+        ///  null, true, false, a string, a number, a Dictionary (JSON object) or an array (JSON array)
+        /// </summary>
         public CouchQuery Key(params object[] value)
         {
-            Options["key"] = JArray.FromObject(value).ToString();
+            Options["key"] = value == null ? "null" : JToken.FromObject(value).ToString();
             return this;
         }
 
+        /// <summary>
+        /// Any valid JSON value is a valid key. This means:
+        ///  null, true, false, a string, a number, a Dictionary (JSON object) or an array (JSON array)
+        /// </summary>
         public CouchQuery StartKey(object value)
         {
             Options["startkey"] = JToken.FromObject(value).ToString();
             return this;
         }
 
+        /// <summary>
+        /// Any valid JSON value is a valid key. This means:
+        ///  null, true, false, a string, a number, a Dictionary (JSON object) or an array (JSON array)
+        /// </summary>
         public CouchQuery StartKey(params object[] value)
         {
-            Options["startkey"] = JArray.FromObject(value).ToString();
+            Options["startkey"] = value == null ? "null" : JToken.FromObject(value).ToString();
             return this;
         }
 
@@ -66,15 +107,23 @@ namespace Divan
             return this;
         }
 
+        /// <summary>
+        /// Any valid JSON value is a valid key. This means:
+        ///  null, true, false, a string, a number, a Dictionary (JSON object) or an array (JSON array)
+        /// </summary>
         public CouchQuery EndKey(object value)
         {
             Options["endkey"] = JToken.FromObject(value).ToString();
             return this;
         }
 
+        /// <summary>
+        /// Any valid JSON value is a valid key. This means:
+        ///  null, true, false, a string, a number, a Dictionary (JSON object) or an array (JSON array)
+        /// </summary>
         public CouchQuery EndKey(params object[] value)
         {
-            Options["endkey"] = JArray.FromObject(value).ToString();
+            Options["endkey"] = value == null ? "null" : JToken.FromObject(value).ToString();
             return this;
         }
 

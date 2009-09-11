@@ -42,6 +42,15 @@ namespace Divan
         }
 
         /// <summary>
+        /// Return all found docs as CouchJsonDocuments.
+        /// </summary>
+        /// <returns>List of documents found.</returns>
+        public IList<CouchJsonDocument> Documents()
+        {
+            return RetrieveDocuments<CouchJsonDocument>("doc");
+        }
+
+        /// <summary>
         /// Return first document found as document of given type
         /// </summary>
         /// <typeparam name="T">Type of document</typeparam>

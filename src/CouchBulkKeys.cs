@@ -11,21 +11,21 @@ namespace Divan
     /// </summary>
     public class CouchBulkKeys : ICanJson
     {
-        public CouchBulkKeys(IEnumerable<string> ids)
+        public CouchBulkKeys(IEnumerable<object> keys)
         {
-            Ids = ids.ToArray();
+            Keys = keys.ToArray();
         }
 
         public CouchBulkKeys()
         {
         }
 
-        public CouchBulkKeys(string[] ids)
+        public CouchBulkKeys(object[] keys)
         {
-            Ids = ids;
+            Keys = keys;
         }
 
-        public string[] Ids { get; set; }
+        public object[] Keys { get; set; }
 
         #region ICouchBulk Members
 
@@ -33,7 +33,7 @@ namespace Divan
         {
             writer.WritePropertyName("keys");
             writer.WriteStartArray();
-            foreach (string id in Ids)
+            foreach (var id in Keys)
             {
                 writer.WriteValue(id);
             }
@@ -47,7 +47,7 @@ namespace Divan
 
         public int Count()
         {
-            return Ids.Count();
+            return Keys.Count();
         }
 
         #endregion
