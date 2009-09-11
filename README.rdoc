@@ -12,10 +12,21 @@ benefit from more) and at least one sample console project included.
 
 Divan is under the MIT-license, see file LICENSE.txt.
 
+== Mailinglist
+
+We have a regular Mailman mailinglist for users and developers alike, please subscribe:
+
+   http://krampe.se/mailman/listinfo/divan
+
+
 == Does it work under Mono?
 
 You bet. Foretagsplatsen uses mainly windows (Visual Studio 2008 and .Net 3.5) but Divan
-is meant to work fine in Mono too.
+is meant to work fine in Mono too. Currently Mono has a bug in System.dll regarding HEAD HTTP
+requests so we reversed a few places in the code to use GET in order to have it working on Mono too.
+
+Note that this bug has been <b>reported and fixed</b> in Mono trunk and should be available
+in any mono release after 2.4.2.3 (I guess).
 
 == What about documentation?
 
@@ -31,7 +42,7 @@ The only dependencies and their tested versions are:
 * NUnit (2.4.8). Unit testing framework, see: http://www.nunit.org
 * CouchDB (0.9.1, 0.9). Running on a server somewhere, see: http://www.couchdb.org
 
-The two neeed dlls are included in the lib directory.
+The two needed dlls are included in the lib directory.
 
 == Getting started
 
