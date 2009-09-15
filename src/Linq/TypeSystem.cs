@@ -1,4 +1,6 @@
-﻿// The code in this file comes from Matt Warren's series of blog posts on how to build a LINQ provider
+﻿// adapted from sample code at http://linqinaction.net/files/folders/linqinaction/entry1952.aspx
+
+// The code in this file comes from Matt Warren's series of blog posts on how to build a LINQ provider
 // http://blogs.msdn.com/mattwar/archive/2007/08/09/linq-building-an-iqueryable-provider-part-i.aspx
 
 using System;

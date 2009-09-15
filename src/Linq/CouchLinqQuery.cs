@@ -1,8 +1,12 @@
-﻿using System;
+﻿// adapted from sample code at http://linqinaction.net/files/folders/linqinaction/entry1952.aspx
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
+using System.Collections;
+using System.Reflection;
 
 namespace Divan.Linq
 {
@@ -17,60 +21,80 @@ namespace Divan.Linq
             this.provider = provider;
         }
 
-        #region IEnumerable<T> Members
-
-        public IEnumerator<T> GetEnumerator()
+        public CouchLinqQuery(CouchQueryProvider provider)
         {
-            throw new NotImplementedException();
+            this.expression = Expression.Constant(this);
+            this.provider = provider;
         }
 
-        #endregion
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        Expression IQueryable.Expression
         {
-            throw new NotImplementedException();
+            get { return this.expression; }
         }
-
-        #endregion
-
-        #region IQueryable Members
-
-        public Type ElementType
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public System.Linq.Expressions.Expression Expression
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public IQueryProvider Provider
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        #endregion
-
-        #region IQueryable Members
 
         Type IQueryable.ElementType
         {
-            get { throw new NotImplementedException(); }
-        }
-
-        System.Linq.Expressions.Expression IQueryable.Expression
-        {
-            get { throw new NotImplementedException(); }
+            get { return typeof(T); }
         }
 
         IQueryProvider IQueryable.Provider
         {
-            get { throw new NotImplementedException(); }
+            get { return this.provider; }
         }
 
-        #endregion
+        class TransformingEnumerator<T> : IEnumerator<T>
+        {
+            private IEnumerator<T> e;
+            private MethodInfo transformer;
+
+            public TransformingEnumerator(IEnumerator<T> e, MethodInfo transformer)
+            {
+                this.e = e;
+                this.transformer = transformer;
+            }
+
+            public T Current { get { return (T)transformer.Invoke(e.Current, null); } }
+            object IEnumerator.Current { get { return transformer.Invoke(e.Current, null); } }
+
+            public void Dispose() { e.Dispose(); }
+            public bool MoveNext() { return e.MoveNext(); }
+            public void Reset() { e.Reset(); }
+        }
+
+        protected virtual IEnumerator<T> DoGetEnumerator<T>()
+        {
+            var expVisitor = this.provider.Prepare(expression);
+            var viewResult = (CouchGenericViewResult)expVisitor.Query.GetResult();
+
+            var dynamicResult =
+                viewResult
+                    .GetType()
+                    .GetMethods()
+                    .First(m => m.Name == "ValueDocuments" && m.IsGenericMethodDefinition)
+                    .MakeGenericMethod(new Type[] { typeof(T) })
+                    .Invoke(viewResult, null);
+
+            if (expVisitor.SelectExpression == null)
+                return ((IEnumerable<T>)dynamicResult).GetEnumerator();
+
+            return
+                new TransformingEnumerator<T>(
+                    ((IEnumerable<T>)dynamicResult).GetEnumerator(),
+                    ((MethodCallExpression)expVisitor.SelectExpression).Method);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return DoGetEnumerator<T>();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return DoGetEnumerator<CouchDocument>();
+        }
+
+        public override string ToString() { return this.provider.GetQueryText(this.expression); }
+        public override bool Equals(object obj) { return obj == null ? false : ToString().Equals(obj.ToString()); }
+        public override int GetHashCode() { return ToString().GetHashCode(); }
     }
 }
