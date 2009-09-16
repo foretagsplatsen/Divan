@@ -9,6 +9,9 @@ using System.Reflection;
 
 namespace Divan.Linq
 {
+    /// <summary>
+    /// QueryProvider for CouchDB queries
+    /// </summary>
     public class CouchQueryProvider: IQueryProvider
     {
         CouchDatabase db;
@@ -17,6 +20,12 @@ namespace Divan.Linq
 
         CouchViewDefinition definition;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CouchQueryProvider"/> class.
+        /// </summary>
+        /// <param name="db">The db.</param>
+        /// <param name="design">The design.</param>
+        /// <param name="view">The view.</param>
         public CouchQueryProvider(CouchDatabase db, string design, string view)
         {
             this.db = db;
@@ -24,6 +33,11 @@ namespace Divan.Linq
             this.design = design;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CouchQueryProvider"/> class.
+        /// </summary>
+        /// <param name="db">The db.</param>
+        /// <param name="definition">The definition.</param>
         public CouchQueryProvider(CouchDatabase db, CouchViewDefinition definition)
         {
             this.db = db;
@@ -32,11 +46,24 @@ namespace Divan.Linq
 
         #region IQueryProvider Members
 
+        /// <summary>
+        /// Creates the query.
+        /// </summary>
+        /// <typeparam name="TElement">The type of the element.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             return new CouchLinqQuery<TElement>(expression, this);
         }
 
+        /// <summary>
+        /// Constructs an <see cref="T:System.Linq.IQueryable"/> object that can evaluate the query represented by a specified expression tree.
+        /// </summary>
+        /// <param name="expression">An expression tree that represents a LINQ query.</param>
+        /// <returns>
+        /// An <see cref="T:System.Linq.IQueryable"/> that can evaluate the query represented by the specified expression tree.
+        /// </returns>
         public IQueryable CreateQuery(Expression expression)
         {
             Type elementType = TypeSystem.GetElementType(expression.Type);
@@ -52,6 +79,11 @@ namespace Divan.Linq
             }
         }
 
+        /// <summary>
+        /// Process the expression into an executable query and a select expression (if applicable)
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         public virtual ExpressionVisitor Prepare(Expression expression)
         {
             return 
@@ -60,6 +92,12 @@ namespace Divan.Linq
                 new ExpressionVisitor().ProcessExpression(expression, db, definition);
         }
 
+        /// <summary>
+        /// Executes the specified expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         public TResult Execute<TResult>(Expression expression)
         {
             if (!typeof(CouchViewResult).IsAssignableFrom(typeof(TResult)))
@@ -68,6 +106,13 @@ namespace Divan.Linq
             return (TResult)Execute(expression);
         }
 
+        /// <summary>
+        /// Executes the query represented by a specified expression tree.
+        /// </summary>
+        /// <param name="expression">An expression tree that represents a LINQ query.</param>
+        /// <returns>
+        /// The value that results from executing the specified query.
+        /// </returns>
         public object Execute(Expression expression)
         {
             var expVisitor = Prepare(expression);
@@ -79,6 +124,11 @@ namespace Divan.Linq
             return ((MethodCallExpression)expVisitor.SelectExpression).Method.Invoke(result, null);
         }
 
+        /// <summary>
+        /// Gets the query text.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         public string GetQueryText(Expression expression)
         {
             return Prepare(expression).ToString();

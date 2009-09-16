@@ -6,14 +6,38 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Collections;
 
 namespace Divan.Linq
 {
+    /// <summary>
+    /// Computes a <see cref="CouchQuery"/> from a LINQ expression tree
+    /// </summary>
     public class ExpressionVisitor
     {
+        /// <summary>
+        /// Gets or sets the query.
+        /// </summary>
+        /// <value>The query.</value>
         public virtual CouchQuery Query { get; protected set; }
+        
+        /// <summary>
+        /// Gets or sets the select expression. This is the MethodInfo representing the Lambda inside of .Select()
+        /// </summary>
+        /// <value>The select expression.</value>
         public virtual MethodCallExpression SelectExpression { get; protected set; }
 
+        bool startKeySet, endKeySet, hasAnd, hasOr = false;
+        List<object> keys = new List<object>();
+
+        /// <summary>
+        /// Processes the expression.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="db">The db.</param>
+        /// <param name="design">The name of the design document.</param>
+        /// <param name="view">The name of the view.</param>
+        /// <returns></returns>
         public ExpressionVisitor ProcessExpression(Expression expression, CouchDatabase db, string design, string view)
         {
             Query = db.Query(design, view);
@@ -21,44 +45,99 @@ namespace Divan.Linq
             return this;
         }
 
+        /// <summary>
+        /// Processes the expression.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="db">The db.</param>
+        /// <param name="definition">The view definition.</param>
+        /// <returns></returns>
         public ExpressionVisitor ProcessExpression(Expression expression, CouchDatabase db, CouchViewDefinition definition)
         {
             Query = db.Query(definition);
             VisitExpression(expression);
+
+            switch (keys.Count)
+            {
+                case 0: // 0 keys means it's a range query. do nothing.
+                    break;
+                case 1: // 1 key means it's a single Equals or a Contains on a single. 
+                    Query.Key(keys[0]);
+                    break;
+                default: // neither 0 nor 1 means that we've got a set of keys to test.
+                    Query.Keys(keys);
+                    break;
+            }
+
             return this;
         }
 
-        private void VisitExpression(Expression expression)
+        /// <summary>
+        /// Recursivley processes the expression tree
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        protected virtual void VisitExpression(Expression expression)
         {
             switch (expression.NodeType)
             {
                 case ExpressionType.AndAlso:
-                    VisitAndAlso((BinaryExpression)expression);
+                    hasAnd = true;
+                    VisitBinary((BinaryExpression)expression);
                     break;
+                case ExpressionType.OrElse:
+                    hasOr = true;
+                    VisitBinary((BinaryExpression)expression);
+                    break;
+                case ExpressionType.GreaterThan:
+                case ExpressionType.LessThan:
+                    throw new NotSupportedException(expression.NodeType + " is not a supported expression");
                 case ExpressionType.Equal:
-                    CallIfPresent((BinaryExpression)expression, (val) => Query.Key(val));
+                    if (hasAnd)
+                        throw new NotSupportedException("'and' operations cannot be performed on key sets. All key sets are 'or' operations.");
+                    if (startKeySet || endKeySet)
+                        throw new NotSupportedException("Key and range operations cannot be combined in a single query");
+                    CallIfPresent((BinaryExpression)expression, (val) => keys.Add(val));
                     break;
                 case ExpressionType.LessThanOrEqual:
+                    if (endKeySet || hasOr)
+                        throw new NotSupportedException("Range queries over multiple ranges are not supported");
+                    if (keys.Count > 0)
+                        throw new NotSupportedException("Key and range operations cannot be combined in a single query");
                     CallIfPresent((BinaryExpression)expression, (val) => Query.EndKey(val));
+                    endKeySet = true;
                     break;
                 case ExpressionType.GreaterThanOrEqual:
+                    if (startKeySet || hasOr)
+                        throw new NotSupportedException("Range queries over multiple ranges are not supported");
+                    if (keys.Count > 0)
+                        throw new NotSupportedException("Key and range operations cannot be combined in a single query");
                     CallIfPresent((BinaryExpression)expression, (val) => Query.StartKey(val));
+                    startKeySet = true;
+                    break;
+                case ExpressionType.Lambda:
+                    VisitExpression(((LambdaExpression)expression).Body);
                     break;
                 default:
                     if (expression is MethodCallExpression)
                         VisitMethodCall((MethodCallExpression)expression);
-                    else if (expression is LambdaExpression)
-                        VisitExpression(((LambdaExpression)expression).Body);
                     break;
             }
         }
 
-        private void VisitAndAlso(BinaryExpression andAlso)
+        /// <summary>
+        /// Processes an "AndAlso" node
+        /// </summary>
+        /// <param name="andAlso">The and also.</param>
+        private void VisitBinary(BinaryExpression expr)
         {
-            VisitExpression(andAlso.Left);
-            VisitExpression(andAlso.Right);
+            VisitExpression(expr.Left);
+            VisitExpression(expr.Right);
         }
 
+        /// <summary>
+        /// Processes a "MethodCall" node
+        /// </summary>
+        /// <param name="expression">The expression.</param>
         private void VisitMethodCall(MethodCallExpression expression)
         {
             if ((expression.Method.DeclaringType == typeof(Queryable)) &&
@@ -66,11 +145,28 @@ namespace Divan.Linq
                 VisitExpression(((UnaryExpression)expression.Arguments[1]).Operand);
             else if ((expression.Method.DeclaringType == typeof(Queryable)) &&
                 (expression.Method.Name == "Select"))
+            {
                 SelectExpression = expression;
+                VisitExpression(expression.Arguments[0]);
+            }
+            else if ((expression.Method.DeclaringType == typeof(Enumerable)) &&
+                (expression.Method.Name == "Contains"))
+                VisitContains((MemberExpression)expression.Arguments[0]);
             else
                 throw new NotSupportedException("Method not supported: " + expression.Method.Name);
         }
 
+        private void VisitContains(MemberExpression memberExpression)
+        {
+            foreach (var elem in ((IEnumerable)GetMemberValue(memberExpression)))
+                keys.Add(elem);
+        }
+
+        /// <summary>
+        /// Invokes the callback if the right-hand side of the BinaryExpression has a value
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="callback">The callback.</param>
         private void CallIfPresent(Expression expression, Action<object> callback)
         {
             object val;
@@ -80,6 +176,11 @@ namespace Divan.Linq
             callback(val);
         }
 
+        /// <summary>
+        /// Gets the value of the right-hand side of the expression
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         private object GetRightExpressionValue(BinaryExpression expression)
         {
             // since all things will have to translate to "key", and the only
@@ -99,6 +200,11 @@ namespace Divan.Linq
             return key;
         }
 
+        /// <summary>
+        /// Gets the member value.
+        /// </summary>
+        /// <param name="memberExpression">The member expression.</param>
+        /// <returns></returns>
         private Object GetMemberValue(MemberExpression memberExpression)
         {
             MemberInfo memberInfo;
@@ -116,21 +222,21 @@ namespace Divan.Linq
                 throw new NotSupportedException("Expression type not supported: " + memberExpression.Expression.GetType().FullName);
 
             // Get value
+
+            // do this through a collection of 'as' calls, as opposed to is/cast. this way
+            // we're not coercing twice.
             memberInfo = memberExpression.Member;
-            if (memberInfo is PropertyInfo)
+            var property = memberInfo as PropertyInfo;
+            if (property == null)
             {
-                PropertyInfo property = (PropertyInfo)memberInfo;
-                return property.GetValue(obj, null);
-            }
-            else if (memberInfo is FieldInfo)
-            {
-                FieldInfo field = (FieldInfo)memberInfo;
+                var field = memberInfo as FieldInfo;
+                if (field == null)
+                    throw new NotSupportedException("MemberInfo type not supported: " + memberInfo.GetType().FullName);
+
                 return field.GetValue(obj);
             }
-            else
-            {
-                throw new NotSupportedException("MemberInfo type not supported: " + memberInfo.GetType().FullName);
-            }
+        
+            return property.GetValue(obj, null);
         }
     }
 }

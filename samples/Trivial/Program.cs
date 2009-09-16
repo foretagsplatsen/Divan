@@ -47,6 +47,10 @@ namespace Trivial
             // For non trivial usage of Divan you typically create your own subclass of CouchServer.
             var server = new CouchServer(host, port);
 
+            // a little bit of cleanup
+            if (server.HasDatabase("trivial"))
+                server.DeleteDatabase("trivial");
+
             // Get (creates it if needed) a CouchDB database. This call will create the db in CouchDB
             // if it does not exist, create a CouchDatabase instance and then send Initialize() to it
             // before returning it. The base class CouchDatabase also has very little state, it knows
@@ -99,6 +103,15 @@ namespace Trivial
             foreach (var fastCar in fastCars)
                 Console.WriteLine(fastCar);
 
+            var twoCars = from c in linqCars where c.HorsePowers == 175 || c.HorsePowers == 176 select c;//.Make + " " + c.Model;
+            foreach (var twoCar in twoCars)
+                Console.WriteLine(twoCar);
+
+            var hps = new int[] {176, 177};
+            var twoMoreCars = from c in linqCars where hps.Contains(c.HorsePowers) select c.Make + " " + c.Model + " with " + c.HorsePowers + "HPs";
+            foreach (var twoCar in twoMoreCars)
+                Console.WriteLine(twoCar);
+
             // cleanup for later
             db.DeleteDocument(tempQuery.Doc);
 
@@ -120,7 +133,7 @@ namespace Trivial
 
             // Delete the db itself
             db.Delete();
-            Console.WriteLine("Deleted database\r\n\r\n. Press enter to close. ");
+            Console.WriteLine("Deleted database.\r\n\r\nPress enter to close. ");
 
             Console.ReadLine();
         }
