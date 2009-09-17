@@ -67,6 +67,10 @@
     <Compile Include="CouchDesignDocument.cs" />
     <Compile Include="ICanJson.cs" />
     <Compile Include="ICouchDocument.cs" />
+    <Compile Include="Linq\CouchLinqQuery.cs" />
+    <Compile Include="Linq\CouchQueryProvider.cs" />
+    <Compile Include="Linq\ExpressionVisitor.cs" />
+    <Compile Include="Linq\TypeSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
