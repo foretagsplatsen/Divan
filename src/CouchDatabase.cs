@@ -539,6 +539,11 @@ namespace Divan
             return new CouchQuery(view);
         }
 
+        public CouchLuceneQuery QueryLucene(CouchLuceneViewDefinition view)
+        {
+            return new CouchLuceneQuery(view);
+        }
+
         public CouchQuery QueryAllDocuments()
         {
             return Query(null, "_all_docs");
