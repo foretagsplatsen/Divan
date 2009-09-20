@@ -103,7 +103,8 @@ namespace Divan
         public override void ReadJson(JObject obj)
         {
             ReadIdAndRev(this, obj);
-            Language = obj["language"].Value<string>();
+            if (obj["language"] != null)
+                Language = obj["language"].Value<string>();
             Definitions = new List<CouchViewDefinition>();
             var views = (JObject)obj["views"];
 
