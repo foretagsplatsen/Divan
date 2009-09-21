@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace Divan
+namespace Divan.Lucene
 {
     /// <summary>
     /// A Lucene query with all its options. This class overlaps with CouchQuery but I could not find

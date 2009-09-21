@@ -1,7 +1,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace Divan
+namespace Divan.Lucene
 {
     /// <summary>
     /// This is a view result from a CouchLuceneQuery. The result is returned as JSON

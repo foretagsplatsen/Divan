@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Divan
+namespace Divan.Lucene
 {
     /// <summary>
     /// A definition of a CouchDB Lucene view with a name, an index function and some options, see below.

@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
-namespace Divan
+namespace Divan.Lucene
 {
     /// <summary>
     /// Unit tests for the Lucene part in Divan. Operates in a separate CouchDB database called divan_lucene_unit_tests.
