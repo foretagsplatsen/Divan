@@ -47,6 +47,10 @@ namespace Divan
 
         public CouchServer Server { get; set; }
 
+        public bool RunningOnMono()
+        {
+            return Server.RunningOnMono;
+        }
 
         public CouchDesignDocument NewDesignDocument(string aName)
         {
