@@ -216,26 +216,26 @@ namespace Divan
             return req.Head().Send().IsETagValid();
         }
 
+
         public string String()
         {
-            CouchRequest req = View.Request().QueryOptions(Options);
+            return Request().String();
+        }
 
+
+        public CouchRequest Request()
+        {
+            var req = View.Request().QueryOptions(Options);
             if (postData != null)
             {
                 req.Data(postData).Post();
             }
-
-            return req.String();
+            return req;
         }
 
         public T GetResult<T>() where T : CouchViewResult, new()
         {
-            CouchRequest req = View.Request().QueryOptions(Options);
-
-            if (postData != null)
-            {
-                req.Data(postData).Post();
-            }
+            var req = Request();
 
             if (Result == null)
             {
