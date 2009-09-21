@@ -95,9 +95,8 @@ namespace Trivial
             Console.WriteLine("Loaded all Cars: " + cars.Count);
 
             // Now try some linq
-            var tempQuery = CreateTempView("if (doc.docType && doc.docType == 'car') emit(doc.Hps, doc);", db);
-            var linqProvider = new CouchQueryProvider(db, tempQuery);
-            var linqCars = new CouchLinqQuery<Car>(linqProvider);
+            var tempView = db.NewTempView("test", "test", "if (doc.docType && doc.docType == 'car') emit(doc.Hps, doc);");
+            var linqCars = tempView.LinqQuery<Car>();
 
             var fastCars = from c in linqCars where c.HorsePowers >= 175 select c;//.Make + " " + c.Model;
             foreach (var fastCar in fastCars)
@@ -113,7 +112,7 @@ namespace Trivial
                 Console.WriteLine(twoCar);
 
             // cleanup for later
-            db.DeleteDocument(tempQuery.Doc);
+            db.DeleteDocument(tempView.Doc);
 
             // Delete some Cars one by one. CouchDB is an MVCC database which means that for every operation that modifies a document
             // we need to supply not only its document id, but also the revision that we are aware of. This means that we must supply id/rev
@@ -136,15 +135,6 @@ namespace Trivial
             Console.WriteLine("Deleted database.\r\n\r\nPress enter to close. ");
 
             Console.ReadLine();
-        }
-
-        private static CouchViewDefinition CreateTempView(string mapText, CouchDatabase db)
-        {
-            var designDoc = new CouchDesignDocument("test", db);
-            var def = designDoc.AddView("test", "function (doc) {" + mapText + "}");
-            designDoc.Synch();
-
-            return def;
         }
 
         /// <summary>

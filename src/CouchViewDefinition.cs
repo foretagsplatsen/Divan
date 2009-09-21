@@ -2,25 +2,22 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using Divan.Linq;
+	
 namespace Divan
 {
     /// <summary>
     /// A definition of a CouchDB view with a name, a map and a reduce function and a reference to the
     /// owning CouchDesignDocument. 
     /// </summary>
-    public class CouchViewDefinition : IEquatable<CouchViewDefinition>
+    public class CouchViewDefinition : CouchViewDefinitionBase, IEquatable<CouchViewDefinition>
     {
         /// <summary>
-        /// Constructor used to create "on the fly" definitions, like for example for "_all_docs".
+        /// Basic constructor used in ReadJson() etc.
         /// </summary>
         /// <param name="name">View name used in URI.</param>
         /// <param name="doc">A design doc, can also be created on the fly.</param>
-        public CouchViewDefinition(string name, CouchDesignDocument doc)
-        {
-            Doc = doc;
-            Name = name;
-        }
+        public CouchViewDefinition(string name, CouchDesignDocument doc) : base(name, doc) {}
 
         /// <summary>
         /// Constructor used for permanent views, see CouchDesignDocument.
@@ -29,29 +26,30 @@ namespace Divan
         /// <param name="map">Map function.</param>
         /// <param name="reduce">Optional reduce function.</param>
         /// <param name="doc">Parent document.</param>
-        public CouchViewDefinition(string name, string map, string reduce, CouchDesignDocument doc)
+        public CouchViewDefinition(string name, string map, string reduce, CouchDesignDocument doc): base(name, doc)
         {
-            Doc = doc;
-            Name = name;
             Map = map;
             Reduce = reduce;
         }
 
-        public CouchDesignDocument Doc { get; set; }
-        public string Name { get; set; }
         public string Map { get; set; }
         public string Reduce { get; set; }
 
-        public CouchRequest Request()
+        public void Touch()
         {
-            return Doc.Owner.Request(Path());
+            Query().Limit(0).GetResult();
         }
 
-        public CouchDatabase Db()
+        public CouchQuery Query()
         {
-            return Doc.Owner;
+            return Doc.Owner.Query(this);
         }
 
+		public CouchLinqQuery<T> LinqQuery<T>() {
+			var linqProvider = new CouchQueryProvider(Db(), this);
+            return new CouchLinqQuery<T>(linqProvider);
+		}
+		
         public void WriteJson(JsonWriter writer)
         {
             writer.WritePropertyName(Name);
@@ -73,25 +71,6 @@ namespace Divan
             {
                 Reduce = obj["reduce"].Value<string>();
             }
-        }
-
-        public CouchQuery Query()
-        {
-            return Doc.Owner.Query(this);
-        }
-
-        public void Touch()
-        {
-            Query().Limit(0).GetResult();
-        }
-
-        public string Path()
-        {
-            if (Doc.Id == "_design/")
-            {
-                return Name;
-            }
-            return Doc.Id + "/_view/" + Name;
         }
 
         /// <summary>
