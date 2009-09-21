@@ -9,3 +9,7 @@ _ReSharper.*
 *~
 *.swp
 .svn
+*.userprefs
+*.usertasks
+*.pidb
+test-results

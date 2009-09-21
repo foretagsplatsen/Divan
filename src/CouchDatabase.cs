@@ -55,6 +55,17 @@ namespace Divan
             return newDoc;
         }
 
+		/// <summary>
+		/// Only to be used when developing.
+		/// </summary>
+		public CouchViewDefinition NewTempView(string designDoc, string viewName, string mapText)
+        {
+            var doc = NewDesignDocument(designDoc);
+            var view = doc.AddView(viewName, "function (doc) {" + mapText + "}");
+            doc.Synch();
+            return view;
+        }
+				
         /// <summary>
         /// Currently the logic is that the code is always the master.
         /// And we also do not remove design documents in the database that
@@ -539,7 +550,8 @@ namespace Divan
             return new CouchQuery(view);
         }
 
-        public CouchLuceneQuery QueryLucene(CouchLuceneViewDefinition view)
+
+        public CouchLuceneQuery Query(CouchLuceneViewDefinition view)
         {
             return new CouchLuceneQuery(view);
         }

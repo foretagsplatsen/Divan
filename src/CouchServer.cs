@@ -15,7 +15,7 @@ namespace Divan
     /// </summary>
     public class CouchServer
     {
-        private const string DefaultHost = "192.168.9.205";
+        private const string DefaultHost = "localhost";
         private const int DefaultPort = 5984;
         private readonly JsonSerializer serializer = new JsonSerializer(); 
         

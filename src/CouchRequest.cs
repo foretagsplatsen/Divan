@@ -86,7 +86,7 @@ namespace Divan
         // HEAD requests seem to be problematic under Mono.
         public CouchRequest Head()
         {
-            method = "HEAD";
+            method = "GET"; // Should be "HEAD"
             return this;
         }
 

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using Divan.Linq;
+	
 namespace Divan
 {
     /// <summary>
@@ -44,6 +45,11 @@ namespace Divan
             return Doc.Owner.Query(this);
         }
 
+		public CouchLinqQuery<T> LinqQuery<T>() {
+			var linqProvider = new CouchQueryProvider(Db(), this);
+            return new CouchLinqQuery<T>(linqProvider);
+		}
+		
         public void WriteJson(JsonWriter writer)
         {
             writer.WritePropertyName(Name);
@@ -92,7 +98,13 @@ namespace Divan
 
         public bool Equals(CouchViewDefinition other)
         {
-            return Name.Equals(other.Name) && Map.Equals(other.Map) && Reduce.Equals(other.Reduce);
+            return 
+                Name != null && 
+                Name.Equals(other.Name) && 
+                Map != null &&
+                Map.Equals(other.Map) && 
+                Reduce != null &&
+                Reduce.Equals(other.Reduce);
         }
     }
 }

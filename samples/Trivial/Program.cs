@@ -5,6 +5,7 @@ using System.Linq;
 using Divan;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Divan.Linq;
 
 namespace Trivial
 {
@@ -20,7 +21,7 @@ namespace Trivial
     class Program
     {
         static void Main(string[] args) {
-            string host = "localhost";
+            string host = "172.16.10.78";
             int port = 5984;
 
             // Lets you see all HTTP requests made by Divan
@@ -29,7 +30,7 @@ namespace Trivial
             // Trivial parse of args to get host and port
             switch (args.Length) {
                 case 0:
-                    Console.WriteLine("Using localhost:5984");
+                    Console.WriteLine("Using " + host + ":" + port);
                     break;
                 case 1:
                     Console.WriteLine("Using " + args[0] + ":5984");
@@ -45,6 +46,10 @@ namespace Trivial
             // Get a server instance. It only holds host, port and a string database prefix.
             // For non trivial usage of Divan you typically create your own subclass of CouchServer.
             var server = new CouchServer(host, port);
+
+            // a little bit of cleanup
+            if (server.HasDatabase("trivial"))
+                server.DeleteDatabase("trivial");
 
             // Get (creates it if needed) a CouchDB database. This call will create the db in CouchDB
             // if it does not exist, create a CouchDatabase instance and then send Initialize() to it
@@ -89,6 +94,26 @@ namespace Trivial
             var cars = db.GetAllDocuments<Car>();
             Console.WriteLine("Loaded all Cars: " + cars.Count);
 
+            // Now try some linq
+            var tempView = db.NewTempView("test", "test", "if (doc.docType && doc.docType == 'car') emit(doc.Hps, doc);");
+            var linqCars = tempView.LinqQuery<Car>();
+
+            var fastCars = from c in linqCars where c.HorsePowers >= 175 select c;//.Make + " " + c.Model;
+            foreach (var fastCar in fastCars)
+                Console.WriteLine(fastCar);
+
+            var twoCars = from c in linqCars where c.HorsePowers == 175 || c.HorsePowers == 176 select c;//.Make + " " + c.Model;
+            foreach (var twoCar in twoCars)
+                Console.WriteLine(twoCar);
+
+            var hps = new int[] {176, 177};
+            var twoMoreCars = from c in linqCars where hps.Contains(c.HorsePowers) select c.Make + " " + c.Model + " with " + c.HorsePowers + "HPs";
+            foreach (var twoCar in twoMoreCars)
+                Console.WriteLine(twoCar);
+
+            // cleanup for later
+            db.DeleteDocument(tempView.Doc);
+
             // Delete some Cars one by one. CouchDB is an MVCC database which means that for every operation that modifies a document
             // we need to supply not only its document id, but also the revision that we are aware of. This means that we must supply id/rev
             // for each document we want to delete.
@@ -107,7 +132,9 @@ namespace Trivial
 
             // Delete the db itself
             db.Delete();
-            Console.WriteLine("Deleted database");
+            Console.WriteLine("Deleted database.\r\n\r\nPress enter to close. ");
+
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -138,6 +165,8 @@ namespace Trivial
                 // This will write id and rev
                 base.WriteJson(writer);
 
+                writer.WritePropertyName("docType");
+                writer.WriteValue("car");
                 writer.WritePropertyName("Make");
                 writer.WriteValue(Make);
                 writer.WritePropertyName("Model");
