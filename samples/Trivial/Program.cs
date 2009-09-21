@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Divan;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Divan.Linq;
 
 namespace Trivial
 {
@@ -21,7 +19,7 @@ namespace Trivial
     class Program
     {
         static void Main(string[] args) {
-            string host = "172.16.10.78";
+            string host = "localhost";
             int port = 5984;
 
             // Lets you see all HTTP requests made by Divan
