@@ -86,7 +86,7 @@ namespace Divan
         // HEAD requests seem to be problematic under Mono.
         public CouchRequest Head()
         {
-            method = "HEAD";
+            method = "GET"; // Should be "HEAD"
             return this;
         }
 
@@ -176,7 +176,6 @@ namespace Divan
         private HttpWebRequest GetRequest()
         {
             Uri requestUri = new UriBuilder("http", server.Host, server.Port, ((db != null) ? db.Name + "/" : "") + path, query).Uri;
-
             var request = WebRequest.Create(requestUri) as HttpWebRequest;
             if (request == null)
             {
@@ -188,11 +187,11 @@ namespace Divan
             if (mimeType != null)
             {
                 request.ContentType = mimeType;
-	    }
-			
+            }
+
             if (postData != null)
             {
-		byte[] bytes = Encoding.UTF8.GetBytes(postData);
+                byte[] bytes = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = bytes.Length;
                 using (Stream ps = request.GetRequestStream())
                 {
@@ -212,30 +211,31 @@ namespace Divan
 
         public T Parse<T>() where T : JToken
         {
+            //var timer = new Stopwatch();
+            //timer.Start();
             using (WebResponse response = GetResponse())
             {
-		PickETag(response);
-                if (etagToCheck != null)
-                {
-                    if (IsETagValid())
-                    {
-                        return null;
-                    }
-                }
-		if (method == "HEAD") {
-			return null;
-		}
                 using (Stream stream = response.GetResponseStream())
                 {
                     using (var reader = new StreamReader(stream))
                     {
                         using (var textReader = new JsonTextReader(reader))
                         {
+                            PickETag(response);
+                            if (etagToCheck != null)
+                            {
+                                if (IsETagValid())
+                                {
+                                    return null;
+                                }
+                            }
                             result = JToken.ReadFrom(textReader); // We know it is a top level JSON JObject.
                         }
                     }
                 }
             }
+            //timer.Stop();
+            //Trace.WriteLine("Time for Couch HTTP & JSON PARSE: " + timer.ElapsedMilliseconds);
             return (T) result;
         }
 
@@ -255,20 +255,16 @@ namespace Divan
         {
             using (WebResponse response = GetResponse())
             {
-		PickETag(response);
-                if (etagToCheck != null)
+                using (var reader = new StreamReader(response.GetResponseStream()))
                 {
+                    PickETag(response);
+                    if (etagToCheck != null)
+                    {
                         if (IsETagValid())
                         {
                             return null;
                         }
-                }
-		if (method == "HEAD") {
-			return null;
-		}
-                using (var reader = new StreamReader(response.GetResponseStream()))
-                {
-                    
+                    }
                     return reader.ReadToEnd();
                 }
             }
@@ -276,7 +272,7 @@ namespace Divan
 
         private WebResponse GetResponse()
         {
-		return GetRequest().GetResponse();
+            return GetRequest().GetResponse();
         }
 
         public CouchRequest Send()

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -16,7 +15,7 @@ namespace Divan
     /// </summary>
     public class CouchServer
     {
-        private const string DefaultHost = "192.168.9.205";
+        private const string DefaultHost = "localhost";
         private const int DefaultPort = 5984;
         private readonly JsonSerializer serializer = new JsonSerializer(); 
         
@@ -58,7 +57,7 @@ namespace Divan
         /// </summary>
         public void Debug(string message)
         {
-            Console.WriteLine(message);
+            Trace.WriteLine(message);
         }
 
         public bool HasDatabase(string name)
@@ -66,10 +65,9 @@ namespace Divan
             //return GetDatabaseNames().Contains(name); // This is too slow when we have thousands of dbs!!!
             try
             {
-                // NOTE: HEAD requests seem to be problematic in Mono...
-                //Request().Path(name).Head().Send();
-                Request().Path(name).Get().Send();
-				return true;
+                // HEAD requests seem to be problematic in Mono...
+                Request().Path(name).Head().Send();
+                return true;
             }
             catch (WebException)
             {
