@@ -12,6 +12,14 @@ benefit from more) and at least one sample console project included.
 
 Divan is under the MIT-license, see file LICENSE.txt.
 
+== Features
+
+* More or less complete regular CouchDB API implemented including bulk and attachments with reasonable abstractions.
+* Has classes for design documents and view definition so you can create and manipulate your views from C#.
+* Has LINQ support thanks to Alex Pedenko! This means you can write limited queries in LINQ syntax.
+* Has CouchDB-Lucene integration!
+* Offers several "hooks" for your own subclasses in order to add specializations.
+
 == Mailinglist
 
 We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/divan] for users and developers alike, please subscribe!
@@ -21,16 +29,16 @@ We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/d
 
 You bet. Foretagsplatsen uses mainly windows (Visual Studio 2008 and .Net 3.5) but Divan
 is meant to work fine in Mono too. Currently Mono has a bug in System.dll regarding HEAD HTTP
-requests so we reversed a few places in the code to use GET in order to have it working on Mono too.
+requests so we detect if we are running in Mono and then we fall back on using a regular GET.
 
 Note that this bug has been <b>reported and fixed</b> in Mono trunk and should be available
-in any mono release after 2.4.2.3 (I guess).
+in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 
 == What about documentation?
 
-At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs
-and there is at least one sample project showing basic usage. One more sample with more
-advanced usage is coming soon.
+At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs and
+CouchLuceneTest.cs and there is at least one sample project showing basic usage.
+One more sample with more advanced usage is coming soon.
 
 == Dependencies
 
@@ -39,6 +47,7 @@ The only dependencies and their tested versions are:
 * Newtonsoft.JSON (3.5 Beta 4), MIT-licensed fast library for JSON, see: http://json.codeplex.com
 * NUnit (2.4.8). Unit testing framework, see: http://www.nunit.org
 * CouchDB (0.9.1, 0.9). Running on a server somewhere, see: http://www.couchdb.org
+* If you want to use the Lucene parts of Divan, you also need CouchDB-Lucene (0.4) installed on the server, see: http://github.com/rnewson/couchdb-lucene/tree/v0.4
 
 The two needed dlls are included in the lib directory.
 
