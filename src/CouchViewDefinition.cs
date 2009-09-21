@@ -119,7 +119,13 @@ namespace Divan
 
         public bool Equals(CouchViewDefinition other)
         {
-            return Name.Equals(other.Name) && Map.Equals(other.Map) && Reduce.Equals(other.Reduce);
+            return 
+                Name != null && 
+                Name.Equals(other.Name) && 
+                Map != null &&
+                Map.Equals(other.Map) && 
+                Reduce != null &&
+                Reduce.Equals(other.Reduce);
         }
     }
 }
