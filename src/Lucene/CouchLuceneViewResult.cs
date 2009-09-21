@@ -1,3 +1,4 @@
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -70,18 +71,49 @@ namespace Divan.Lucene
             return result["rows"].Children();
         }
 
+
+        /// <summary>
+        /// Return all hits with all meta info. A hit can be told to retrieve its CouchDocument.
+        /// </summary>
+        public virtual IList<CouchLuceneHit> Hits()
+        {
+            var hits = new List<CouchLuceneHit>();
+            foreach (JObject row in Rows())
+            {
+                hits.Add(new CouchLuceneHit(row));
+            }
+            return hits;
+        }
+
 		/// <summary>
-		/// Perform a bulk retrieval of the documents that was returned by this
-		/// query. Note that this may be a subset of TotalCount().
+		/// Extract documents from hits or perform a bulk retrieval of the documents
+		/// that was returned by this query. Note that this may be a subset of TotalCount().
 		/// </summary>
 		public virtual IList<T> GetDocuments<T>() where T : ICouchDocument, new()
         {
-            var ids = new List<string>();
-            foreach (JObject row in Rows())
+		    var docs = new List<T>();
+
+		    var hits = Hits();
+            if (hits.Count == 0)
             {
-                ids.Add(row["id"].Value<string>());
+                return docs;
             }
-            return view.Db().GetDocuments<T>(ids);
+		    var firstHit = hits.First();
+		    var db = view.Db();
+            if (firstHit.HasDocument())
+            {
+                foreach (var hit in hits)
+                {
+                    docs.Add(hit.Document<T>());
+                }
+                return docs;
+            }
+		    var ids = new List<string>();
+		    foreach (var hit in hits)
+		    {
+		        ids.Add(hit.Id());
+		    }
+		    return db.GetDocuments<T>(ids);
         }
 		
 		/// <summary>

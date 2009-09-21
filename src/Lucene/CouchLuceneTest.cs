@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Threading;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
@@ -22,7 +25,7 @@ namespace Divan.Lucene
         [TearDown]
         public void TearDown()
         {
-            //db.Delete();
+            db.Delete();
         }
 
         #endregion
@@ -38,36 +41,33 @@ namespace Divan.Lucene
             var view = design.AddLuceneView("simple", @"function (doc) { var ret = new Document(); ret.add(doc.text); return ret;}");
             db.SynchDesignDocuments();
 
-            db.CreateDocument("{\"text\": \"one two three four\"}");
+            db.WriteDocument("{\"text\": \"one two three four\"}", "my-funky-id");
 
-            var result = view.Query().Q("one").GetResult();
-//			var docs = result.GetDocuments<CouchJsonDocument>();
-//			var doc = docs.First<CouchJsonDocument>();
-			Assert.That(result.Count(), Is.EqualTo(1));
-//			Assert.That(doc.Obj["text"].Value<string>(), Is.EqualTo("one two three four"));
+            // Hehe, we need to sleep to make sure the indexer catches up... wonder if we can see that somehow?
+            Thread.Sleep(5000);
+
+            // Silly query should give no hits
+            var result = view.Query().Q("yabbadabba").GetResult();
+            var hits = result.Hits();
+            Assert.That(hits.Count(), Is.EqualTo(0));
+
+            // Should give one single hit with no included document, but correct id.
+            result = view.Query().Q("one").GetResult();
+            hits = result.Hits();
+            Assert.That(hits.Count(), Is.EqualTo(1));
+            Assert.That(hits.First().HasDocument(), Is.False);
+            Assert.That(hits.First().Id(), Is.EqualTo("my-funky-id"));
+
+            // Then we should be able to GetDocuments() which will perform a bulk get
+			var doc = result.GetDocuments<CouchJsonDocument>().First();
+            Assert.That(doc.Id, Is.EqualTo("my-funky-id"));
+			Assert.That(doc.Obj["text"].Value<string>(), Is.EqualTo("one two three four"));
+
+            // Then all over again but including documents and getting it out in one single query.
+            result = view.Query().Q("one").IncludeDocuments().GetResult();
+            doc = result.GetDocuments<CouchJsonDocument>().First();
+            Assert.That(doc.Id, Is.EqualTo("my-funky-id"));
+            Assert.That(doc.Obj["text"].Value<string>(), Is.EqualTo("one two three four"));
         }
-
-/*		[Test]
-        public void ShouldHandleEmptyIndex()
-        {
-            var design = db.NewDesignDocument("test");
-            var view = design.AddLuceneView("noindex", 
-                            @"function(doc) {
-                              return null;
-                            }
-                            ");
-            db.WriteDocument(design);
-
-            CouchJsonDocument doc1 = db.CreateDocument("{\"CPU\": \"Intel\"}");
-            db.CreateDocument("{\"CPU\": \"AMD\"}");
-            db.CreateDocument("{\"CPU\": \"Via\"}");
-            db.CreateDocument("{\"CPU\": \"Sparq\"}");
-
-            var query = view.Query().Q("Via").GetResult();
-
-
-        }
-*/
-
     }
 }

@@ -68,6 +68,7 @@
     <Compile Include="CouchDesignDocument.cs" />
     <Compile Include="ICanJson.cs" />
     <Compile Include="ICouchDocument.cs" />
+    <Compile Include="Lucene\CouchLuceneHit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Linq\CouchLinqQuery.cs" />
     <Compile Include="Linq\CouchQueryProvider.cs" />
