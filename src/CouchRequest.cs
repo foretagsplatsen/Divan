@@ -90,13 +90,7 @@ namespace Divan
         public CouchRequest Head()
         {
             // NOTE: We need to do this until next release of mono where HEAD requests have been fixed!
-            if (db.RunningOnMono())
-            {
-                method = "GET"; // Falling back on GET
-            } else
-            {
-                method = "HEAD";
-            }
+            method = server.RunningOnMono ? "GET" : "HEAD";
             return this;
         }
 

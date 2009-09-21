@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using Divan.Lucene;
 using Newtonsoft.Json.Linq;
 
 namespace Divan

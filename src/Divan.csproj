@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,13 +55,9 @@
     <Compile Include="CouchException.cs" />
     <Compile Include="CouchGenericViewResult.cs" />
     <Compile Include="CouchJsonDocument.cs" />
-    <Compile Include="CouchLuceneQuery.cs" />
-    <Compile Include="CouchLuceneTest.cs" />
-    <Compile Include="CouchLuceneViewDefinition.cs" />
     <Compile Include="CouchNotFoundException.cs" />
     <Compile Include="CouchPermanentViewResult.cs" />
     <Compile Include="CouchQuery.cs" />
-    <Compile Include="CouchQueryBase.cs" />
     <Compile Include="CouchQueryDocument.cs" />
     <Compile Include="CouchRequest.cs" />
     <Compile Include="CouchServer.cs" />
@@ -90,7 +86,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="Lucene\" />
-  </ItemGroup>
 </Project>
