@@ -30,9 +30,8 @@ Note that this bug has been <b>reported and fixed</b> in Mono trunk and should b
 in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 
 == Getting started
-1. Install git of course... :)
-2. Clone Divan. The "official" repository is the one from Foretagsplatsen and we only have one branch there so far, and no tags yet:
-	<b>git clone git://github.com/foretagsplatsen/Divan.git</b>
+1. Install git of course... and clone Divan. The "official" repository is the one from Foretagsplatsen and we only have one branch there so far, and no tags yet:
+	git clone git://github.com/foretagsplatsen/Divan.git
 3. If you are on VS2008 or Monodevelop then I suggest double clicking the Divan.sln. Hopefully the rest works out fine.
 4. If you are on Mono "CLI style" then the configure/Makefile should work as expected, it is "vanilla generated" from Monodevelop. Then you can also run the basic unit tests, but note that these rely on a couchdb running locally:
 	nunit-console2 -labels -run=Divan.CouchTest src/bin/Debug/Divan.dll
@@ -53,6 +52,8 @@ We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/d
 At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs and
 CouchLuceneTest.cs and there is at least one sample project showing basic usage.
 One more sample with more advanced usage is coming soon.
+Blog articles:
+-One blog article[http://goran.krampe.se/blog/Divan/divan-plus-couchdb-lucene.rdoc] on how to install Couchdb-Lucene and test it with Divan.
 
 == Dependencies
 
