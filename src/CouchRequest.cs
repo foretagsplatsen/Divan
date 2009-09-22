@@ -83,10 +83,14 @@ namespace Divan
             return Query(sb.ToString());
         }
 
-        // HEAD requests seem to be problematic under Mono.
+        /// <summary>
+        /// Turn the request into a HEAD request, HEAD requests are problematic
+        /// under Mono 2.4, but has been fixed in later releases.
+        /// </summary> 
         public CouchRequest Head()
         {
-            method = "GET"; // Should be "HEAD"
+            // NOTE: We need to do this until next release of mono where HEAD requests have been fixed!
+            method = server.RunningOnMono ? "GET" : "HEAD";
             return this;
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,6 +16,8 @@ namespace Divan
     /// </summary>
     public class CouchServer
     {
+        public bool RunningOnMono = Type.GetType("Mono.Runtime") != null;
+        
         private const string DefaultHost = "localhost";
         private const int DefaultPort = 5984;
         private readonly JsonSerializer serializer = new JsonSerializer(); 
@@ -65,7 +68,6 @@ namespace Divan
             //return GetDatabaseNames().Contains(name); // This is too slow when we have thousands of dbs!!!
             try
             {
-                // HEAD requests seem to be problematic in Mono...
                 Request().Path(name).Head().Send();
                 return true;
             }

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using Divan.Lucene;
 using Newtonsoft.Json.Linq;
 
 namespace Divan
@@ -47,6 +48,10 @@ namespace Divan
 
         public CouchServer Server { get; set; }
 
+        public bool RunningOnMono()
+        {
+            return Server.RunningOnMono;
+        }
 
         public CouchDesignDocument NewDesignDocument(string aName)
         {
@@ -549,6 +554,7 @@ namespace Divan
         {
             return new CouchQuery(view);
         }
+
 
         public CouchLuceneQuery Query(CouchLuceneViewDefinition view)
         {
