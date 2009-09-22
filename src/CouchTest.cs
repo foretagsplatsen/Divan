@@ -10,6 +10,8 @@ namespace Divan
 {
     /// <summary>
     /// Unit tests for Divan. Operates in a separate CouchDB database called divan_unit_tests.
+    /// Run from command line using something like:
+    /// 	nunit-console2 --labels -run=Divan.CouchTest src/bin/Debug/Divan.dll
     /// </summary>
     [TestFixture]
     public class CouchTest
