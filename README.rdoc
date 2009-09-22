@@ -18,9 +18,9 @@ Divan is under the MIT-license, see file LICENSE.txt.
 * Offers several "hooks" for your own subclasses in order to add specializations.
 
 == Does it work under Mono?
-You bet. Foretagsplatsen uses mainly windows (Visual Studio 2008 and .Net 3.5) but Divan
-is meant to work fine in Mono too. Currently Mono has a bug in System.dll regarding HEAD HTTP
-requests so <b>we detect if we are running in Mono and then we fall back on using a regular GET</b>.
+You bet. Foretagsplatsen uses mainly windows (VS2008/.Net 3.5) but Divan is also developed using Monodevelop 2.0/Mono 2.4.2.3. We are currently using the Makefile integration in Monodevelop so Divan should also easily build from command line.
+
+Currently Mono has a bug in System.dll regarding HEAD HTTP requests so <b>we detect if we are running in Mono and then we fall back on using a regular GET</b>.
 
 Note that this bug has been <b>reported and fixed</b> in Mono trunk and should be available
 in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
@@ -30,7 +30,7 @@ in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 	git clone git://github.com/foretagsplatsen/Divan.git
 3. If you are on VS2008 or Monodevelop then I suggest double clicking the Divan.sln. Hopefully the rest works out fine.
 4. If you are on Mono "CLI style" then the configure/Makefile should work as expected, it is "vanilla generated" from Monodevelop. Then you can also run the basic unit tests, but note that these rely on a couchdb running locally:
-	nunit-console2 -labels -run=Divan.CouchTest src/bin/Debug/Divan.dll
+	nunit-console2 -labels -run=Divan.CouchTest Tests/bin/Debug/Divan.dll
 5. Run the "Trivial" sample console app. You can point it at a running CouchDB server:
 
 	C:\Divan\samples\Trivial>bin\Debug\Trivial.exe 192.168.9.205 5984
@@ -41,7 +41,6 @@ in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs and
 CouchLuceneTest.cs and there is at least one sample project showing basic usage.
 One more sample with more advanced usage is coming soon.
-Blog articles:
 
 * One blog article[http://goran.krampe.se/blog/Divan/divan-plus-couchdb-lucene.rdoc] on how to install Couchdb-Lucene and test it with Divan.
 
@@ -62,7 +61,6 @@ We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/d
 Apart from polishing and fixing bugs the following pieces are on the todolist:
 * Optional automatic JSON serialization.
 * Optional mirroring of design documents from external files instead of defining them as literal strings in C#.
-* Splitting out the tests into their own project.
 * Writing a tutorial and a sample project showing the advanced mechanisms.
 
 == Contributing
