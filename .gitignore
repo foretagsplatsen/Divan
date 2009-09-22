@@ -12,4 +12,6 @@ _ReSharper.*
 *.userprefs
 *.usertasks
 *.pidb
+config.log
+TestResult.xml
 test-results

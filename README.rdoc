@@ -1,5 +1,4 @@
 = Divan, a C# library for CouchDB
-
 Divan is a C# library under the MIT license for using CouchDB[http://www.couchdb.org].
 It should be more or less API complete including bulk operations, attachments, views
 and design documents etc. It is quite fast and designed to be flexible but not bloated. 
@@ -9,31 +8,16 @@ being used in the new core system at Foretagsplatsen. It has unit tests (althoug
 benefit from more) and at least one sample console project included.
 
 == License
-
 Divan is under the MIT-license, see file LICENSE.txt.
 
 == Features
-
 * More or less complete CouchDB API implemented including bulk and attachments.
 * Has classes for design documents and view definition so you can create and manipulate your views from C#.
 * Has LINQ support (limited) thanks to Alex Pedenko! This means you can write a subset of queries in LINQ syntax.
 * Has basic CouchDB-Lucene integration for making free text indexes and query them.
 * Offers several "hooks" for your own subclasses in order to add specializations.
 
-== Roadmap
-
-Apart from polishing and fixing bugs the following pieces are on the todolist:
-* Optional automatic JSON serialization.
-* Optional mirroring of design documents from external files instead of defining them as literal strings in C#.
-* Splitting out the tests into their own project.
-* Writing a tutorial and a sample project showing the advanced mechanisms.
-
-== Mailinglist
-
-We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/divan] for users and developers alike, please subscribe!
-
 == Does it work under Mono?
-
 You bet. Foretagsplatsen uses mainly windows (Visual Studio 2008 and .Net 3.5) but Divan
 is meant to work fine in Mono too. Currently Mono has a bug in System.dll regarding HEAD HTTP
 requests so <b>we detect if we are running in Mono and then we fall back on using a regular GET</b>.
@@ -41,14 +25,27 @@ requests so <b>we detect if we are running in Mono and then we fall back on usin
 Note that this bug has been <b>reported and fixed</b> in Mono trunk and should be available
 in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 
-== What about documentation?
+== Getting started
+1. Install git of course... and clone Divan. The "official" repository is the one from Foretagsplatsen and we only have one branch there so far, and no tags yet:
+	git clone git://github.com/foretagsplatsen/Divan.git
+3. If you are on VS2008 or Monodevelop then I suggest double clicking the Divan.sln. Hopefully the rest works out fine.
+4. If you are on Mono "CLI style" then the configure/Makefile should work as expected, it is "vanilla generated" from Monodevelop. Then you can also run the basic unit tests, but note that these rely on a couchdb running locally:
+	nunit-console2 -labels -run=Divan.CouchTest src/bin/Debug/Divan.dll
+5. Run the "Trivial" sample console app. You can point it at a running CouchDB server:
 
+	C:\Divan\samples\Trivial>bin\Debug\Trivial.exe 192.168.9.205 5984
+
+6. Happy coding! And ask any questions on the mailinglist.
+
+== What about documentation?
 At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs and
 CouchLuceneTest.cs and there is at least one sample project showing basic usage.
 One more sample with more advanced usage is coming soon.
+Blog articles:
+
+* One blog article[http://goran.krampe.se/blog/Divan/divan-plus-couchdb-lucene.rdoc] on how to install Couchdb-Lucene and test it with Divan.
 
 == Dependencies
-
 The only dependencies and their tested versions are:
 
 * Newtonsoft.JSON (3.5 Beta 4), MIT-licensed fast library for JSON, see: http://json.codeplex.com
@@ -58,65 +55,15 @@ The only dependencies and their tested versions are:
 
 The two needed dlls are included in the lib directory.
 
-== Getting started
+== Mailinglist
+We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/divan] for users and developers alike, please subscribe!
 
-Well... it goes something like this:
+== Roadmap
+Apart from polishing and fixing bugs the following pieces are on the todolist:
+* Optional automatic JSON serialization.
+* Optional mirroring of design documents from external files instead of defining them as literal strings in C#.
+* Splitting out the tests into their own project.
+* Writing a tutorial and a sample project showing the advanced mechanisms.
 
-1. First get CouchDB up and running on some box.
-
-2. Clone Divan and build it.
-
-3. Run the "Trivial" sample console app by pointing it at a running CouchDB server getting output similar to this:
-
-	C:\Divan\samples\Trivial>bin\Debug\Trivial.exe 192.168.9.205 5984
-	Using 192.168.9.205:5984
-	Created a CouchServer
-	Request: http://192.168.9.205:5984/trivial Method: HEAD
-	Request: http://192.168.9.205:5984/trivial Method: PUT
-	Created database 'trivial'
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Request: http://192.168.9.205:5984/trivial/ Method: POST
-	Saved 10 Cars with 170 hps each.
-	Request: http://192.168.9.205:5984/trivial/86a9d1ad306e204a037940c4fb0cbbe7 Method: PUT
-	Modified last Car with id 86a9d1ad306e204a037940c4fb0cbbe7
-	Request: http://192.168.9.205:5984/trivial/86a9d1ad306e204a037940c4fb0cbbe7 Method: GET
-	Loaded last Car Saab 93 now with 400hps.
-	Request: http://192.168.9.205:5984/trivial/_all_docs?include_docs=true Method: GET
-	Loaded all Cars: 10
-	Request: http://192.168.9.205:5984/trivial/1f6de464ae8034eb952b93105807f22c?rev1-208231211 Method: DELETE
-	Deleted car with id 1f6de464ae8034eb952b93105807f22c
-	Request: http://192.168.9.205:5984/trivial/44f9638877fc09e07bda6504a5bfd40d?rev1-345884075 Method: DELETE
-	Deleted car with id 44f9638877fc09e07bda6504a5bfd40d
-	Request: http://192.168.9.205:5984/trivial/591e0ef170154311aafa8a2a5fcbb310?rev1-2891194419 Method: DELETE
-	Deleted car with id 591e0ef170154311aafa8a2a5fcbb310
-	Request: http://192.168.9.205:5984/trivial/7124fada0f90ed93f88168dc6c1c8b4f?rev1-2479256166 Method: DELETE
-	Deleted car with id 7124fada0f90ed93f88168dc6c1c8b4f
-	Request: http://192.168.9.205:5984/trivial/73115c4dd3b2bcd512412813dd04b901?rev1-3993011972 Method: DELETE
-	Deleted car with id 73115c4dd3b2bcd512412813dd04b901
-	Request: http://192.168.9.205:5984/trivial/78a305543bff2f474cbcfe2ac667cc6d?rev1-1583012745 Method: DELETE
-	Deleted car with id 78a305543bff2f474cbcfe2ac667cc6d
-	Request: http://192.168.9.205:5984/trivial/86a9d1ad306e204a037940c4fb0cbbe7?rev2-1402499148 Method: DELETE
-	Deleted car with id 86a9d1ad306e204a037940c4fb0cbbe7
-	Request: http://192.168.9.205:5984/trivial/9e647b114b9ba1c8a170ed1c1951260c?rev1-30425501 Method: DELETE
-	Deleted car with id 9e647b114b9ba1c8a170ed1c1951260c
-	Request: http://192.168.9.205:5984/trivial/bad56664dec8f3d1fd30db70510f7ff2?rev1-1765374009 Method: DELETE
-	Deleted car with id bad56664dec8f3d1fd30db70510f7ff2
-	Request: http://192.168.9.205:5984/trivial/cbf0bb7f8ebc4aad02a2c90228d1076f?rev1-2425501185 Method: DELETE
-	Deleted car with id cbf0bb7f8ebc4aad02a2c90228d1076f
-	Request: http://192.168.9.205:5984/trivial Method: HEAD
-	Request: http://192.168.9.205:5984/trivial Method: DELETE
-	Deleted database
-	
-
-3. Look at couchTest.cs and make sure the tests are green, you may need to edit CochServer.cs with different default server ip.
-
-4. Have fun!
-
+== Contributing
+...is simple. <b>All contributions should be under the MIT license</b>. Just fork and make pull requests and we will try to integrate. Feel free to bring up anything on the mailinglist. We haven't started using any issue tracker yet, but we will if it gets more popular and we when we do a proper release.
