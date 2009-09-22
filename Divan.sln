@@ -13,6 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{37AC0B66-5340-4B81-BC62-3EE80233A011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37AC0B66-5340-4B81-BC62-3EE80233A011}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37AC0B66-5340-4B81-BC62-3EE80233A011}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -21,16 +25,31 @@ Global
 		{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		version = 0.1
 		StartupItem = src\Divan.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.StandardHeader = $2
+		$2.Text = 
+		$2.inheritsSet = MITX11License
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabWidth = 4
+		$3.TabsToSpaces = False
+		$3.NoTabsAfterNonTabs = False
+		$3.RemoveTrailingWhitespace = False
+		$3.EolMarker = Native
+		$0.ChangeLogPolicy = $4
+		$4.UpdateMode = None
+		$4.MessageStyle = $5
+		$5.LineAlign = 0
+		$4.inheritsSet = Mono
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

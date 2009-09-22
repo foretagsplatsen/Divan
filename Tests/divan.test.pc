@@ -1,0 +1,6 @@
+Name: Divan.Test
+Description: Divan.Test
+Version: 0.1
+
+Requires: 
+Libs: -r:/usr/local/lib/divan/Divan.Test.dll

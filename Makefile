@@ -1,5 +1,5 @@
 
-EXTRA_DIST =  rules.make configure Makefile.include ../../../Divan/bin/Debug/Newtonsoft.Json.dll
+EXTRA_DIST =  rules.make configure Makefile.include lib/Newtonsoft.Json.dll lib/nunit.framework.dll
 
 all: all-recursive
 
@@ -12,10 +12,10 @@ include $(top_srcdir)/rules.make
 
 #Warning: This is an automatically generated file, do not edit!
 ifeq ($(CONFIG),DEBUG)
- SUBDIRS =  src samples/Trivial
+ SUBDIRS =  src samples/Trivial Tests
 endif
 ifeq ($(CONFIG),RELEASE)
- SUBDIRS =  src samples/Trivial
+ SUBDIRS =  src samples/Trivial Tests
 endif
 
 

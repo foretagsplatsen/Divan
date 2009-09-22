@@ -3,8 +3,8 @@ VERSION=0.1
 PACKAGE=divan
 prefix=/usr/local
 config=DEBUG
-configurations=" RELEASE DEBUG"
-common_packages=" nunit;2.4"
+configurations=" DEBUG RELEASE"
+common_packages=""
 
 
 usage ()

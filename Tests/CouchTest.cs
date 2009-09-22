@@ -11,8 +11,11 @@ namespace Divan.Test
 {
     /// <summary>
     /// Unit tests for Divan. Operates in a separate CouchDB database called divan_unit_tests.
+    /// If you are not running a CouchDB on localhost:5984 you will need to edit
+    /// the Tests/App.config file.
+    /// 
     /// Run from command line using something like:
-    /// 	nunit-console2 --labels -run=Divan.CouchTest src/bin/Debug/Divan.dll
+    /// 	nunit-console2 --labels -run=Divan.CouchTest Tests/bin/Debug/Tests.dll
     /// </summary>
     [TestFixture]
     public class CouchTest

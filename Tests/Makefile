@@ -10,32 +10,39 @@ include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
 ASSEMBLY_COMPILER_COMMAND = gmcs
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:3 -optimize- -debug "-define:DEBUG;TRACE"
-ASSEMBLY = bin/Debug/Divan.dll
+ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug "-define:DEBUG;TRACE"
+ASSEMBLY = bin/Debug/Divan.Test.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
-PROJECT_REFERENCES = 
+PROJECT_REFERENCES =  \
+	../src/bin/Debug/Divan.dll
 BUILD_DIR = bin/Debug/
 
 NEWTONSOFT_JSON_DLL_SOURCE=../lib/Newtonsoft.Json.dll
 NUNIT_FRAMEWORK_DLL_SOURCE=../lib/nunit.framework.dll
-DIVAN_DLL_MDB_SOURCE=bin/Debug/Divan.dll.mdb
+DIVAN_DLL_SOURCE=../src/bin/Debug/Divan.dll
+DIVAN_DLL_MDB_SOURCE=../src/bin/Debug/Divan.dll.mdb
 DIVAN_DLL_MDB=$(BUILD_DIR)/Divan.dll.mdb
+DIVAN_TEST_DLL_MDB_SOURCE=bin/Debug/Divan.Test.dll.mdb
+DIVAN_TEST_DLL_MDB=$(BUILD_DIR)/Divan.Test.dll.mdb
 
 endif
 
 ifeq ($(CONFIG),RELEASE)
 ASSEMBLY_COMPILER_COMMAND = gmcs
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:3 -optimize+ "-define:TRACE"
-ASSEMBLY = bin/Release/Divan.dll
+ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ "-define:TRACE"
+ASSEMBLY = bin/Release/Divan.Test.dll
 ASSEMBLY_MDB = 
 COMPILE_TARGET = library
-PROJECT_REFERENCES = 
+PROJECT_REFERENCES =  \
+	../src/bin/Release/Divan.dll
 BUILD_DIR = bin/Release/
 
 NEWTONSOFT_JSON_DLL_SOURCE=../lib/Newtonsoft.Json.dll
 NUNIT_FRAMEWORK_DLL_SOURCE=../lib/nunit.framework.dll
+DIVAN_DLL_SOURCE=../src/bin/Release/Divan.dll
 DIVAN_DLL_MDB=
+DIVAN_TEST_DLL_MDB=
 
 endif
 
@@ -45,48 +52,24 @@ SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 PROGRAMFILES = \
 	$(NEWTONSOFT_JSON_DLL) \
 	$(NUNIT_FRAMEWORK_DLL) \
-	$(DIVAN_DLL_MDB)  
+	$(DIVAN_DLL) \
+	$(DIVAN_DLL_MDB) \
+	$(DIVAN_TEST_DLL_MDB)  
 
 LINUX_PKGCONFIG = \
-	$(DIVAN_PC)  
+	$(DIVAN_TEST_PC)  
 
 
 RESGEN=resgen2
 
 NEWTONSOFT_JSON_DLL = $(BUILD_DIR)/Newtonsoft.Json.dll
 NUNIT_FRAMEWORK_DLL = $(BUILD_DIR)/nunit.framework.dll
-DIVAN_PC = $(BUILD_DIR)/divan.pc
+DIVAN_DLL = $(BUILD_DIR)/Divan.dll
+DIVAN_TEST_PC = $(BUILD_DIR)/divan.test.pc
 
 FILES =  \
-	CouchBulkDeleteDocuments.cs \
-	CouchBulkDocuments.cs \
-	CouchBulkKeys.cs \
-	CouchConflictException.cs \
-	CouchDatabase.cs \
-	CouchDesignDocument.cs \
-	CouchDocument.cs \
-	CouchException.cs \
-	CouchGenericViewResult.cs \
-	CouchJsonDocument.cs \
-	CouchNotFoundException.cs \
-	CouchPermanentViewResult.cs \
-	CouchQuery.cs \
-	CouchQueryDocument.cs \
-	CouchRequest.cs \
-	CouchServer.cs \
-	CouchViewDefinition.cs \
-	CouchViewDefinitionBase.cs \
-	CouchViewResult.cs \
-	ICanJson.cs \
-	ICouchDocument.cs \
-	Linq/CouchLinqQuery.cs \
-	Linq/CouchQueryProvider.cs \
-	Linq/ExpressionVisitor.cs \
-	Linq/TypeSystem.cs \
-	Lucene/CouchLuceneHit.cs \
-	Lucene/CouchLuceneQuery.cs \
-	Lucene/CouchLuceneViewDefinition.cs \
-	Lucene/CouchLuceneViewResult.cs \
+	CouchTest.cs \
+	Lucene/CouchLuceneTest.cs \
 	Properties/AssemblyInfo.cs 
 
 DATA_FILES = 
@@ -94,14 +77,20 @@ DATA_FILES =
 RESOURCES = 
 
 EXTRAS = \
-	divan.pc.in 
+	App.config \
+	divan.test.pc.in 
 
 REFERENCES =  \
 	../lib/Newtonsoft.Json.dll \
 	../lib/nunit.framework.dll \
+	../src/bin/Debug/Divan.dll \
 	System \
+	System.Configuration \
 	System.Core \
-	System.Web
+	System.Data \
+	System.Data.DataSetExtensions \
+	System.Xml \
+	System.Xml.Linq
 
 DLL_REFERENCES =  \
 	../lib/Newtonsoft.Json.dll \
@@ -119,7 +108,9 @@ include $(top_srcdir)/Makefile.include
 
 $(eval $(call emit-deploy-target,NEWTONSOFT_JSON_DLL))
 $(eval $(call emit-deploy-target,NUNIT_FRAMEWORK_DLL))
-$(eval $(call emit-deploy-wrapper,DIVAN_PC,divan.pc))
+$(eval $(call emit-deploy-target,DIVAN_DLL))
+$(eval $(call emit-deploy-target,DIVAN_DLL_MDB))
+$(eval $(call emit-deploy-wrapper,DIVAN_TEST_PC,divan.test.pc))
 
 
 $(eval $(call emit_resgen_targets))
@@ -143,9 +134,11 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(NEWTONSOFT_JSON_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(NUNIT_FRAMEWORK_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(DIVAN_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(DIVAN_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(DIVAN_TEST_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	mkdir -p '$(DESTDIR)$(libdir)/pkgconfig'
-	$(call cp,$(DIVAN_PC),$(DESTDIR)$(libdir)/pkgconfig)
+	$(call cp,$(DIVAN_TEST_PC),$(DESTDIR)$(libdir)/pkgconfig)
 	make post-install-local-hook prefix=$(prefix)
 
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
@@ -155,8 +148,10 @@ uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(NEWTONSOFT_JSON_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(NUNIT_FRAMEWORK_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(DIVAN_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(DIVAN_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
-	$(call rm,$(DIVAN_PC),$(DESTDIR)$(libdir)/pkgconfig)
+	$(call rm,$(DIVAN_TEST_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(DIVAN_TEST_PC),$(DESTDIR)$(libdir)/pkgconfig)
 	make post-uninstall-local-hook prefix=$(prefix)
 
 install: install-local
