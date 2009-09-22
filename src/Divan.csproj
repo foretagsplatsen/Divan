@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{37AC0B66-5340-4B81-BC62-3EE80233A011}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -35,10 +35,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -61,7 +57,6 @@
     <Compile Include="CouchQueryDocument.cs" />
     <Compile Include="CouchRequest.cs" />
     <Compile Include="CouchServer.cs" />
-    <Compile Include="CouchTest.cs" />
     <Compile Include="CouchViewDefinitionBase.cs" />
     <Compile Include="CouchViewResult.cs" />
     <Compile Include="CouchViewDefinition.cs" />
@@ -75,7 +70,6 @@
     <Compile Include="Linq\ExpressionVisitor.cs" />
     <Compile Include="Linq\TypeSystem.cs" />
     <Compile Include="Lucene\CouchLuceneQuery.cs" />
-    <Compile Include="Lucene\CouchLuceneTest.cs" />
     <Compile Include="Lucene\CouchLuceneViewDefinition.cs" />
     <Compile Include="Lucene\CouchLuceneViewResult.cs" />
   </ItemGroup>
@@ -101,5 +95,6 @@
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
+    <VisualStudio />
   </ProjectExtensions>
 </Project>

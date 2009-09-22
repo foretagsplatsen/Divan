@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
-namespace Divan
+namespace Divan.Test
 {
     /// <summary>
     /// Unit tests for Divan. Operates in a separate CouchDB database called divan_unit_tests.
@@ -19,7 +20,9 @@ namespace Divan
         [SetUp]
         public void SetUp()
         {
-            server = new CouchServer();
+            var host = ConfigurationManager.AppSettings["CouchHost"];
+            var port = Convert.ToInt32(ConfigurationManager.AppSettings["CouchPort"]);
+            server = new CouchServer(host, port);
             db = server.GetNewDatabase(DbName);
         }
 
@@ -220,7 +223,7 @@ namespace Divan
         {
             var design = db.NewDesignDocument("computers");
             design.AddView("by_cpumake",
-                @"function(doc) {
+                           @"function(doc) {
                         emit(doc.CPU, doc);
                     }");
             db.WriteDocument(design);
@@ -263,7 +266,7 @@ namespace Divan
         {
             var design = db.NewDesignDocument("computers");
             design.AddView("by_cpumake",
-                @"function(doc) {
+                           @"function(doc) {
                         emit(doc.CPU, doc);
                     }");
             db.SynchDesignDocuments(); // This writes them to the db.
@@ -271,7 +274,7 @@ namespace Divan
             var db2 = server.GetDatabase(DbName);
             design = db2.NewDesignDocument("computers");
             design.AddView("by_cpumake",
-                @"function(doc) {
+                           @"function(doc) {
                         emit(doc.CPU, nil);
                     }");
             db2.SynchDesignDocuments(); // This should detect difference and overwrite the one in the db

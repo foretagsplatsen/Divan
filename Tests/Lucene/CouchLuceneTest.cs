@@ -1,10 +1,12 @@
+using System;
+using System.Configuration;
 using System.Linq;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
-namespace Divan.Lucene
+namespace Divan.Test.Lucene
 {
     /// <summary>
     /// Unit tests for the Lucene part in Divan. Operates in a separate CouchDB database called divan_lucene_unit_tests.
@@ -18,7 +20,9 @@ namespace Divan.Lucene
         [SetUp]
         public void SetUp()
         {
-            server = new CouchServer();
+            var host = ConfigurationManager.AppSettings["CouchHost"];
+            var port = Convert.ToInt32(ConfigurationManager.AppSettings["CouchPort"]);
+            server = new CouchServer(host, port);
             db = server.GetNewDatabase(DbName);
         }
 
@@ -59,9 +63,9 @@ namespace Divan.Lucene
             Assert.That(hits.First().Id(), Is.EqualTo("my-funky-id"));
 
             // Then we should be able to GetDocuments() which will perform a bulk get
-			var doc = result.GetDocuments<CouchJsonDocument>().First();
+            var doc = result.GetDocuments<CouchJsonDocument>().First();
             Assert.That(doc.Id, Is.EqualTo("my-funky-id"));
-			Assert.That(doc.Obj["text"].Value<string>(), Is.EqualTo("one two three four"));
+            Assert.That(doc.Obj["text"].Value<string>(), Is.EqualTo("one two three four"));
 
             // Then all over again but including documents and getting it out in one single query.
             result = view.Query().Q("one").IncludeDocuments().GetResult();
