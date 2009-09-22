@@ -1,10 +1,10 @@
 = Divan, a C# library for CouchDB
 
-Divan is a C# library under the MIT license for using CouchDB (http://www.couchdb.org).
+Divan is a C# library under the MIT license for using CouchDB[http://www.couchdb.org].
 It should be more or less API complete including bulk operations, attachments, views
 and design documents etc. It is quite fast and designed to be flexible but not bloated. 
 
-Divan has been developed in-house at Foretagsplatsen AB (www.foretagsplatsen.se) and is
+Divan has mainly been developed in-house at Foretagsplatsen[http://www.foretagsplatsen.se] and is
 being used in the new core system at Foretagsplatsen. It has unit tests (although could
 benefit from more) and at least one sample console project included.
 
@@ -14,22 +14,29 @@ Divan is under the MIT-license, see file LICENSE.txt.
 
 == Features
 
-* More or less complete regular CouchDB API implemented including bulk and attachments with reasonable abstractions.
+* More or less complete CouchDB API implemented including bulk and attachments.
 * Has classes for design documents and view definition so you can create and manipulate your views from C#.
-* Has LINQ support thanks to Alex Pedenko! This means you can write limited queries in LINQ syntax.
-* Has CouchDB-Lucene integration!
+* Has LINQ support (limited) thanks to Alex Pedenko! This means you can write a subset of queries in LINQ syntax.
+* Has basic CouchDB-Lucene integration for making free text indexes and query them.
 * Offers several "hooks" for your own subclasses in order to add specializations.
+
+== Roadmap
+
+Apart from polishing and fixing bugs the following pieces are on the todolist:
+* Optional automatic JSON serialization.
+* Optional mirroring of design documents from external files instead of defining them as literal strings in C#.
+* Splitting out the tests into their own project.
+* Writing a tutorial and a sample project showing the advanced mechanisms.
 
 == Mailinglist
 
 We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/divan] for users and developers alike, please subscribe!
 
-
 == Does it work under Mono?
 
 You bet. Foretagsplatsen uses mainly windows (Visual Studio 2008 and .Net 3.5) but Divan
 is meant to work fine in Mono too. Currently Mono has a bug in System.dll regarding HEAD HTTP
-requests so we detect if we are running in Mono and then we fall back on using a regular GET.
+requests so <b>we detect if we are running in Mono and then we fall back on using a regular GET</b>.
 
 Note that this bug has been <b>reported and fixed</b> in Mono trunk and should be available
 in any mono release after 2.4.2.3 (I guess). Then we will remove that check.

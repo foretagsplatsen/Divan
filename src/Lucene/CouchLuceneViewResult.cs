@@ -73,7 +73,8 @@ namespace Divan.Lucene
 
 
         /// <summary>
-        /// Return all hits with all meta info. A hit can be told to retrieve its CouchDocument.
+        /// Return all hits with all meta info. A hit can be told to retrieve its CouchDocument, 
+        /// if you used IncludeDocuments() in the query.
         /// </summary>
         public virtual IList<CouchLuceneHit> Hits()
         {

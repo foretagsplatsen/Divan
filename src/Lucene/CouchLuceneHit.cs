@@ -7,7 +7,7 @@ namespace Divan.Lucene
     /// <summary>
     /// A Lucene query hit containing document id and score.
     /// Optionally it also contains field (optional), sort_order (optional) and the actual document embedded
-    /// if you used IncludeDocs() when querying. If not, this hit can retrieve the document by id lookup.
+    /// if you used IncludeDocuments() when querying.
     /// </summary>
     public class CouchLuceneHit: ICanJson
     {
