@@ -38,9 +38,13 @@ in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 6. Happy coding! And ask any questions on the mailinglist.
 
 == What about documentation?
-At the moment documentation is... this file! :) But there are unit tests in CouchTest.cs and
-CouchLuceneTest.cs and there is at least one sample project showing basic usage.
-One more sample with more advanced usage is coming soon.
+At the moment documentation is... this file! :) But there are also unit tests in the separate Tests project:
+* CouchTest.cs that runs against a CouchDB server.
+* Lucene/CouchLuceneTest.cs that tests the CouchDB-Lucene integration if you have it, see article below.
+
+When running the tests they will expect CouchDB running at localhost:5984, unless you copy the App.config.template to App.config and edit it.
+
+There is also one sample project "Trivial" showing basic usage. More samples with more advanced usage is coming soon.
 
 * One blog article[http://goran.krampe.se/blog/Divan/divan-plus-couchdb-lucene.rdoc] on how to install Couchdb-Lucene and test it with Divan.
 
