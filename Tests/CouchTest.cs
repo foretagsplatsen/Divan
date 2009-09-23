@@ -15,7 +15,7 @@ namespace Divan.Test
     /// the Tests/App.config file.
     /// 
     /// Run from command line using something like:
-    /// 	nunit-console2 --labels -run=Divan.CouchTest Tests/bin/Debug/Tests.dll
+    /// 	nunit-console2 --labels -run=Divan.Test.CouchTest Tests/bin/Debug/Tests.dll
     /// </summary>
     [TestFixture]
     public class CouchTest
@@ -25,8 +25,8 @@ namespace Divan.Test
         [SetUp]
         public void SetUp()
         {
-            var host = ConfigurationManager.AppSettings["CouchHost"];
-            var port = Convert.ToInt32(ConfigurationManager.AppSettings["CouchPort"]);
+            var host = ConfigurationManager.AppSettings["CouchHost"] ?? "localhost";
+            var port = Convert.ToInt32(ConfigurationManager.AppSettings["CouchPort"] ?? "5984");
             server = new CouchServer(host, port);
             db = server.GetNewDatabase(DbName);
         }

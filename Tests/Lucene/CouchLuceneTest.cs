@@ -12,7 +12,7 @@ namespace Divan.Test.Lucene
     /// Unit tests for the Lucene part in Divan. Operates in a separate CouchDB database called divan_lucene_unit_tests.
     /// Requires a working Couchdb-Lucene installation according to Couchdb-Lucene's documentation.
     /// Run from command line using something like:
-    /// 	nunit-console2 --labels -run=Divan.Lucene src/bin/Debug/Divan.dll
+    /// 	nunit-console2 --labels -run=Divan.Test.Lucene src/bin/Debug/Divan.dll
     /// </summary>
     [TestFixture]
     public class CouchLuceneTest
@@ -22,8 +22,8 @@ namespace Divan.Test.Lucene
         [SetUp]
         public void SetUp()
         {
-            var host = ConfigurationManager.AppSettings["CouchHost"];
-            var port = Convert.ToInt32(ConfigurationManager.AppSettings["CouchPort"]);
+            var host = ConfigurationManager.AppSettings["CouchHost"] ?? "localhost";
+            var port = Convert.ToInt32(ConfigurationManager.AppSettings["CouchPort"] ?? "5984");
             server = new CouchServer(host, port);
             db = server.GetNewDatabase(DbName);
         }
