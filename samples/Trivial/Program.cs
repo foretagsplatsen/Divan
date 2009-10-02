@@ -45,11 +45,9 @@ namespace Trivial
             // For non trivial usage of Divan you typically create your own subclass of CouchServer.
             var server = new CouchServer(host, port);
 
-            /*
             // a little bit of cleanup
             if (server.HasDatabase("trivial"))
                 server.DeleteDatabase("trivial");
-             */
 
             // Get (creates it if needed) a CouchDB database. This call will create the db in CouchDB
             // if it does not exist, create a CouchDatabase instance and then send Initialize() to it
@@ -130,27 +128,11 @@ namespace Trivial
             db.DeleteDocuments(cars.ToArray());
             Console.WriteLine("Deleted the rest of the cars");
 
-            // test out the arbitrary conventions
-            Console.WriteLine("Trying arbitrary documents");
-            var littleCar = new LittleCar() { docType = "car", Make = "Yugo", Model = "Hell if i know" };
-            littleCar = db.SaveArbitraryDocument(littleCar);
-            
-            Console.Write("\r\nDelete database (y/n)? ");
-            if (Console.ReadLine().Trim().Equals("y", StringComparison.OrdinalIgnoreCase))
-            {
-                // Delete the db itself
-                db.Delete();
-                Console.WriteLine("Deleted database.");
-            }
-            Console.WriteLine("\r\nPress enter to close. ");
+            // Delete the db itself
+            db.Delete();
+            Console.WriteLine("Deleted database.\r\n\r\nPress enter to close. ");
 
             Console.ReadLine();
-        }
-
-        private class LittleCar
-        {
-            private string Id, Rev;
-            public string Make, Model, docType;
         }
 
         /// <summary>
