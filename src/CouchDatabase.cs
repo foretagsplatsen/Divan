@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using Divan.Lucene;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Divan
 {
@@ -201,6 +202,11 @@ namespace Divan
             return WriteDocument(document, false);
         }
 
+        public T SaveArbitraryDocument<T>(T document)
+        {
+            return ((CouchDocumentWrapper<T>)SaveDocument(new CouchDocumentWrapper<T>(document))).Instance;
+        }
+
         /// <summary>
         /// This is a convenience method that creates or writes a ICouchDocument depending on if
         /// it has an id or not. If it does not have an id we create the document and let CouchDB allocate
@@ -392,6 +398,13 @@ namespace Divan
             }
         }
 
+        public void SaveArbitraryDocuments<T>(IList<T> documents, bool allOrNothing)
+        {
+            SaveDocuments(
+                (IList<ICouchDocument>)documents.Select(doc => new CouchDocumentWrapper<T>(doc)).ToList(),
+                allOrNothing);
+        }
+
         /// <summary>
         /// Create or update a list of ICouchDocuments in CouchDB. Uses POST and CouchDB will 
         /// allocate new ids if the documents lack them.
@@ -416,6 +429,15 @@ namespace Divan
             {
                 throw CouchException.Create("Failed to create bulk documents", e);
             }
+        }
+
+        public void SaveArbitraryDocuments<T>(IList<T> documents, int chunkCount, List<CouchViewDefinition> views, bool allOrNothing)
+        {
+            SaveDocuments(
+                (IList<ICouchDocument>)documents.Select(doc => new CouchDocumentWrapper<T>(doc)).ToList(), 
+                chunkCount,
+                views,
+                allOrNothing);
         }
 
         /// <summary>
@@ -484,6 +506,11 @@ namespace Divan
             SaveDocuments(documents, chunkCount, null, allOrNothing);
         }
 
+        public void SaveArbitraryDocuments<T>(IList<T> documents, int chunkCount, bool allOrNothing)
+        {
+            SaveArbitraryDocuments(documents, chunkCount, null, allOrNothing);
+        }
+
         /// <summary>
         /// Get multiple documents.
         /// </summary>
@@ -491,6 +518,11 @@ namespace Divan
         public IList<T> GetDocuments<T>(IList<string> documentIds) where T : ICouchDocument, new()
         {
             return GetDocuments<T>(documentIds.ToArray());
+        }
+
+        public IList<T> GetArbitraryDocuments<T>(IList<string> documentIds, Func<T> ctor)
+        {
+            return GetArbitraryDocuments<T>(documentIds.ToArray(), ctor);
         }
 
         public IList<CouchJsonDocument> GetDocuments(IList<string> documentIds)
@@ -521,6 +553,26 @@ namespace Divan
                 return default(T);
             }
             return doc;
+        }
+
+        public T GetArbitraryDocument<T>(string documentId, Func<T> ctor)
+        {
+            var doc = new CouchDocumentWrapper<T>(ctor);
+            try
+            {
+                ReadDocument(doc);
+            }
+            catch (CouchNotFoundException)
+            {
+                return default(T);
+            }
+            return doc.Instance;
+        }
+
+        public IList<T> GetArbitraryDocuments<T>(string[] documentIds, Func<T> ctor)
+        {
+            var bulk = new CouchBulkKeys(documentIds);
+            return QueryAllDocuments().Data(CouchDocument.WriteJson(bulk)).IncludeDocuments().GetResult().ArbitraryDocuments<T>(ctor);
         }
 
         public CouchJsonDocument GetDocument(string documentId)

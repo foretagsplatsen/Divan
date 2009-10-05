@@ -69,9 +69,14 @@ namespace Divan
             using (JsonWriter jsonWriter = new JsonTextWriter(new StringWriter(sb, CultureInfo.InvariantCulture)))
             {
                 //jsonWriter.Formatting = Formatting.Indented;
-                jsonWriter.WriteStartObject();
-                doc.WriteJson(jsonWriter);
-                jsonWriter.WriteEndObject();
+                if (!(doc is ISelfContained))
+                {
+                    jsonWriter.WriteStartObject();
+                    doc.WriteJson(jsonWriter);
+                    jsonWriter.WriteEndObject();
+                } else
+                    doc.WriteJson(jsonWriter);
+
                 string result = sb.ToString();
                 return result;
             }
