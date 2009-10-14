@@ -127,7 +127,16 @@ namespace Divan
 
         public void WriteJson(Newtonsoft.Json.JsonWriter writer)
         {
-            serializer.Serialize(writer, instance);
+            if (Id == null)
+            {
+                var tokenWriter = new JTokenWriter();
+                serializer.Serialize(tokenWriter, instance);
+                var obj = tokenWriter.Token as JObject;
+                obj.Remove("_id");
+                obj.Remove("_rev");
+                obj.WriteTo(writer);
+            } else
+                serializer.Serialize(writer, instance);
         }
 
         public void ReadJson(Newtonsoft.Json.Linq.JObject obj)
