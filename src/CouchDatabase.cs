@@ -558,6 +558,7 @@ namespace Divan
         public T GetArbitraryDocument<T>(string documentId, Func<T> ctor)
         {
             var doc = new CouchDocumentWrapper<T>(ctor);
+            doc.Id = documentId;
             try
             {
                 ReadDocument(doc);

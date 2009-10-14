@@ -42,8 +42,8 @@ namespace Divan
 
         protected CouchDocumentWrapper()
         {
-            rev = GetFunc("Rev");
-            id = GetFunc("Id");
+            rev = GetFunc("_rev") ?? GetFunc("rev");
+            id = GetFunc("_id") ?? GetFunc("id");
         }
 
         public CouchDocumentWrapper(Func<T> ctor): this()
@@ -132,7 +132,9 @@ namespace Divan
 
         public void ReadJson(Newtonsoft.Json.Linq.JObject obj)
         {
-            instance = (T)serializer.Deserialize(new JTokenReader(obj));
+            instance = (T)serializer.Deserialize(new JTokenReader(obj), typeof(T));
+            id.SetValue(instance, obj["_id"].Value<string>());
+            rev.SetValue(instance, obj["_rev"].Value<string>());
         }
 
         #endregion
