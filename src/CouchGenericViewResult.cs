@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Divan
 {
@@ -21,6 +22,11 @@ namespace Divan
             return RetrieveDocuments<T>("value");
         }
 
+        public IList<T> ValueDocuments<T>(Func<T> ctor)
+        {
+            return RetrieveArbitraryDocuments<T>("value", ctor);
+        }
+
         /// <summary>
         /// Return first value found as document of given type.
         /// </summary>
@@ -31,6 +37,11 @@ namespace Divan
             return RetrieveDocument<T>("value");
         }
 
+        public T ArbitraryValueDocument<T>(Func<T> ctor)
+        {
+            return RetrieveArbitraryDocument<T>("value", ctor);
+        }
+
         /// <summary>
         /// Return all found docs as documents of given type
         /// </summary>
@@ -39,6 +50,11 @@ namespace Divan
         public IList<T> Documents<T>() where T : ICouchDocument, new()
         {
             return RetrieveDocuments<T>("doc");
+        }
+
+        public IList<T> ArbitraryDocuments<T>(Func<T> ctor)
+        {
+            return RetrieveArbitraryDocuments<T>("doc", ctor);
         }
 
         /// <summary>
@@ -58,6 +74,11 @@ namespace Divan
         public T Document<T>() where T : ICouchDocument, new()
         {
             return RetrieveDocument<T>("doc");
+        }
+
+        public T ArbitraryDocument<T>(Func<T> ctor)
+        {
+            return RetrieveArbitraryDocument<T>("doc", ctor);
         }
 
         protected virtual IList<T> RetrieveDocuments<T>(string docOrValue) where T : ICanJson, new()
@@ -82,6 +103,28 @@ namespace Divan
             }
             return default(T);
         }
+        protected virtual IList<T> RetrieveArbitraryDocuments<T>(string docOrValue, Func<T> ctor)
+        {
+            var list = new List<T>();
+            foreach (JToken row in Rows())
+            {
+                var doc = new CouchDocumentWrapper<T>(ctor);
+                doc.ReadJson(row[docOrValue].Value<JObject>());
+                list.Add(doc.Instance);
+            }
+            return list;
+        }
+
+        protected virtual T RetrieveArbitraryDocument<T>(string docOrValue, Func<T> ctor)
+        {
+            foreach (JToken row in Rows())
+            {
+                var doc = new CouchDocumentWrapper<T>(ctor);
+                doc.ReadJson(row[docOrValue].Value<JObject>());
+                return doc.Instance;
+            }
+            return default(T);
+        }
 
         public IList<CouchQueryDocument> RowDocuments()
         {
@@ -96,6 +139,18 @@ namespace Divan
                 var doc = new T();
                 doc.ReadJson(row);
                 list.Add(doc);
+            }
+            return list;
+        }
+
+        public IList<T> ArbitraryRowDocuments<T>(Func<T> ctor)
+        {
+            var list = new List<T>();
+            foreach (JObject row in Rows())
+            {
+                var doc = new CouchDocumentWrapper<T>(ctor);
+                doc.ReadJson(row);
+                list.Add(doc.Instance);
             }
             return list;
         }
