@@ -88,6 +88,17 @@ namespace Divan.Test
             Assert.That(doc1.Id, Is.Not.EqualTo(doc2.Id));
         }
 
+        [Test]
+        public void ShouldCreateDocumentWithSpecifiedId()
+        {
+            const string doc = "{\"_id\": \"foo\"}";
+            var doc1 = new CouchJsonDocument(doc);
+            db.SaveDocument(doc1);
+            Assert.That(db.CountDocuments(), Is.EqualTo(1));
+            Assert.That(doc1.Id, Is.EqualTo("foo"));
+            Assert.That(doc1.Rev, Is.Not.Null);
+        }
+
         [Test, ExpectedException(typeof (CouchNotFoundException))]
         public void ShouldDeleteDatabase()
         {

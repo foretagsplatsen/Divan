@@ -127,13 +127,13 @@ namespace Divan
 
         public void WriteJson(Newtonsoft.Json.JsonWriter writer)
         {
-            if (Id == null)
+            if (Id == null || Rev == null)
             {
                 var tokenWriter = new JTokenWriter();
                 serializer.Serialize(tokenWriter, instance);
                 var obj = tokenWriter.Token as JObject;
-                obj.Remove("_id");
-                obj.Remove("_rev");
+                if (Rev == null) obj.Remove("_rev");
+                if(Id == null) obj.Remove("_id");                
                 obj.WriteTo(writer);
             } else
                 serializer.Serialize(writer, instance);

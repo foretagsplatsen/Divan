@@ -216,7 +216,7 @@ namespace Divan
         /// <returns>Couch Document with new Rev set and possibly an Id set.</returns>
         public ICouchDocument SaveDocument(ICouchDocument document)
         {
-            if (document.Id == null)
+            if (document.Id == null || document.Rev == null)
             {
                 return CreateDocument(document);
             }
