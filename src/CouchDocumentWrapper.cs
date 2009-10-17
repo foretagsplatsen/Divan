@@ -142,8 +142,10 @@ namespace Divan
         public void ReadJson(Newtonsoft.Json.Linq.JObject obj)
         {
             instance = (T)serializer.Deserialize(new JTokenReader(obj), typeof(T));
-            id.SetValue(instance, obj["_id"].Value<string>());
-            rev.SetValue(instance, obj["_rev"].Value<string>());
+            if(obj["_id"] != null)
+                id.SetValue(instance, obj["_id"].Value<string>());
+            if(obj["_rev"] != null)
+                rev.SetValue(instance, obj["_rev"].Value<string>());
         }
 
         #endregion
