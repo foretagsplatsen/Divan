@@ -25,7 +25,7 @@ namespace Divan
         public string method = "GET"; // PUT, DELETE, POST, HEAD
         public string mimeType;
         public string path;
-        public string postData;
+        public byte[] postData;
         public string query;
 
         public JToken result;
@@ -126,6 +126,12 @@ namespace Divan
 
         public CouchRequest Data(string data)
         {
+            postData = Encoding.UTF8.GetBytes(data);
+            return this;
+        }
+
+        public CouchRequest Data(byte[] data)
+        {
             postData = data;
             return this;
         }
@@ -144,12 +150,12 @@ namespace Divan
 
         public JObject Result()
         {
-            return (JObject) result;
+            return (JObject)result;
         }
 
         public T Result<T>() where T : JToken
         {
-            return (T) result;
+            return (T)result;
         }
 
         public string Etag()
@@ -195,11 +201,11 @@ namespace Divan
 
             if (postData != null)
             {
-                byte[] bytes = Encoding.UTF8.GetBytes(postData);
-                request.ContentLength = bytes.Length;
+                //byte[] bytes = Encoding.UTF8.GetBytes(postData);
+                request.ContentLength = postData.Length;
                 using (Stream ps = request.GetRequestStream())
                 {
-                    ps.Write(bytes, 0, bytes.Length);
+                    ps.Write(postData, 0, postData.Length);
                     ps.Close();
                 }
             }
@@ -240,7 +246,7 @@ namespace Divan
             }
             //timer.Stop();
             //Trace.WriteLine("Time for Couch HTTP & JSON PARSE: " + timer.ElapsedMilliseconds);
-            return (T) result;
+            return (T)result;
         }
 
         private void PickETag(WebResponse response)
@@ -272,6 +278,21 @@ namespace Divan
                     return reader.ReadToEnd();
                 }
             }
+        }
+
+        public WebResponse Response()
+        {
+            WebResponse response = GetResponse();
+
+            PickETag(response);
+            if (etagToCheck != null)
+            {
+                if (IsETagValid())
+                {
+                    return null;
+                }
+            }
+            return response;
         }
 
         private WebResponse GetResponse()

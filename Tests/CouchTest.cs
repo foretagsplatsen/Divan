@@ -191,15 +191,33 @@ namespace Divan.Test
         {
             var doc = new CouchJsonDocument("{\"CPU\": \"Intel\"}");
             ICouchDocument cd = db.CreateDocument(doc);
-            Assert.That(db.HasAttachment(cd), Is.False);
-            db.WriteAttachment(cd, "jabbadabba", "text/plain");
-            Assert.That(db.HasAttachment(cd), Is.True);
-            Assert.That(db.ReadAttachment(cd), Is.EqualTo("jabbadabba"));
-            db.WriteAttachment(cd, "jabbadabba-doo", "text/plain");
-            Assert.That(db.HasAttachment(cd), Is.True);
-            Assert.That(db.ReadAttachment(cd), Is.EqualTo("jabbadabba-doo"));
-            db.DeleteAttachment(cd);
-            Assert.That(db.HasAttachment(cd), Is.False);
+            var attachmentName = "someAttachment.txt";
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.False);
+            db.WriteAttachment(cd, attachmentName, "jabbadabba", "text/plain");
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.True);
+
+            using (var response = db.ReadAttachment(cd, attachmentName))
+            {
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    Assert.That(reader.ReadToEnd(), Is.EqualTo("jabbadabba"));
+                }
+            }
+
+            db.WriteAttachment(cd, attachmentName, "jabbadabba-doo", "text/plain");
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.True);
+
+            using (var response = db.ReadAttachment(cd, attachmentName))
+            {
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    Assert.That(reader.ReadToEnd(), Is.EqualTo("jabbadabba-doo"));
+                }
+            }
+
+            db.DeleteAttachment(cd,attachmentName);
+
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.False);
         }
 
         [Test, ExpectedException(typeof (CouchConflictException))]
