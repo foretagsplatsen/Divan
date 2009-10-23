@@ -127,13 +127,13 @@ namespace Divan
 
         public void WriteJson(Newtonsoft.Json.JsonWriter writer)
         {
-            if (Id == null || Rev == null)
+            if (Id == null)
             {
                 var tokenWriter = new JTokenWriter();
                 serializer.Serialize(tokenWriter, instance);
                 var obj = tokenWriter.Token as JObject;
-                if (Rev == null) obj.Remove("_rev");
-                if(Id == null) obj.Remove("_id");                
+                obj.Remove("_rev");
+                obj.Remove("_id");                
                 obj.WriteTo(writer);
             } else
                 serializer.Serialize(writer, instance);
@@ -142,10 +142,8 @@ namespace Divan
         public void ReadJson(Newtonsoft.Json.Linq.JObject obj)
         {
             instance = (T)serializer.Deserialize(new JTokenReader(obj), typeof(T));
-            if(obj["_id"] != null)
-                id.SetValue(instance, obj["_id"].Value<string>());
-            if(obj["_rev"] != null)
-                rev.SetValue(instance, obj["_rev"].Value<string>());
+            id.SetValue(instance, obj["_id"].Value<string>());
+            rev.SetValue(instance, obj["_rev"].Value<string>());
         }
 
         #endregion

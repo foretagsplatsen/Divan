@@ -39,10 +39,8 @@ in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 
 == What about documentation?
 At the moment documentation is... this file! :) But there are also unit tests in the separate Tests project:
-* CouchTest.cs that runs against a CouchDB server.
+* CouchTest.cs that runs against a CouchDB server, see the class comment for some instructions.
 * Lucene/CouchLuceneTest.cs that tests the CouchDB-Lucene integration if you have it, see article below.
-
-When running the tests they will expect CouchDB running at localhost:5984, unless you copy the App.config.template to App.config and edit it.
 
 There is also one sample project "Trivial" showing basic usage. More samples with more advanced usage is coming soon.
 

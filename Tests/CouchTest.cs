@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -11,8 +12,12 @@ namespace Divan.Test
 {
     /// <summary>
     /// Unit tests for Divan. Operates in a separate CouchDB database called divan_unit_tests.
-    /// If you are not running a CouchDB on localhost:5984 you will need to edit
-    /// the Tests/App.config file.
+    /// If you are not running a CouchDB on localhost:5984 you will need to first edit
+    /// the Tests/App.config file to point somewhere else.
+    /// 
+    /// NOTE: App.config is copied to Tests/bin/Debug/Divan.Test.dll.config as a
+    /// Custom Command in the Makefile! if someone can tell me how to handle this better on
+    /// Mono/Monodevelop I am all ears.
     /// 
     /// Run from command line using something like:
     /// 	nunit-console2 --labels -run=Divan.Test.CouchTest Tests/bin/Debug/Tests.dll
@@ -202,15 +207,33 @@ namespace Divan.Test
         {
             var doc = new CouchJsonDocument("{\"CPU\": \"Intel\"}");
             ICouchDocument cd = db.CreateDocument(doc);
-            Assert.That(db.HasAttachment(cd), Is.False);
-            db.WriteAttachment(cd, "jabbadabba", "text/plain");
-            Assert.That(db.HasAttachment(cd), Is.True);
-            Assert.That(db.ReadAttachment(cd), Is.EqualTo("jabbadabba"));
-            db.WriteAttachment(cd, "jabbadabba-doo", "text/plain");
-            Assert.That(db.HasAttachment(cd), Is.True);
-            Assert.That(db.ReadAttachment(cd), Is.EqualTo("jabbadabba-doo"));
-            db.DeleteAttachment(cd);
-            Assert.That(db.HasAttachment(cd), Is.False);
+            var attachmentName = "someAttachment.txt";
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.False);
+            db.WriteAttachment(cd, attachmentName, "jabbadabba", "text/plain");
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.True);
+
+            using (var response = db.ReadAttachment(cd, attachmentName))
+            {
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    Assert.That(reader.ReadToEnd(), Is.EqualTo("jabbadabba"));
+                }
+            }
+
+            db.WriteAttachment(cd, attachmentName, "jabbadabba-doo", "text/plain");
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.True);
+
+            using (var response = db.ReadAttachment(cd, attachmentName))
+            {
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    Assert.That(reader.ReadToEnd(), Is.EqualTo("jabbadabba-doo"));
+                }
+            }
+
+            db.DeleteAttachment(cd,attachmentName);
+
+            Assert.That(db.HasAttachment(cd,attachmentName), Is.False);
         }
 
         [Test, ExpectedException(typeof (CouchConflictException))]
