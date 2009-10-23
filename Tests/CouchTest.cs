@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -11,8 +12,12 @@ namespace Divan.Test
 {
     /// <summary>
     /// Unit tests for Divan. Operates in a separate CouchDB database called divan_unit_tests.
-    /// If you are not running a CouchDB on localhost:5984 you will need to edit
-    /// the Tests/App.config file.
+    /// If you are not running a CouchDB on localhost:5984 you will need to first edit
+    /// the Tests/App.config file to point somewhere else.
+    /// 
+    /// NOTE: App.config is copied to Tests/bin/Debug/Divan.Test.dll.config as a
+    /// Custom Command in the Makefile! if someone can tell me how to handle this better on
+    /// Mono/Monodevelop I am all ears.
     /// 
     /// Run from command line using something like:
     /// 	nunit-console2 --labels -run=Divan.Test.CouchTest Tests/bin/Debug/Tests.dll
