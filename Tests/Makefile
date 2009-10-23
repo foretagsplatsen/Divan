@@ -89,6 +89,7 @@ REFERENCES =  \
 	System.Core \
 	System.Data \
 	System.Data.DataSetExtensions \
+	System.Web \
 	System.Xml \
 	System.Xml.Linq
 
