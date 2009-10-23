@@ -14,6 +14,7 @@ Divan is under the MIT-license, see file LICENSE.txt.
 * More or less complete CouchDB API implemented including bulk and attachments.
 * Has classes for design documents and view definition so you can create and manipulate your views from C#.
 * Has LINQ support (limited) thanks to Alex Pedenko! This means you can write a subset of queries in LINQ syntax.
+* Has basic automatic JSON serialization support again thanks to Alex Pedenko!
 * Has basic CouchDB-Lucene integration for making free text indexes and query them.
 * Offers several "hooks" for your own subclasses in order to add specializations.
 
@@ -30,7 +31,7 @@ in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 	git clone git://github.com/foretagsplatsen/Divan.git
 3. If you are on VS2008 or Monodevelop then I suggest double clicking the Divan.sln. Hopefully the rest works out fine.
 4. If you are on Mono "CLI style" then the configure/Makefile should work as expected, it is "vanilla generated" from Monodevelop. Then you can also run the basic unit tests, but note that these rely on a couchdb running locally:
-	nunit-console2 -labels -run=Divan.CouchTest Tests/bin/Debug/Divan.dll
+	nunit-console2 --labels -run=Divan.Test.CouchTest Tests/bin/Debug/Divan.Test.dll
 5. Run the "Trivial" sample console app. You can point it at a running CouchDB server:
 
 	C:\Divan\samples\Trivial>bin\Debug\Trivial.exe 192.168.9.205 5984
@@ -61,7 +62,6 @@ We have set up a regular Mailman mailinglist[http://krampe.se/mailman/listinfo/d
 
 == Roadmap
 Apart from polishing and fixing bugs the following pieces are on the todolist:
-* Optional automatic JSON serialization.
 * Optional mirroring of design documents from external files instead of defining them as literal strings in C#.
 * Writing a tutorial and a sample project showing the advanced mechanisms.
 
