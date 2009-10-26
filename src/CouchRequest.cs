@@ -94,6 +94,12 @@ namespace Divan
             return this;
         }
 
+        public CouchRequest Copy()
+        {
+            method = "COPY";
+            return this;
+        }
+
         public CouchRequest PostJson()
         {
             MimeTypeJson();
@@ -197,6 +203,11 @@ namespace Divan
             if (mimeType != null)
             {
                 request.ContentType = mimeType;
+            }
+
+            foreach (var header in headers)
+            {
+                request.Headers.Add(header.Key, header.Value);
             }
 
             if (postData != null)
@@ -312,6 +323,12 @@ namespace Divan
         public bool IsETagValid()
         {
             return etagToCheck == etag;
+        }
+
+        public CouchRequest AddHeader(string key, string value)
+        {
+            headers[key] = value;
+            return this;
         }
     }
 }
