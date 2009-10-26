@@ -656,9 +656,9 @@ namespace Divan
             return document;
         }
 
-        public void DeleteAttachment(string id, string rev)
+        public void DeleteAttachment(string id, string rev, string attachmentName)
         {
-            Request(id + "/attachment").Query("?rev=" + rev).Delete().Check("Failed to delete attachment");
+            Request(id + "/" + attachmentName).Query("?rev=" + rev).Delete().Check("Failed to delete attachment");
         }
 
         public void DeleteDocument(string id, string rev)
@@ -765,6 +765,71 @@ namespace Divan
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Copies a document based on its document id.
+        /// </summary>
+        /// <param name="sourceDocumentId">The source document id.</param>
+        /// <param name="destinationDocumentId">The destination document id.</param>
+        /// <remarks>Use this method when the destination document does not exist.</remarks>
+        public void Copy(string sourceDocumentId, string destinationDocumentId)
+        {
+            try
+            {
+                Request(sourceDocumentId)
+                    .AddHeader("Destination", destinationDocumentId)
+                    .Copy()
+                    .Send()
+                    .Parse();
+
+                // TODO add the following check statement.
+                // Currently on Windows the COPY command does not return an ok=true pair. This might be
+                // a bug in the implementation, but once it is sorted out the check should be added.
+                //.Check("Error copying document");
+            }
+            catch (WebException e)
+            {
+                throw new CouchException(e.Message, e);
+            }
+        }
+
+        /// <summary>
+        /// Copies a document based on its document id and replaces another existing document.
+        /// </summary>
+        /// <param name="sourceDocumentId">The source document id.</param>
+        /// <param name="destinationDocumentId">The destination document id.</param>
+        /// <param name="destinationRev">The destination rev.</param>
+        /// <remarks>Use this method when the destination document already exists</remarks>
+        public void Copy(string sourceDocumentId, string destinationDocumentId, string destinationRev)
+        {
+            try
+            {
+                Request(sourceDocumentId)
+                    .AddHeader("Destination", destinationDocumentId + "?rev=" + destinationRev)
+                    .Copy()
+                    .Parse();
+
+                // TODO add the following check statement.
+                // Currently on Windows the COPY command does not return an ok=true pair. This might be
+                // a bug in the implementation, but once it is sorted out the check should be added.
+                //.Check("Error copying document");
+            }
+            catch (WebException e)
+            {
+                throw new CouchException(e.Message, e);
+            }
+        }
+
+        /// <summary>
+        /// Copies the specified source document to the destination document, replacing it.
+        /// </summary> 
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="destinationDocument">The destination document.</param>
+        /// <remarks>This method does not update the destinationDocument object.</remarks>
+        public void Copy(CouchDocument sourceDocument, CouchDocument destinationDocument)
+        {
+            Copy(sourceDocument.Id, destinationDocument.Id, destinationDocument.Rev);
         }
     }
 }
