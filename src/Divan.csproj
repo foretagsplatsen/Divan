@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CouchViewResultStream.cs" />
     <Compile Include="CouchBulkDeleteDocuments.cs" />
     <Compile Include="CouchBulkDocuments.cs" />
     <Compile Include="CouchBulkKeys.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="CouchPermanentViewResult.cs" />
     <Compile Include="CouchQuery.cs" />
     <Compile Include="CouchQueryDocument.cs" />
+    <Compile Include="CouchRecord.cs" />
     <Compile Include="CouchRequest.cs" />
     <Compile Include="CouchServer.cs" />
     <Compile Include="CouchViewDefinitionBase.cs" />

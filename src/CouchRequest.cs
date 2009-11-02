@@ -243,6 +243,15 @@ namespace Divan
             return (T) result;
         }
 
+        /// <summary>
+        /// Returns a Json stream from the server
+        /// </summary>
+        /// <returns></returns>
+        public JsonTextReader Stream()
+        {
+            return new JsonTextReader(new StreamReader(GetResponse().GetResponseStream()));
+        }
+
         private void PickETag(WebResponse response)
         {
             etag = response.Headers["ETag"];

@@ -265,5 +265,10 @@ namespace Divan
             }
             return (T) Result;
         }
+
+        public CouchViewResultStream<T> StreamResult<T>() where T: ICanJson, new()
+        {
+            return new CouchViewResultStream<T>(Request().Stream());
+        }
     }
 }

@@ -44,6 +44,13 @@ namespace Trivial
             // Get a server instance. It only holds host, port and a string database prefix.
             // For non trivial usage of Divan you typically create your own subclass of CouchServer.
             var server = new CouchServer(host, port);
+            var db = server.GetDatabase("can_demo");
+
+            using (var stream = db.Query("entries", "all").StreamResult<CouchDocument>())
+            {
+                foreach (var record in stream)
+                    Console.Out.WriteLine("id: {0} key: {1}, value: {2}", record.Id, record.Key, record.Value);
+            }
 
             /*
             // a little bit of cleanup
@@ -51,6 +58,7 @@ namespace Trivial
                 server.DeleteDatabase("trivial");
              */
 
+            /*
             // Get (creates it if needed) a CouchDB database. This call will create the db in CouchDB
             // if it does not exist, create a CouchDatabase instance and then send Initialize() to it
             // before returning it. The base class CouchDatabase also has very little state, it knows
@@ -142,6 +150,8 @@ namespace Trivial
                 db.Delete();
                 Console.WriteLine("Deleted database.");
             }
+             */
+
             Console.WriteLine("\r\nPress enter to close. ");
 
             Console.ReadLine();
