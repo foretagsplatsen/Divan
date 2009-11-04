@@ -132,8 +132,8 @@ namespace Divan
                 var tokenWriter = new JTokenWriter();
                 serializer.Serialize(tokenWriter, instance);
                 var obj = tokenWriter.Token as JObject;
-                obj.Remove("_id");
                 obj.Remove("_rev");
+                obj.Remove("_id");                
                 obj.WriteTo(writer);
             } else
                 serializer.Serialize(writer, instance);

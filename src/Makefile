@@ -65,6 +65,7 @@ FILES =  \
 	CouchDatabase.cs \
 	CouchDesignDocument.cs \
 	CouchDocument.cs \
+	CouchDocumentWrapper.cs \
 	CouchException.cs \
 	CouchGenericViewResult.cs \
 	CouchJsonDocument.cs \
@@ -79,6 +80,7 @@ FILES =  \
 	CouchViewResult.cs \
 	ICanJson.cs \
 	ICouchDocument.cs \
+	ISelfContained.cs \
 	Linq/CouchLinqQuery.cs \
 	Linq/CouchQueryProvider.cs \
 	Linq/ExpressionVisitor.cs \

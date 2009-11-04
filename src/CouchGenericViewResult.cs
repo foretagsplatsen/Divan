@@ -42,6 +42,11 @@ namespace Divan
             return RetrieveArbitraryDocument<T>("value", ctor);
         }
 
+        public IList<T> ArbitraryValueDocuments<T>(Func<T> ctor)
+        {
+            return RetrieveArbitraryDocuments<T>("value", ctor);
+        }
+
         /// <summary>
         /// Return all found docs as documents of given type
         /// </summary>

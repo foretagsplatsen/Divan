@@ -2,9 +2,10 @@
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Text;
+using System;
 using Divan.Lucene;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace Divan
 {
@@ -61,17 +62,17 @@ namespace Divan
             return newDoc;
         }
 
-		/// <summary>
-		/// Only to be used when developing.
-		/// </summary>
-		public CouchViewDefinition NewTempView(string designDoc, string viewName, string mapText)
+        /// <summary>
+        /// Only to be used when developing.
+        /// </summary>
+        public CouchViewDefinition NewTempView(string designDoc, string viewName, string mapText)
         {
             var doc = NewDesignDocument(designDoc);
             var view = doc.AddView(viewName, "function (doc) {" + mapText + "}");
             doc.Synch();
             return view;
         }
-				
+
         /// <summary>
         /// Currently the logic is that the code is always the master.
         /// And we also do not remove design documents in the database that
@@ -210,10 +211,10 @@ namespace Divan
         /// <summary>
         /// This is a convenience method that creates or writes a ICouchDocument depending on if
         /// it has an id or not. If it does not have an id we create the document and let CouchDB allocate
-        /// an id. If it has an id we use WriteDocument which will overwrite the document in CouchDB.
+        /// an id. If it has an id we use WriteDocument which will overwrite the existing document in CouchDB.
         /// </summary>
-        /// <param name="document">Couch document</param>
-        /// <returns>Couch Document with new Rev set and possibly an Id set.</returns>
+        /// <param name="document">ICouchDocument</param>
+        /// <returns>ICouchDocument with new Rev set.</returns>
         public ICouchDocument SaveDocument(ICouchDocument document)
         {
             if (document.Id == null)
@@ -249,11 +250,27 @@ namespace Divan
         /// Add an attachment to an existing ICouchDocument, it may already exist in db and will then be overwritten.
         /// </summary>
         /// <param name="document">Couch document</param>
-        /// <param name="attachment">Binary data as string</param>
+        /// <param name="attachmentName">Name of the attachment.</param>
+        /// <param name="attachmentData">The attachment data.</param>
         /// <param name="mimeType">The MIME type for the attachment.</param>
         /// <returns>The document.</returns>
         /// <remarks>This relies on the document to already have an id.</remarks>
-        public ICouchDocument WriteAttachment(ICouchDocument document, string attachment, string mimeType)
+        public ICouchDocument WriteAttachment(ICouchDocument document, string attachmentName, string attachmentData, string mimeType)
+        {
+            var byteData = Encoding.UTF8.GetBytes(attachmentData);
+            return WriteAttachment(document, attachmentName, byteData, mimeType);
+        }
+
+        /// <summary>
+        /// Add an attachment to an existing ICouchDocument, it may already exist in db and will then be overwritten.
+        /// </summary>
+        /// <param name="document">Couch document</param>
+        /// <param name="attachmentName">Name of the attachment.</param>
+        /// <param name="attachmentData">The attachment data.</param>
+        /// <param name="mimeType">The MIME type for the attachment.</param>
+        /// <returns>The document.</returns>
+        /// <remarks>This relies on the document to already have an id.</remarks>
+        public ICouchDocument WriteAttachment(ICouchDocument document, string attachmentName, byte[] attachmentData, string mimeType)
         {
             if (document.Id == null)
             {
@@ -262,7 +279,7 @@ namespace Divan
             }
 
             JObject result =
-                Request(document.Id + "/attachment").Query("?rev=" + document.Rev).Data(attachment).MimeType(mimeType).Put().Check("Failed to write attachment")
+                Request(document.Id + "/" + attachmentName).Query("?rev=" + document.Rev).Data(attachmentData).MimeType(mimeType).Put().Check("Failed to write attachment")
                     .Result();
             document.Id = result["id"].Value<string>(); // Not really neeed
             document.Rev = result["rev"].Value<string>();
@@ -283,9 +300,11 @@ namespace Divan
         /// Read the attachment for an ICouchDocument.
         /// </summary>
         /// <param name="document">Document to read.</param>
-        public string ReadAttachment(ICouchDocument document)
+        /// <param name="attachmentName">Name of the attachment.</param>
+        /// <returns></returns>
+        public WebResponse ReadAttachment(ICouchDocument document, string attachmentName)
         {
-            return ReadAttachment(document.Id);
+            return ReadAttachment(document.Id, attachmentName);
         }
 
         /// <summary>
@@ -354,11 +373,11 @@ namespace Divan
         /// </summary>
         /// <param name="documentId">Document identifier</param>
         /// <returns>Document attachment</returns>
-        public string ReadAttachment(string documentId)
+        public WebResponse ReadAttachment(string documentId, string attachmentName)
         {
             try
             {
-                return Request(documentId + "/attachment").String();
+                return Request(documentId + "/" + attachmentName).Response();
             }
             catch (WebException e)
             {
@@ -374,7 +393,7 @@ namespace Divan
         /// <remarks>POST which may be problematic in some environments.</remarks>
         public CouchJsonDocument CreateDocument(string json)
         {
-            return (CouchJsonDocument) CreateDocument(new CouchJsonDocument(json));
+            return (CouchJsonDocument)CreateDocument(new CouchJsonDocument(json));
         }
 
         /// <summary>
@@ -543,7 +562,7 @@ namespace Divan
 
         public T GetDocument<T>(string documentId) where T : ICouchDocument, new()
         {
-            var doc = new T {Id = documentId};
+            var doc = new T { Id = documentId };
             try
             {
                 ReadDocument(doc);
@@ -629,17 +648,17 @@ namespace Divan
             DeleteDocument(document.Id, document.Rev);
         }
 
-        public ICouchDocument DeleteAttachment(ICouchDocument document)
+        public ICouchDocument DeleteAttachment(ICouchDocument document, string attachmentName)
         {
-            JObject result = Request(document.Id + "/attachment").Query("?rev=" + document.Rev).Delete().Check("Failed to delete attachment").Result();
+            JObject result = Request(document.Id + "/" + attachmentName).Query("?rev=" + document.Rev).Delete().Check("Failed to delete attachment").Result();
             document.Id = result["id"].Value<string>(); // Not really neeed
             document.Rev = result["rev"].Value<string>();
             return document;
         }
 
-        public void DeleteAttachment(string id, string rev)
+        public void DeleteAttachment(string id, string rev, string attachmentName)
         {
-            Request(id + "/attachment").Query("?rev=" + rev).Delete().Check("Failed to delete attachment");
+            Request(id + "/" + attachmentName).Query("?rev=" + rev).Delete().Check("Failed to delete attachment");
         }
 
         public void DeleteDocument(string id, string rev)
@@ -707,9 +726,9 @@ namespace Divan
             return HasDocument(document.Id);
         }
 
-        public bool HasAttachment(ICouchDocument document)
+        public bool HasAttachment(ICouchDocument document, string attachmentName)
         {
-            return HasAttachment(document.Id);
+            return HasAttachment(document.Id, attachmentName);
         }
 
         public bool HasDocumentChanged(ICouchDocument document)
@@ -735,17 +754,82 @@ namespace Divan
             }
         }
 
-        public bool HasAttachment(string documentId)
+        public bool HasAttachment(string documentId, string attachmentName)
         {
             try
             {
-                Request(documentId + "/attachment").Head().Send();
+                Request(documentId + "/" + attachmentName).Head().Send();
                 return true;
             }
             catch (WebException)
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Copies a document based on its document id.
+        /// </summary>
+        /// <param name="sourceDocumentId">The source document id.</param>
+        /// <param name="destinationDocumentId">The destination document id.</param>
+        /// <remarks>Use this method when the destination document does not exist.</remarks>
+        public void Copy(string sourceDocumentId, string destinationDocumentId)
+        {
+            try
+            {
+                Request(sourceDocumentId)
+                    .AddHeader("Destination", destinationDocumentId)
+                    .Copy()
+                    .Send()
+                    .Parse();
+
+                // TODO add the following check statement.
+                // Currently on Windows the COPY command does not return an ok=true pair. This might be
+                // a bug in the implementation, but once it is sorted out the check should be added.
+                //.Check("Error copying document");
+            }
+            catch (WebException e)
+            {
+                throw new CouchException(e.Message, e);
+            }
+        }
+
+        /// <summary>
+        /// Copies a document based on its document id and replaces another existing document.
+        /// </summary>
+        /// <param name="sourceDocumentId">The source document id.</param>
+        /// <param name="destinationDocumentId">The destination document id.</param>
+        /// <param name="destinationRev">The destination rev.</param>
+        /// <remarks>Use this method when the destination document already exists</remarks>
+        public void Copy(string sourceDocumentId, string destinationDocumentId, string destinationRev)
+        {
+            try
+            {
+                Request(sourceDocumentId)
+                    .AddHeader("Destination", destinationDocumentId + "?rev=" + destinationRev)
+                    .Copy()
+                    .Parse();
+
+                // TODO add the following check statement.
+                // Currently on Windows the COPY command does not return an ok=true pair. This might be
+                // a bug in the implementation, but once it is sorted out the check should be added.
+                //.Check("Error copying document");
+            }
+            catch (WebException e)
+            {
+                throw new CouchException(e.Message, e);
+            }
+        }
+
+        /// <summary>
+        /// Copies the specified source document to the destination document, replacing it.
+        /// </summary> 
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="destinationDocument">The destination document.</param>
+        /// <remarks>This method does not update the destinationDocument object.</remarks>
+        public void Copy(CouchDocument sourceDocument, CouchDocument destinationDocument)
+        {
+            Copy(sourceDocument.Id, destinationDocument.Id, destinationDocument.Rev);
         }
     }
 }
