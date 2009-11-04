@@ -60,8 +60,13 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CouchTest.cs" />
-    <Compile Include="Lucene\CouchLuceneTest.cs" />
+    <Compile Include="CouchTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Linq\CouchLinqTest.cs" />
+    <Compile Include="Lucene\CouchLuceneTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

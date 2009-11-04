@@ -2,6 +2,9 @@ using System;
 using System.Globalization;
 using System.Net;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace Divan
 {
@@ -41,17 +44,28 @@ namespace Divan
             string msg = string.Format(CultureInfo.InvariantCulture, message + ": {0}", e.Message);
             if (e.Response != null)
             {
+                var webResponse = (HttpWebResponse) e.Response;
                 // Pick out status code
-                HttpStatusCode code = ((HttpWebResponse) e.Response).StatusCode;
+                HttpStatusCode code = webResponse.StatusCode;
+                using (var stream = new JsonTextReader(new StreamReader(webResponse.GetResponseStream())))
+                {
+                    // if we don't get a valid {error:, reason:}, don't worry about it
+                    try
+                    {
+                        var error = JObject.ReadFrom(stream);
+                        msg += String.Format(CultureInfo.InvariantCulture, " error: {0}, reason: {1}", error.Value<string>("error"), error.Value<string>("reason"));
+                    }
+                    catch (Exception) { }
 
-                // Create any specific exceptions we care to use
-                if (code == HttpStatusCode.Conflict)
-                {
-                    return new CouchConflictException(msg, e);
-                }
-                if (code == HttpStatusCode.NotFound)
-                {
-                    return new CouchNotFoundException(msg, e);
+                    // Create any specific exceptions we care to use
+                    if (code == HttpStatusCode.Conflict)
+                    {
+                        return new CouchConflictException(msg, e);
+                    }
+                    if (code == HttpStatusCode.NotFound)
+                    {
+                        return new CouchNotFoundException(msg, e);
+                    }
                 }
             }
 

@@ -83,7 +83,7 @@ namespace Divan.Test
             const string doc = "{\"CPU\": \"Intel\"}";
             var doc1 = new CouchJsonDocument(doc);
             var doc2 = new CouchJsonDocument(doc);
-            IList<ICouchDocument> list = new List<ICouchDocument> {doc1, doc2};
+            IList<ICouchDocument> list = new List<ICouchDocument> { doc1, doc2 };
             db.SaveDocuments(list, true);
             Assert.That(db.CountDocuments(), Is.EqualTo(2));
             Assert.That(doc1.Id, Is.Not.Null);
@@ -104,7 +104,7 @@ namespace Divan.Test
             Assert.That(doc1.Rev, Is.Not.Null);
         }
 
-        [Test, ExpectedException(typeof (CouchNotFoundException))]
+        [Test, ExpectedException(typeof(CouchNotFoundException))]
         public void ShouldDeleteDatabase()
         {
             db.Delete();
@@ -130,7 +130,7 @@ namespace Divan.Test
             Assert.That(db.HasDocument(doc2.Id), Is.False);
         }
 
-        [Test, ExpectedException(typeof (CouchException))]
+        [Test, ExpectedException(typeof(CouchException))]
         public void ShouldFailCreateDatabase()
         {
             server.CreateDatabase(db.Name); // one more time should fail
@@ -159,7 +159,7 @@ namespace Divan.Test
             const string doc = "{\"CPU\": \"Intel\"}";
             CouchJsonDocument doc1 = db.CreateDocument(doc);
             CouchJsonDocument doc2 = db.CreateDocument(doc);
-            var ids = new List<string> {doc1.Id, doc2.Id};
+            var ids = new List<string> { doc1.Id, doc2.Id };
 
             // Bulk request for multiple keys.
             var docs = db.GetDocuments(ids);
@@ -202,15 +202,40 @@ namespace Divan.Test
             Assert.That(cd.Rev, Is.Not.Null);
         }
 
+
+        private class LittleCar
+        {
+            public string Id, Rev;
+            public string Make, Model, docType;
+        }
+
+        [Test]
+        public void ShouldSaveArbitraryDocument()
+        {
+            var littleCar = new LittleCar() { docType = "car", Make = "Yugo", Model = "Hell if i know" };
+            littleCar = db.SaveArbitraryDocument(littleCar);
+            Assert.IsNotNull(littleCar.Id);
+        }
+
+        [Test]
+        public void ShouldLoadArbitraryDocument()
+        {
+            var firstCar = new LittleCar() { docType = "car", Make = "Yugo", Model = "Hell if i know" };
+            firstCar = db.SaveArbitraryDocument(firstCar);
+            var otherCar = db.GetArbitraryDocument<LittleCar>(firstCar.Id, () => new LittleCar());
+            Assert.IsNotNull(otherCar);
+            Assert.IsNotNull(otherCar.Id);
+        }
+
         [Test]
         public void ShouldStoreGetAndDeleteAttachment()
         {
             var doc = new CouchJsonDocument("{\"CPU\": \"Intel\"}");
             ICouchDocument cd = db.CreateDocument(doc);
             var attachmentName = "someAttachment.txt";
-            Assert.That(db.HasAttachment(cd,attachmentName), Is.False);
+            Assert.That(db.HasAttachment(cd, attachmentName), Is.False);
             db.WriteAttachment(cd, attachmentName, "jabbadabba", "text/plain");
-            Assert.That(db.HasAttachment(cd,attachmentName), Is.True);
+            Assert.That(db.HasAttachment(cd, attachmentName), Is.True);
 
             using (var response = db.ReadAttachment(cd, attachmentName))
             {
@@ -221,7 +246,7 @@ namespace Divan.Test
             }
 
             db.WriteAttachment(cd, attachmentName, "jabbadabba-doo", "text/plain");
-            Assert.That(db.HasAttachment(cd,attachmentName), Is.True);
+            Assert.That(db.HasAttachment(cd, attachmentName), Is.True);
 
             using (var response = db.ReadAttachment(cd, attachmentName))
             {
@@ -231,21 +256,21 @@ namespace Divan.Test
                 }
             }
 
-            db.DeleteAttachment(cd,attachmentName);
+            db.DeleteAttachment(cd, attachmentName);
 
-            Assert.That(db.HasAttachment(cd,attachmentName), Is.False);
+            Assert.That(db.HasAttachment(cd, attachmentName), Is.False);
         }
 
-        [Test, ExpectedException(typeof (CouchConflictException))]
+        [Test, ExpectedException(typeof(CouchConflictException))]
         public void ShouldThrowConflictExceptionOnAlreadyExists()
         {
             const string doc = "{\"CPU\": \"Intel\"}";
             CouchJsonDocument doc1 = db.CreateDocument(doc);
-            var doc2 = new CouchJsonDocument(doc) {Id = doc1.Id};
+            var doc2 = new CouchJsonDocument(doc) { Id = doc1.Id };
             db.WriteDocument(doc2);
         }
 
-        [Test, ExpectedException(typeof (CouchConflictException))]
+        [Test, ExpectedException(typeof(CouchConflictException))]
         public void ShouldThrowConflictExceptionOnStaleWrite()
         {
             const string doc = "{\"CPU\": \"Intel\"}";
@@ -255,6 +280,19 @@ namespace Divan.Test
             db.SaveDocument(doc1);
             doc2.Obj["CPU"] = JToken.FromObject("Via");
             db.SaveDocument(doc2);
+        }
+
+        [Test, ExpectedException(typeof(CouchConflictException))]
+        public void ShouldHaveExtendedExceptionMessages()
+        {
+            try
+            {
+                db.Query("invalid", "view").GetResult();
+            }
+            catch (CouchException ex)
+            {
+                Assert.That(ex.Message.Contains("reason: "), String.Format("Expected extended exception text, with 'reason' field, received '{0}'", ex.Message));
+            }
         }
 
         [Test]
@@ -330,7 +368,7 @@ namespace Divan.Test
         ///  string, number, true, false, null, JSON array and JSON object.
         /// </summary>
         [Test]
-        public void QueryKeyShouldGiveProperJsonValue()
+        public void ShouldGetProperJsonValueForQueryKey()
         {
             var query = db.Query("test", "test");
             query.Key("a string");
@@ -346,7 +384,7 @@ namespace Divan.Test
             query.Key(null);
             Assert.That(query.Options["key"].Equals("null"));
 
-            query.Key(new[] {"one", "two"});
+            query.Key(new[] { "one", "two" });
             var json = Regex.Replace(query.Options["key"], @"\s", ""); // removes all whitespace
             Assert.That(json.Equals("[\"one\",\"two\"]"));
 
@@ -360,6 +398,39 @@ namespace Divan.Test
             query.Key("one", "two");
             json = Regex.Replace(query.Options["key"], @"\s", ""); // removes all whitespace
             Assert.That(json.Equals("[\"one\",\"two\"]"));
+        }
+
+        [Test, ExpectedException(typeof(InvalidOperationException))]
+        public void ShouldHandleStreaming()
+        {
+            var design = new CouchDesignDocument("test", db);
+            design.AddView("docs", "function (doc) { emit(null, null); } ");
+            design.Synch();
+
+            var doc = new CouchJsonDocument("{\"_id\":\"123\", \"CPU\": \"Intel\"}");
+            db.SaveDocument(doc);
+
+            var result = db.Query("test", "docs").StreamResult<CouchDocument>();
+
+            Assert.That(result.FirstOrDefault() != null, "there should be one doc present");
+
+            try
+            {
+                // this should throw an invalid operation exception
+                result.FirstOrDefault();
+            }
+            finally
+            {
+                db.DeleteDocument(doc);
+                db.DeleteDocument(design);
+            }
+        }
+
+        private class Car : CouchDocument
+        {
+            public string Make;
+            public string Model;
+            public int HorsePowers;
         }
     }
 }

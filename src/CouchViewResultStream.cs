@@ -19,10 +19,12 @@ namespace Divan
             JsonReader reader;
             CouchRecord<T> current;
             bool hasMore = true;
+            CouchViewResultStream<T> owner;
 
-            public RecordEnumerator(JsonReader reader)
+            public RecordEnumerator(JsonReader reader, CouchViewResultStream<T> owner)
             {
                 this.reader = reader;
+                this.owner = owner;
             }
 
             public CouchRecord<T> Current
@@ -44,6 +46,7 @@ namespace Divan
 
                 var token = JToken.ReadFrom(reader);
                 hasMore = reader.Read() && reader.TokenType == JsonToken.StartObject;
+                owner.hasMore = hasMore;
 
                 current = new CouchRecord<T>(token as JObject);
 
@@ -57,6 +60,7 @@ namespace Divan
         }
 
         JsonReader reader;
+        bool hasMore = true;
 
         public CouchViewResultStream(JsonReader reader)
         {
@@ -87,12 +91,18 @@ namespace Divan
 
         public IEnumerator<CouchRecord<T>> GetEnumerator()
         {
-            return new RecordEnumerator(reader);
+            if (!hasMore)
+                throw new InvalidOperationException("Result stream cannot be re-enumerated");
+
+            return new RecordEnumerator(reader, this);
         }
 
         IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return new RecordEnumerator(reader);
+            if (!hasMore)
+                throw new InvalidOperationException("Result stream cannot be re-enumerated");
+
+            return new RecordEnumerator(reader, this);
         }
     }
 }

@@ -268,7 +268,14 @@ namespace Divan
 
         public CouchViewResultStream<T> StreamResult<T>() where T: ICanJson, new()
         {
-            return new CouchViewResultStream<T>(Request().Stream());
+            try
+            {
+                return new CouchViewResultStream<T>(Request().Stream());
+            }
+            catch (WebException e)
+            {
+                throw CouchException.Create("Query failed", e);
+            }
         }
     }
 }
