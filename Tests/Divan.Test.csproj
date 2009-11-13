@@ -60,6 +60,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Autoreconcile\CouchAutoreconcileTest.cs" />
     <Compile Include="CouchTest.cs">
       <SubType>Code</SubType>
     </Compile>
