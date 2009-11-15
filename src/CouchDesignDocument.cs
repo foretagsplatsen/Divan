@@ -203,7 +203,7 @@ namespace Divan
                 foreach (var property in fulltext.Properties())
                 {
                     var v = new CouchLuceneViewDefinition(property.Name, this);
-                    v.ReadJson((JObject) views[property.Name]);
+                    v.ReadJson((JObject) fulltext[property.Name]);
                     LuceneDefinitions.Add(v);
                 }
             }

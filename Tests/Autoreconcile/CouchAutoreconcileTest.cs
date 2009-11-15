@@ -77,6 +77,14 @@ namespace Divan.Test.Autoreconcile
             db = server.GetNewDatabase(DbName);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            db.Delete();
+        }
+
+        #endregion
+
         [Test, ExpectedException(ExceptionType = typeof(CouchConflictException))]
         public void ShouldCauseConflict()
         {
@@ -90,13 +98,41 @@ namespace Divan.Test.Autoreconcile
             db.SaveDocument(doc);
         }
 
-        [TearDown]
-        public void TearDown()
+        [Test]
+        public void ShouldHandleConflict()
         {
-            db.Delete();
+            var doc = new Car("Hoopty", "Type R", 5);
+            doc = db.SaveDocument(doc) as Car;
+
+            var rev = doc.Rev;
+            doc = db.SaveDocument(doc) as Car;
+
+            doc.Rev = rev;
+            db.SaveDocument(doc);
+
+            Assert.That(doc.Rev.StartsWith("3"), "Incorrect revision");
         }
 
-        #endregion
+        [Test]
+        public void ShouldResolveConflict()
+        {
+            var doc = new Car("Hoopty", "Type R", 5);
+            doc = db.SaveDocument(doc) as Car;
+
+            var doc2 = new Car("Slightly Better", "Type R", 6);
+            doc2.Id = doc.Id;
+            doc2.Rev = doc.Rev;
+
+            doc.Model = "Type S";
+            doc = db.SaveDocument(doc) as Car;
+
+            doc2 = db.SaveDocument(doc2) as Car;
+
+            Assert.That(doc2.Rev.StartsWith("3"), "Incorrect revision");
+            Assert.AreEqual("Slightly Better", doc2.Make);
+            Assert.AreEqual("Type S", doc2.Model);
+            Assert.AreEqual(6, doc2.HorsePowers);
+        }
 
         private CouchServer server;
         private CouchDatabase db;

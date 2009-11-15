@@ -92,6 +92,9 @@ namespace Divan
             foreach (JToken row in Rows())
             {
                 var doc = new T();
+                if (row[docOrValue] == null)
+                    continue;
+
                 doc.ReadJson(row[docOrValue].Value<JObject>());
                 list.Add(doc);
             }
