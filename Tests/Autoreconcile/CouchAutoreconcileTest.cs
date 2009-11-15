@@ -63,6 +63,11 @@ namespace Divan.Test.Autoreconcile
                 HorsePowers = obj["Hps"].Value<int>();
             }
 
+            public override IReconcilingDocument GetDatabaseCopy(CouchDatabase db)
+            {
+                return db.GetDocument<Car>(Id);
+            }
+
             #endregion
         }
         
@@ -102,6 +107,7 @@ namespace Divan.Test.Autoreconcile
         public void ShouldHandleConflict()
         {
             var doc = new Car("Hoopty", "Type R", 5);
+            doc.ReconcileBy = ReconcileStrategy.AutoMergeFields;
             doc = db.SaveDocument(doc) as Car;
 
             var rev = doc.Rev;
@@ -136,7 +142,6 @@ namespace Divan.Test.Autoreconcile
 
         private CouchServer server;
         private CouchDatabase db;
-        private CouchViewDefinition tempView;
         private const string DbName = "divan_linq_unit_tests";
     }
 }

@@ -217,11 +217,34 @@ namespace Divan
         /// <returns>ICouchDocument with new Rev set.</returns>
         public ICouchDocument SaveDocument(ICouchDocument document)
         {
-            if (document.Id == null)
+            var reconcilingDoc = document as IReconcilingDocument;
+            ICouchDocument savedDoc = null;
+            try
             {
-                return CreateDocument(document);
+                if (document.Id == null)
+                {
+                    savedDoc = CreateDocument(document);
+                }
+                savedDoc = WriteDocument(document);
             }
-            return WriteDocument(document);
+            catch (CouchConflictException ex)
+            {
+                if (reconcilingDoc == null)
+                    throw;
+
+                switch (reconcilingDoc.ReconcileBy)
+                {
+                    case ReconcileStrategy.None:
+                        throw;
+                    default:
+                        reconcilingDoc.Reconcile(reconcilingDoc.GetDatabaseCopy(this));
+                        SaveDocument(reconcilingDoc);
+                        break;
+                }
+            }
+
+            reconcilingDoc.SaveCommited();
+            return savedDoc;
         }
 
         /// <summary>
