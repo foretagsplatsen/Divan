@@ -106,6 +106,15 @@ namespace Divan
 
         #endregion
 
+        private bool EqualFields(object v1, object v2)
+        {
+            if (v1 == null)
+                return v2 == null;
+            if (v2 == null)
+                return false;
+            return v1.Equals(v2);
+        }
+
         /// <summary>
         /// Automatically reconcile the database copy with the target instance. This method
         /// uses reflection to perform the reconcilliation, and as such won't perform as well
@@ -118,14 +127,17 @@ namespace Divan
             var fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             foreach (var field in fields)
                 // if we haven't changed the field, 
-                if (field.GetValue(sourceData) == field.GetValue(this))
+                if (EqualFields(field.GetValue(sourceData), field.GetValue(this)))
                     field.SetValue(this, field.GetValue(databaseCopy));
 
             foreach (var prop in properties)
                 if (!prop.CanWrite || prop.GetIndexParameters().Length > 0)
                     continue;
-                else if (prop.GetValue(sourceData, null) == prop.GetValue(this, null))
+                else if (EqualFields(prop.GetValue(sourceData, null), prop.GetValue(this, null)))
                     prop.SetValue(this, prop.GetValue(databaseCopy, null), null);
+
+            // this is non-negotiable
+            Rev = databaseCopy.Rev;
         }
 
         protected CouchDocument AutoClone()
@@ -166,7 +178,8 @@ namespace Divan
                     break;
             }
 
-            sourceData.ReconcileBy = ReconcileStrategy.None;
+            if (sourceData != null)
+                sourceData.ReconcileBy = ReconcileStrategy.None;
         }
 
         /// <summary>

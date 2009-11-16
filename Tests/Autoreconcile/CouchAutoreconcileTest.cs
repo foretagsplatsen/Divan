@@ -27,10 +27,10 @@ namespace Divan.Test.Autoreconcile
 
             public Car()
             {
-                // This constructor is needed by Divan
+                ReconcileBy = ReconcileStrategy.AutoMergeFields;
             }
 
-            public Car(string make, string model, int hps)
+            public Car(string make, string model, int hps): this()
             {
                 Make = make;
                 Model = model;
@@ -107,7 +107,6 @@ namespace Divan.Test.Autoreconcile
         public void ShouldHandleConflict()
         {
             var doc = new Car("Hoopty", "Type R", 5);
-            doc.ReconcileBy = ReconcileStrategy.AutoMergeFields;
             doc = db.SaveDocument(doc) as Car;
 
             var rev = doc.Rev;
@@ -116,7 +115,7 @@ namespace Divan.Test.Autoreconcile
             doc.Rev = rev;
             db.SaveDocument(doc);
 
-            Assert.That(doc.Rev.StartsWith("3"), "Incorrect revision");
+            Assert.That(doc.Rev.StartsWith("4"), "Incorrect revision");
         }
 
         [Test]
@@ -125,7 +124,9 @@ namespace Divan.Test.Autoreconcile
             var doc = new Car("Hoopty", "Type R", 5);
             doc = db.SaveDocument(doc) as Car;
 
-            var doc2 = new Car("Slightly Better", "Type R", 6);
+            var doc2 = db.GetDocument<Car>(doc.Id);
+            doc2.Make = "Slightly Better";
+            doc2.HorsePowers = 6;
             doc2.Id = doc.Id;
             doc2.Rev = doc.Rev;
 
@@ -134,14 +135,25 @@ namespace Divan.Test.Autoreconcile
 
             doc2 = db.SaveDocument(doc2) as Car;
 
-            Assert.That(doc2.Rev.StartsWith("3"), "Incorrect revision");
+            Assert.That(doc2.Rev.StartsWith("4"), "Incorrect revision");
             Assert.AreEqual("Slightly Better", doc2.Make);
             Assert.AreEqual("Type S", doc2.Model);
             Assert.AreEqual(6, doc2.HorsePowers);
         }
 
+        [Test, ExpectedException(ExceptionType = typeof(CouchConflictException))]
+        public void ShouldCauseConflictOnNewDoc()
+        {
+            var doc = new Car("Hoopty", "Type R", 5);
+            doc = db.SaveDocument(doc) as Car;
+
+            var doc2 = new Car("Some other", "Car", 1000000);
+            doc2.Id = doc.Id;
+            db.SaveDocument(doc2);
+        }
+
         private CouchServer server;
         private CouchDatabase db;
-        private const string DbName = "divan_linq_unit_tests";
+        private const string DbName = "divan_reconcile_unit_tests";
     }
 }

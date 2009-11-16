@@ -222,14 +222,17 @@ namespace Divan
             try
             {
                 if (document.Id == null)
-                {
-                    savedDoc = CreateDocument(document);
-                }
+                    CreateDocument(document);
+
                 savedDoc = WriteDocument(document);
             }
             catch (CouchConflictException ex)
             {
                 if (reconcilingDoc == null)
+                    throw;
+
+                // can't handle a brand-new document
+                if (String.IsNullOrEmpty(reconcilingDoc.Rev))
                     throw;
 
                 switch (reconcilingDoc.ReconcileBy)
@@ -241,6 +244,8 @@ namespace Divan
                         SaveDocument(reconcilingDoc);
                         break;
                 }
+
+                savedDoc = reconcilingDoc;
             }
 
             reconcilingDoc.SaveCommited();
