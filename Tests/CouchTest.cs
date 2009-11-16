@@ -205,7 +205,7 @@ namespace Divan.Test
 
         private class LittleCar
         {
-            public string Id, Rev;
+            public string _id, _rev;
             public string Make, Model, docType;
         }
 
@@ -214,7 +214,7 @@ namespace Divan.Test
         {
             var littleCar = new LittleCar() { docType = "car", Make = "Yugo", Model = "Hell if i know" };
             littleCar = db.SaveArbitraryDocument(littleCar);
-            Assert.IsNotNull(littleCar.Id);
+            Assert.IsNotNull(littleCar._id);
         }
 
         [Test]
@@ -222,9 +222,9 @@ namespace Divan.Test
         {
             var firstCar = new LittleCar() { docType = "car", Make = "Yugo", Model = "Hell if i know" };
             firstCar = db.SaveArbitraryDocument(firstCar);
-            var otherCar = db.GetArbitraryDocument<LittleCar>(firstCar.Id, () => new LittleCar());
+            var otherCar = db.GetArbitraryDocument<LittleCar>(firstCar._id, () => new LittleCar());
             Assert.IsNotNull(otherCar);
-            Assert.IsNotNull(otherCar.Id);
+            Assert.IsNotNull(otherCar._id);
         }
 
         [Test]
