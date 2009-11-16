@@ -13,6 +13,21 @@ namespace Divan
     public class CouchGenericViewResult : CouchViewResult
     {
         /// <summary>
+        /// Return all found values of given type
+        /// </summary>
+        /// <typeparam name="T">Type of value.</typeparam>
+        /// <returns>All found values.</returns>
+        public IList<T> Values<T>() where T : new()
+        {
+            var list = new List<T>();
+            foreach (JToken row in Rows())
+            {
+                list.Add(row["value"].Value<T>());
+            }
+            return list;
+        }
+		
+		/// <summary>
         /// Return all found values as documents of given type
         /// </summary>
         /// <typeparam name="T">Type of value.</typeparam>
@@ -22,6 +37,16 @@ namespace Divan
             return RetrieveDocuments<T>("value");
         }
 
+		/// <summary>
+        /// Return all ids in value as documents of given type.
+        /// </summary>
+        /// <typeparam name="T">Type of value.</typeparam>
+        /// <returns>All found documents.</returns>
+        public IList<T> ValueDocumentsWithIds<T>() where T : ICouchDocument, new()
+        {
+            return RetrieveDocumentsWithIds<T>("value");
+        }
+		
         public IList<T> ValueDocuments<T>(Func<T> ctor)
         {
             return RetrieveArbitraryDocuments<T>("value", ctor);
@@ -100,7 +125,27 @@ namespace Divan
             }
             return list;
         }
-
+		
+		protected virtual IList<T> RetrieveDocumentsWithIds<T>(string docOrValue) where T : ICouchDocument, new()
+        {
+            var list = new List<T>();
+			var found = new Dictionary<string, T>();
+            foreach (JToken row in Rows())
+            {
+				var ids = row[docOrValue].Value<JArray>();
+				foreach (JToken id in ids) {
+					var stringId = id.Value<string>();
+					if (!found.ContainsKey(stringId)) {
+						var doc = new T();
+	               	 	doc.Id = stringId;
+						found[stringId] = doc;
+						list.Add(doc);
+					}
+				}
+            }
+            return list;
+        }
+		
         protected virtual T RetrieveDocument<T>(string docOrValue) where T : ICanJson, new()
         {
             foreach (JToken row in Rows())

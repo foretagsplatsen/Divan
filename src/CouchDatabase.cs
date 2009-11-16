@@ -270,7 +270,7 @@ namespace Divan
             }
             JObject result =
                 Request(document.Id).Query(batch ? "?batch=ok" : null).Data(CouchDocument.WriteJson(document)).Put().Check("Failed to write document").Result();
-            document.Id = result["id"].Value<string>(); // Not really neeed
+            document.Id = result["id"].Value<string>(); // Not really needed
             document.Rev = result["rev"].Value<string>();
 
             return document;

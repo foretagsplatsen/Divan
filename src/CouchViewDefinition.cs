@@ -76,7 +76,7 @@ namespace Divan
         /// <summary>
         /// Utility methods to make queries shorter.
         /// </summary>
-        public IList<T> Key<T>(string key) where T : ICouchDocument, new()
+        public IList<T> Key<T>(object key) where T : ICouchDocument, new()
         {
             return Query().Key(key).IncludeDocuments().GetResult().Documents<T>();
         }
