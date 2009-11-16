@@ -248,7 +248,9 @@ namespace Divan
                 savedDoc = reconcilingDoc;
             }
 
-            reconcilingDoc.SaveCommited();
+            if (reconcilingDoc != null)
+                reconcilingDoc.SaveCommited();
+
             return savedDoc;
         }
 

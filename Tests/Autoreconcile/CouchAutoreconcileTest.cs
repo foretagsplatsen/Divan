@@ -94,6 +94,7 @@ namespace Divan.Test.Autoreconcile
         public void ShouldCauseConflict()
         {
             var doc = new Car("Hoopty", "Type R", 5);
+            doc.ReconcileBy = ReconcileStrategy.None;
             doc = db.SaveDocument(doc) as Car;
 
             var rev = doc.Rev;
