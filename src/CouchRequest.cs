@@ -191,7 +191,7 @@ namespace Divan
 
         private HttpWebRequest GetRequest()
         {
-            Uri requestUri = new UriBuilder("http", server.Host, server.Port, ((db != null) ? db.Name + "/" : "") + path, query).Uri;
+            var requestUri = new UriBuilder("http", server.Host, server.Port, ((db != null) ? db.Name + "/" : "") + path, query).Uri;
             var request = WebRequest.Create(requestUri) as HttpWebRequest;
             if (request == null)
             {
@@ -209,6 +209,9 @@ namespace Divan
             {
                 request.Headers.Add(header.Key, header.Value);
             }
+
+            if (!string.IsNullOrEmpty(server.EncodedCredentials))
+                request.Headers.Add("Authorization", server.EncodedCredentials);
 
             if (postData != null)
             {

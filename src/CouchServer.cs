@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -25,14 +26,28 @@ namespace Divan
         public readonly string Host;
         public readonly int Port;
 
+        public readonly string UserName;
+        public readonly string Password;
+        public readonly string EncodedCredentials;
+
         public string DatabasePrefix = ""; // Used by databases to prefix their names
 
-        public CouchServer(string host, int port)
+        public CouchServer(string host, int port, string user, string pass)
         {
             Host = host;
             Port = port;
+            UserName = user;
+            Password = pass;
+
+            if (!String.IsNullOrEmpty(UserName))
+                EncodedCredentials = "Basic " +
+                                     Convert.ToBase64String(Encoding.ASCII.GetBytes(UserName + ":" + Password));
 
             Debug(string.Format("CouchServer({0}:{1})", host, port));
+        }
+
+        public CouchServer(string host, int port): this(host, port, null, null)
+        {
         }
 
         public CouchServer(string host)
