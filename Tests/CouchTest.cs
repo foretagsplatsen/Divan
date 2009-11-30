@@ -282,7 +282,7 @@ namespace Divan.Test
             db.SaveDocument(doc2);
         }
 
-        [Test, ExpectedException(typeof(CouchConflictException))]
+        [Test, ExpectedException(typeof(CouchNotFoundException))]
         public void ShouldHaveExtendedExceptionMessages()
         {
             try

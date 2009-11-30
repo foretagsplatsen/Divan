@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -46,7 +46,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CouchViewResultStream.cs" />
     <Compile Include="CouchBulkDeleteDocuments.cs" />
     <Compile Include="CouchBulkDocuments.cs" />
     <Compile Include="CouchBulkKeys.cs" />
@@ -60,7 +59,6 @@
     <Compile Include="CouchPermanentViewResult.cs" />
     <Compile Include="CouchQuery.cs" />
     <Compile Include="CouchQueryDocument.cs" />
-    <Compile Include="CouchRecord.cs" />
     <Compile Include="CouchRequest.cs" />
     <Compile Include="CouchServer.cs" />
     <Compile Include="CouchViewDefinitionBase.cs" />
@@ -69,7 +67,6 @@
     <Compile Include="CouchDesignDocument.cs" />
     <Compile Include="ICanJson.cs" />
     <Compile Include="ICouchDocument.cs" />
-    <Compile Include="IReconcilingDocument.cs" />
     <Compile Include="Lucene\CouchLuceneHit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Linq\CouchLinqQuery.cs" />
@@ -81,6 +78,9 @@
     <Compile Include="Lucene\CouchLuceneViewResult.cs" />
     <Compile Include="CouchDocumentWrapper.cs" />
     <Compile Include="ISelfContained.cs" />
+    <Compile Include="IReconcilingDocument.cs" />
+    <Compile Include="CouchRecord.cs" />
+    <Compile Include="CouchViewResultStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

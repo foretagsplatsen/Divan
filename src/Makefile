@@ -73,13 +73,16 @@ FILES =  \
 	CouchPermanentViewResult.cs \
 	CouchQuery.cs \
 	CouchQueryDocument.cs \
+	CouchRecord.cs \
 	CouchRequest.cs \
 	CouchServer.cs \
 	CouchViewDefinition.cs \
 	CouchViewDefinitionBase.cs \
 	CouchViewResult.cs \
+	CouchViewResultStream.cs \
 	ICanJson.cs \
 	ICouchDocument.cs \
+	IReconcilingDocument.cs \
 	ISelfContained.cs \
 	Linq/CouchLinqQuery.cs \
 	Linq/CouchQueryProvider.cs \
