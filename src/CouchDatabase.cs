@@ -854,7 +854,7 @@ namespace Divan
         /// <param name="sourceDocument">The source document.</param>
         /// <param name="destinationDocument">The destination document.</param>
         /// <remarks>This method does not update the destinationDocument object.</remarks>
-        public void Copy(CouchDocument sourceDocument, CouchDocument destinationDocument)
+        public void Copy(ICouchDocument sourceDocument, ICouchDocument destinationDocument)
         {
             Copy(sourceDocument.Id, destinationDocument.Id, destinationDocument.Rev);
         }
