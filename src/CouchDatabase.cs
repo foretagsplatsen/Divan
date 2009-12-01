@@ -6,6 +6,7 @@ using System.Text;
 using System;
 using Divan.Lucene;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace Divan
 {
@@ -301,6 +302,32 @@ namespace Divan
         /// <returns>The document.</returns>
         /// <remarks>This relies on the document to already have an id.</remarks>
         public ICouchDocument WriteAttachment(ICouchDocument document, string attachmentName, byte[] attachmentData, string mimeType)
+        {
+            if (document.Id == null)
+            {
+                throw CouchException.Create(
+                    "Failed to add attachment to document using PUT because it lacks an id");
+            }
+
+            JObject result =
+                Request(document.Id + "/" + attachmentName).Query("?rev=" + document.Rev).Data(attachmentData).MimeType(mimeType).Put().Check("Failed to write attachment")
+                    .Result();
+            document.Id = result["id"].Value<string>(); // Not really neeed
+            document.Rev = result["rev"].Value<string>();
+
+            return document;
+        }
+
+        /// <summary>
+        /// Writes the attachment.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="attachmentName">Name of the attachment.</param>
+        /// <param name="attachmentData">The attachment data.</param>
+        /// <param name="mimeType">Type of the MIME.</param>
+        /// <returns>The document.</returns>
+        /// <remarks>This relies on the document to already have an id.</remarks>
+        public ICouchDocument WriteAttachment(ICouchDocument document, string attachmentName, Stream attachmentData, string mimeType)
         {
             if (document.Id == null)
             {
@@ -857,7 +884,7 @@ namespace Divan
         /// <param name="sourceDocument">The source document.</param>
         /// <param name="destinationDocument">The destination document.</param>
         /// <remarks>This method does not update the destinationDocument object.</remarks>
-        public void Copy(CouchDocument sourceDocument, CouchDocument destinationDocument)
+        public void Copy(ICouchDocument sourceDocument, ICouchDocument destinationDocument)
         {
             Copy(sourceDocument.Id, destinationDocument.Id, destinationDocument.Rev);
         }

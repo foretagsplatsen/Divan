@@ -16,7 +16,9 @@ namespace Divan
     /// </summary>
     public class CouchRequest
     {
+        private const int UploadBufferSize = 100000;
         private readonly CouchDatabase db;
+        private Stream postStream;
         private readonly CouchServer server;
         private string etag, etagToCheck;
         public Dictionary<string, string> headers = new Dictionary<string, string>();
@@ -25,7 +27,7 @@ namespace Divan
         public string method = "GET"; // PUT, DELETE, POST, HEAD
         public string mimeType;
         public string path;
-        public byte[] postData;
+        //public byte[] postData;        
         public string query;
 
         public JToken result;
@@ -132,13 +134,22 @@ namespace Divan
 
         public CouchRequest Data(string data)
         {
-            postData = Encoding.UTF8.GetBytes(data);
-            return this;
+            var postData = Encoding.UTF8.GetBytes(data);
+            return Data(postData);
+            //this.postStream = new MemoryStream(postData);
+            //return this;
         }
 
         public CouchRequest Data(byte[] data)
         {
-            postData = data;
+            this.postStream = new MemoryStream(data);
+            //postData = data;
+            return this;
+        }
+
+        public CouchRequest Data(Stream dataStream)
+        {
+            this.postStream = dataStream;
             return this;
         }
 
@@ -210,19 +221,27 @@ namespace Divan
                 request.Headers.Add(header.Key, header.Value);
             }
 
-            if (postData != null)
+            if (postStream != null)
             {
-                //byte[] bytes = Encoding.UTF8.GetBytes(postData);
-                request.ContentLength = postData.Length;
-                using (Stream ps = request.GetRequestStream())
-                {
-                    ps.Write(postData, 0, postData.Length);
-                    ps.Close();
-                }
+                WriteData(request);
             }
 
             Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Request: {0} Method: {1}", requestUri, method));
             return request;
+        }
+
+        private void WriteData(HttpWebRequest request)
+        {
+            request.ContentLength = postStream.Length;
+            using (Stream ps = request.GetRequestStream())
+            {
+                var buffer = new byte[UploadBufferSize];
+                int bytesRead;
+                while ((bytesRead = postStream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    ps.Write(buffer, 0, bytesRead);
+                }
+            }
         }
 
         public JObject Parse()
