@@ -227,7 +227,7 @@ namespace Divan
 				else 
 	                savedDoc = WriteDocument(document);
             }
-            catch (CouchConflictException ex)
+            catch (CouchConflictException)
             {
                 if (reconcilingDoc == null)
                     throw;

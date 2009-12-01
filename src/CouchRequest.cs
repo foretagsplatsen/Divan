@@ -27,7 +27,6 @@ namespace Divan
         public string method = "GET"; // PUT, DELETE, POST, HEAD
         public string mimeType;
         public string path;
-        //public byte[] postData;        
         public string query;
 
         public JToken result;
@@ -134,22 +133,18 @@ namespace Divan
 
         public CouchRequest Data(string data)
         {
-            var postData = Encoding.UTF8.GetBytes(data);
-            return Data(postData);
-            //this.postStream = new MemoryStream(postData);
-            //return this;
+            return Data(Encoding.UTF8.GetBytes(data));
         }
 
         public CouchRequest Data(byte[] data)
         {
-            this.postStream = new MemoryStream(data);
-            //postData = data;
+            postStream = new MemoryStream(data);
             return this;
         }
 
         public CouchRequest Data(Stream dataStream)
         {
-            this.postStream = dataStream;
+            postStream = dataStream;
             return this;
         }
 
@@ -202,7 +197,7 @@ namespace Divan
 
         private HttpWebRequest GetRequest()
         {
-            Uri requestUri = new UriBuilder("http", server.Host, server.Port, ((db != null) ? db.Name + "/" : "") + path, query).Uri;
+            var requestUri = new UriBuilder("http", server.Host, server.Port, ((db != null) ? db.Name + "/" : "") + path, query).Uri;
             var request = WebRequest.Create(requestUri) as HttpWebRequest;
             if (request == null)
             {
@@ -221,6 +216,11 @@ namespace Divan
                 request.Headers.Add(header.Key, header.Value);
             }
 
+            if (!string.IsNullOrEmpty(server.EncodedCredentials))
+			{
+                request.Headers.Add("Authorization", server.EncodedCredentials);
+			}
+			
             if (postStream != null)
             {
                 WriteData(request);
