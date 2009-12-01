@@ -223,9 +223,9 @@ namespace Divan
             try
             {
                 if (document.Id == null)
-                    CreateDocument(document);
-
-                savedDoc = WriteDocument(document);
+                    savedDoc = CreateDocument(document);
+				else 
+	                savedDoc = WriteDocument(document);
             }
             catch (CouchConflictException ex)
             {
