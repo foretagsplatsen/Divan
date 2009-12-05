@@ -116,7 +116,7 @@ namespace Divan.Test.Autoreconcile
             doc.Rev = rev;
             db.SaveDocument(doc);
 
-            Assert.That(doc.Rev.StartsWith("4"), "Incorrect revision");
+            Assert.That(doc.Rev.StartsWith("3"), "Incorrect revision");
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace Divan.Test.Autoreconcile
 
             doc2 = db.SaveDocument(doc2) as Car;
 
-            Assert.That(doc2.Rev.StartsWith("4"), "Incorrect revision");
+            Assert.That(doc2.Rev.StartsWith("3"), "Incorrect revision");
             Assert.AreEqual("Slightly Better", doc2.Make);
             Assert.AreEqual("Type S", doc2.Model);
             Assert.AreEqual(6, doc2.HorsePowers);
