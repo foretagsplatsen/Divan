@@ -14,11 +14,11 @@ namespace Divan.Linq
     /// </summary>
     public class CouchQueryProvider: IQueryProvider
     {
-        CouchDatabase db;
+        ICouchDatabase db;
         string view;
         string design;
 
-        CouchViewDefinition definition;
+        ICouchViewDefinition definition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CouchQueryProvider"/> class.
@@ -38,7 +38,7 @@ namespace Divan.Linq
         /// </summary>
         /// <param name="db">The db.</param>
         /// <param name="definition">The definition.</param>
-        public CouchQueryProvider(CouchDatabase db, CouchViewDefinition definition)
+        public CouchQueryProvider(ICouchDatabase db, ICouchViewDefinition definition)
         {
             this.db = db;
             this.definition = definition;
