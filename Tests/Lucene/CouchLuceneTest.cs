@@ -42,8 +42,8 @@ namespace Divan.Test.Lucene
 
         #endregion
 
-        private CouchServer server;
-        private CouchDatabase db;
+        private ICouchServer server;
+        private ICouchDatabase db;
         private string DbName { get { return "divan_lucene_unit_tests" + DateTime.Now.Ticks; } }
 
 

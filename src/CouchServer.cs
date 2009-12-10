@@ -15,7 +15,7 @@ namespace Divan
     /// One nice approach is to create a specific subclass that knows about its databases.
     /// DatabasePrefix can be used to separate all databases created from other CouchDB databases.
     /// </summary>
-    public class CouchServer
+    public class CouchServer : Divan.ICouchServer
     {
         public bool RunningOnMono = Type.GetType("Mono.Runtime") != null;
         
@@ -96,7 +96,7 @@ namespace Divan
         /// Get a CouchDatabase with given name.
         /// We create the database if it does not exist.
         /// </summary>
-        public CouchDatabase GetDatabase(string name)
+        public ICouchDatabase GetDatabase(string name)
         {
             return GetDatabase<CouchDatabase>(name);
         }
@@ -106,7 +106,7 @@ namespace Divan
         /// We check if the database exists and delete
         /// it if it does, then we recreate it.
         /// </summary>
-        public CouchDatabase GetNewDatabase(string name)
+        public ICouchDatabase GetNewDatabase(string name)
         {
             return GetNewDatabase<CouchDatabase>(name);
         }
@@ -116,7 +116,7 @@ namespace Divan
         /// We check if the database exists and delete it if it does,
         /// then we recreate it.
         /// </summary>
-        public T GetNewDatabase<T>(string name) where T : CouchDatabase, new()
+        public T GetNewDatabase<T>(string name) where T : ICouchDatabase, new()
         {
             var db = new T { Name = name, Server = this };
             if (db.Exists())
@@ -131,7 +131,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase. That class should
         /// define its own database name. We presume it is already created.
         /// </summary>
-        public T GetExistingDatabase<T>() where T : CouchDatabase, new()
+        public T GetExistingDatabase<T>() where T : ICouchDatabase, new()
         {
             return new T {Server = this};
         }
@@ -140,7 +140,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase with given name.
         /// We presume it is already created.
         /// </summary>
-        public T GetExistingDatabase<T>(string name) where T : CouchDatabase, new()
+        public T GetExistingDatabase<T>(string name) where T : ICouchDatabase, new()
         {
             return new T {Name = name, Server = this};
         }
@@ -149,7 +149,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase. That class should
         /// define its own database name. We ensure that it is created.
         /// </summary>
-        public T GetDatabase<T>() where T : CouchDatabase, new()
+        public T GetDatabase<T>() where T : ICouchDatabase, new()
         {
             var db = GetExistingDatabase<T>();
             db.Create();
@@ -160,7 +160,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase with given name.
         /// We ensure that it is created.
         /// </summary>
-        public T GetDatabase<T>(string name) where T : CouchDatabase, new()
+        public T GetDatabase<T>(string name) where T : ICouchDatabase, new()
         {
             var db = GetExistingDatabase<T>(name);
             db.Create();

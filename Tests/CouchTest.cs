@@ -51,8 +51,8 @@ namespace Divan.Test
 
         #endregion
 
-        private CouchServer server;
-        private CouchDatabase db;
+        private ICouchServer server;
+        private ICouchDatabase db;
         private string DbName;
 
         private static string GetNewDbName()
