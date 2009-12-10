@@ -92,7 +92,7 @@ namespace Trivial
             // HTTP request to CouchDB and return a CouchGenericViewResult which we in turn can ask to produce objects from JSON,
             // in this case we pick out the actual documents and instantiate them as instances of the class Car.
             var cars = db.GetAllDocuments<Car>();
-            Console.WriteLine("Loaded all Cars: " + cars.Count);
+            Console.WriteLine("Loaded all Cars: " + cars.Count());
 
             // Now try some linq
             var tempView = db.NewTempView("test", "test", "if (doc.docType && doc.docType == 'car') emit(doc.Hps, doc);");
@@ -124,7 +124,7 @@ namespace Trivial
             }
 
             // Get all cars again and see how many are left.
-            Console.WriteLine("Cars left: " + db.GetAllDocuments<Car>().Count);
+            Console.WriteLine("Cars left: " + db.GetAllDocuments<Car>().Count());
 
             //  We can actually also delete in a single bulk call using DeleteDocuments().
             db.DeleteDocuments(cars.ToArray());
