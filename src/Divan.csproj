@@ -68,6 +68,7 @@
     <Compile Include="ICanJson.cs" />
     <Compile Include="ICouchDatabase.cs" />
     <Compile Include="ICouchDocument.cs" />
+    <Compile Include="ICouchRequest.cs" />
     <Compile Include="ICouchServer.cs" />
     <Compile Include="ICouchViewDefinition.cs" />
     <Compile Include="ICouchViewDefinitionBase.cs" />

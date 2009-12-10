@@ -14,7 +14,7 @@ namespace Divan
     /// <summary>
     /// A CouchDB HTTP request with all its options. This is where we do the actual HTTP requests to CouchDB.
     /// </summary>
-    public class CouchRequest
+    public class CouchRequest : Divan.ICouchRequest
     {
         private const int UploadBufferSize = 100000;
         private readonly ICouchDatabase db;
