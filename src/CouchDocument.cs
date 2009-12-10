@@ -198,7 +198,7 @@ namespace Divan
             Rev = databaseCopy.Rev;
         }
 
-        public virtual IReconcilingDocument GetDatabaseCopy(CouchDatabase db)
+        public virtual IReconcilingDocument GetDatabaseCopy(ICouchDatabase db)
         {
             return db.GetDocument<CouchDocument>(Id);
         }
