@@ -3,32 +3,32 @@ namespace Divan
 {
     public interface ICouchRequest
     {
-        CouchRequest AddHeader(string key, string value);
-        CouchRequest Check(string message);
-        CouchRequest Copy();
-        CouchRequest Data(System.IO.Stream dataStream);
-        CouchRequest Data(string data);
-        CouchRequest Data(byte[] data);
-        CouchRequest Delete();
+        ICouchRequest AddHeader(string key, string value);
+        ICouchRequest Check(string message);
+        ICouchRequest Copy();
+        ICouchRequest Data(System.IO.Stream dataStream);
+        ICouchRequest Data(string data);
+        ICouchRequest Data(byte[] data);
+        ICouchRequest Delete();
         string Etag();
-        CouchRequest Etag(string value);
-        CouchRequest Get();
-        CouchRequest Head();
+        ICouchRequest Etag(string value);
+        ICouchRequest Get();
+        ICouchRequest Head();
         bool IsETagValid();
-        CouchRequest MimeType(string type);
-        CouchRequest MimeTypeJson();
+        ICouchRequest MimeType(string type);
+        ICouchRequest MimeTypeJson();
         T Parse<T>() where T : Newtonsoft.Json.Linq.JToken;
         Newtonsoft.Json.Linq.JObject Parse();
-        CouchRequest Path(string name);
-        CouchRequest Post();
-        CouchRequest PostJson();
-        CouchRequest Put();
-        CouchRequest Query(string name);
-        CouchRequest QueryOptions(System.Collections.Generic.ICollection<System.Collections.Generic.KeyValuePair<string, string>> options);
+        ICouchRequest Path(string name);
+        ICouchRequest Post();
+        ICouchRequest PostJson();
+        ICouchRequest Put();
+        ICouchRequest Query(string name);
+        ICouchRequest QueryOptions(System.Collections.Generic.ICollection<System.Collections.Generic.KeyValuePair<string, string>> options);
         System.Net.WebResponse Response();
         T Result<T>() where T : Newtonsoft.Json.Linq.JToken;
         Newtonsoft.Json.Linq.JObject Result();
-        CouchRequest Send();
+        ICouchRequest Send();
         Newtonsoft.Json.JsonTextReader Stream();
         string String();
     }

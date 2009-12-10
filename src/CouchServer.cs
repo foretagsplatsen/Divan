@@ -114,7 +114,7 @@ namespace Divan
             get { return Host + ":" + Port; }
         }
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             return new CouchRequest(this);
         }

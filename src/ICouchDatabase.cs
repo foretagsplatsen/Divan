@@ -50,9 +50,9 @@ namespace Divan
         Newtonsoft.Json.Linq.JObject ReadDocument(string documentId);
         void ReadDocumentIfChanged(ICouchDocument document);
         string ReadDocumentString(string documentId);
-        CouchRequest Request(string path);
-        CouchRequest Request();
-        CouchRequest RequestAllDocuments();
+        ICouchRequest Request(string path);
+        ICouchRequest Request();
+        ICouchRequest RequestAllDocuments();
         bool RunningOnMono();
         T SaveArbitraryDocument<T>(T document);
         void SaveArbitraryDocuments<T>(System.Collections.Generic.IEnumerable<T> documents, bool allOrNothing);

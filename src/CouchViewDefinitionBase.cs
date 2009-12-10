@@ -16,7 +16,7 @@ namespace Divan
             return Doc.Owner;
         }
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             return Db().Request(Path());
         }

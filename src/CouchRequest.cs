@@ -42,26 +42,26 @@ namespace Divan
             this.db = db;
         }
 
-        public CouchRequest Etag(string value)
+        public ICouchRequest Etag(string value)
         {
             etagToCheck = value;
             headers["If-Modified"] = value;
             return this;
         }
 
-        public CouchRequest Path(string name)
+        public ICouchRequest Path(string name)
         {
             path = name;
             return this;
         }
 
-        public CouchRequest Query(string name)
+        public ICouchRequest Query(string name)
         {
             query = name;
             return this;
         }
 
-        public CouchRequest QueryOptions(ICollection<KeyValuePair<string, string>> options)
+        public ICouchRequest QueryOptions(ICollection<KeyValuePair<string, string>> options)
         {
             if (options == null || options.Count == 0)
             {
@@ -88,73 +88,73 @@ namespace Divan
         /// Turn the request into a HEAD request, HEAD requests are problematic
         /// under Mono 2.4, but has been fixed in later releases.
         /// </summary> 
-        public CouchRequest Head()
+        public ICouchRequest Head()
         {
             // NOTE: We need to do this until next release of mono where HEAD requests have been fixed!
             method = server.RunningOnMono ? "GET" : "HEAD";
             return this;
         }
 
-        public CouchRequest Copy()
+        public ICouchRequest Copy()
         {
             method = "COPY";
             return this;
         }
 
-        public CouchRequest PostJson()
+        public ICouchRequest PostJson()
         {
             MimeTypeJson();
             return Post();
         }
 
-        public CouchRequest Post()
+        public ICouchRequest Post()
         {
             method = "POST";
             return this;
         }
 
-        public CouchRequest Get()
+        public ICouchRequest Get()
         {
             method = "GET";
             return this;
         }
 
-        public CouchRequest Put()
+        public ICouchRequest Put()
         {
             method = "PUT";
             return this;
         }
 
-        public CouchRequest Delete()
+        public ICouchRequest Delete()
         {
             method = "DELETE";
             return this;
         }
 
-        public CouchRequest Data(string data)
+        public ICouchRequest Data(string data)
         {
             return Data(Encoding.UTF8.GetBytes(data));
         }
 
-        public CouchRequest Data(byte[] data)
+        public ICouchRequest Data(byte[] data)
         {
             postStream = new MemoryStream(data);
             return this;
         }
 
-        public CouchRequest Data(Stream dataStream)
+        public ICouchRequest Data(Stream dataStream)
         {
             postStream = dataStream;
             return this;
         }
 
-        public CouchRequest MimeType(string type)
+        public ICouchRequest MimeType(string type)
         {
             mimeType = type;
             return this;
         }
 
-        public CouchRequest MimeTypeJson()
+        public ICouchRequest MimeTypeJson()
         {
             MimeType("application/json");
             return this;
@@ -175,7 +175,7 @@ namespace Divan
             return etag;
         }
 
-        public CouchRequest Check(string message)
+        public ICouchRequest Check(string message)
         {
             try
             {
@@ -339,7 +339,7 @@ namespace Divan
             return GetRequest().GetResponse();
         }
 
-        public CouchRequest Send()
+        public ICouchRequest Send()
         {
             using (WebResponse response = GetResponse())
             {
@@ -353,7 +353,7 @@ namespace Divan
             return etagToCheck == etag;
         }
 
-        public CouchRequest AddHeader(string key, string value)
+        public ICouchRequest AddHeader(string key, string value)
         {
             headers[key] = value;
             return this;

@@ -89,12 +89,12 @@ namespace Divan
             }
         }
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             return new CouchRequest(this);
         }
 
-        public CouchRequest Request(string path)
+        public ICouchRequest Request(string path)
         {
             return (new CouchRequest(this)).Path(path);
         }
@@ -104,7 +104,7 @@ namespace Divan
             return (Request().Parse())["doc_count"].Value<int>();
         }
 
-        public CouchRequest RequestAllDocuments()
+        public ICouchRequest RequestAllDocuments()
         {
             return Request("_all_docs");
         }

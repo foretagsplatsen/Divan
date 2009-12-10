@@ -17,7 +17,7 @@ namespace Divan
         ICouchDatabase GetNewDatabase(string name);
         T GetNewDatabase<T>(string name) where T : ICouchDatabase, new();
         bool HasDatabase(string name);
-        CouchRequest Request();
+        ICouchRequest Request();
         string ServerName { get; }
         string DatabasePrefix { get; set; }
         bool RunningOnMono { get; }

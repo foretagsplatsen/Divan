@@ -211,7 +211,7 @@ namespace Divan
             {
                 return false;
             }
-            CouchRequest req = View.Request().QueryOptions(Options);
+            ICouchRequest req = View.Request().QueryOptions(Options);
             req.Etag(Result.etag);
             return req.Head().Send().IsETagValid();
         }
@@ -223,7 +223,7 @@ namespace Divan
         }
 
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             var req = View.Request().QueryOptions(Options);
             if (postData != null)
