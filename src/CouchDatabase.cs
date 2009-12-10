@@ -25,7 +25,8 @@ namespace Divan
             Name = "default";
         }
 
-        public CouchDatabase(CouchServer server) : this()
+        public CouchDatabase(CouchServer server)
+            : this()
         {
             Server = server;
         }
@@ -44,7 +45,8 @@ namespace Divan
                     return name;
                 return Server.DatabasePrefix + name;
             }
-            set {
+            set
+            {
                 name = value;
             }
         }
@@ -112,7 +114,7 @@ namespace Divan
         /// This method is only practical for testing purposes.
         /// </summary>
         /// <returns>A list of all documents.</returns>
-        public IList<CouchJsonDocument> GetAllDocuments()
+        public IEnumerable<CouchJsonDocument> GetAllDocuments()
         {
             return QueryAllDocuments().IncludeDocuments().GetResult().Documents<CouchJsonDocument>();
         }
@@ -124,7 +126,7 @@ namespace Divan
         /// </summary>
         /// <typeparam name="T">The document type to use.</typeparam>
         /// <returns>A list of all documents.</returns>
-        public IList<T> GetAllDocuments<T>() where T : ICouchDocument, new()
+        public IEnumerable<T> GetAllDocuments<T>() where T : ICouchDocument, new()
         {
             return QueryAllDocuments().IncludeDocuments().GetResult().Documents<T>();
         }
@@ -134,7 +136,7 @@ namespace Divan
         /// CouchDocument does not contain the actual content.
         /// </summary>
         /// <returns>List of documents</returns>
-        public IList<CouchDocument> GetAllDocumentsWithoutContent()
+        public IEnumerable<CouchDocument> GetAllDocumentsWithoutContent()
         {
             QueryAllDocuments().GetResult().ValueDocuments<CouchDocument>();
 
@@ -224,8 +226,8 @@ namespace Divan
             {
                 if (document.Id == null)
                     savedDoc = CreateDocument(document);
-				else 
-	                savedDoc = WriteDocument(document);
+                else
+                    savedDoc = WriteDocument(document);
             }
             catch (CouchConflictException)
             {
@@ -474,11 +476,9 @@ namespace Divan
             }
         }
 
-        public void SaveArbitraryDocuments<T>(IList<T> documents, bool allOrNothing)
+        public void SaveArbitraryDocuments<T>(IEnumerable<T> documents, bool allOrNothing)
         {
-            SaveDocuments(
-                (IList<ICouchDocument>)documents.Select(doc => new CouchDocumentWrapper<T>(doc)).ToList(),
-                allOrNothing);
+            SaveDocuments(documents.Select(doc => new CouchDocumentWrapper<T>(doc)).Cast<ICouchDocument>(), allOrNothing);
         }
 
         /// <summary>
@@ -487,19 +487,24 @@ namespace Divan
         /// </summary>
         /// <param name="documents">List of documents to store.</param>
         /// <remarks>POST may be problematic in some environments.</remarks>
-        public void SaveDocuments(IList<ICouchDocument> documents, bool allOrNothing)
+        public void SaveDocuments(IEnumerable<ICouchDocument> documents, bool allOrNothing)
         {
             var bulk = new CouchBulkDocuments(documents);
             try
             {
-                var result =
-                    Request("_bulk_docs").Data(CouchDocument.WriteJson(bulk)).Query("?all_or_nothing=" + allOrNothing.ToString().ToLower()).PostJson().Parse
-                        <JArray>();
-                for (int i = 0; i < documents.Count; i++)
+                var result = Request("_bulk_docs")
+                    .Data(CouchDocument.WriteJson(bulk))
+                    .Query("?all_or_nothing=" + allOrNothing.ToString().ToLower())
+                    .PostJson()
+                    .Parse<JArray>();
+
+                int index = 0;
+                foreach (var document in documents)
                 {
-                    documents[i].Id = (result[i])["id"].Value<string>();
-                    documents[i].Rev = (result[i])["rev"].Value<string>();
-                }
+                    document.Id = (result[index])["id"].Value<string>();
+                    document.Rev = (result[index])["rev"].Value<string>();
+                    ++index;
+                }                
             }
             catch (WebException e)
             {
@@ -507,10 +512,10 @@ namespace Divan
             }
         }
 
-        public void SaveArbitraryDocuments<T>(IList<T> documents, int chunkCount, List<CouchViewDefinition> views, bool allOrNothing)
+        public void SaveArbitraryDocuments<T>(IEnumerable<T> documents, int chunkCount, List<CouchViewDefinition> views, bool allOrNothing)
         {
             SaveDocuments(
-                (IList<ICouchDocument>)documents.Select(doc => new CouchDocumentWrapper<T>(doc)).ToList(), 
+                documents.Select(doc => new CouchDocumentWrapper<T>(doc)).Cast<ICouchDocument>(),
                 chunkCount,
                 views,
                 allOrNothing);
@@ -523,7 +528,7 @@ namespace Divan
         /// <param name="documents">List of documents to store.</param>
         /// <param name="chunkCount">Number of documents to store per "POST"</param>
         /// <param name="views">List of views to touch per chunk.</param>
-        public void SaveDocuments(IList<ICouchDocument> documents, int chunkCount, List<CouchViewDefinition> views, bool allOrNothing)
+        public void SaveDocuments(IEnumerable<ICouchDocument> documents, int chunkCount, List<CouchViewDefinition> views, bool allOrNothing)
         {
             var chunk = new List<ICouchDocument>(chunkCount);
             int counter = 0;
@@ -577,43 +582,24 @@ namespace Divan
         /// </summary>
         /// <param name="documents">List of documents to store.</param>
         /// <param name="chunkCount">Number of documents to store per "POST"</param>
-        public void SaveDocuments(IList<ICouchDocument> documents, int chunkCount, bool allOrNothing)
+        public void SaveDocuments(IEnumerable<ICouchDocument> documents, int chunkCount, bool allOrNothing)
         {
             SaveDocuments(documents, chunkCount, null, allOrNothing);
         }
 
-        public void SaveArbitraryDocuments<T>(IList<T> documents, int chunkCount, bool allOrNothing)
+        public void SaveArbitraryDocuments<T>(IEnumerable<T> documents, int chunkCount, bool allOrNothing)
         {
             SaveArbitraryDocuments(documents, chunkCount, null, allOrNothing);
         }
-
-        /// <summary>
-        /// Get multiple documents.
-        /// </summary>
-        /// <param name="documentIds">List of documents to get.</param>
-        public IList<T> GetDocuments<T>(IList<string> documentIds) where T : ICouchDocument, new()
-        {
-            return GetDocuments<T>(documentIds.ToArray());
-        }
-
-        public IList<T> GetArbitraryDocuments<T>(IList<string> documentIds, Func<T> ctor)
-        {
-            return GetArbitraryDocuments<T>(documentIds.ToArray(), ctor);
-        }
-
-        public IList<CouchJsonDocument> GetDocuments(IList<string> documentIds)
+                
+        public IEnumerable<CouchJsonDocument> GetDocuments(IEnumerable<string> documentIds)
         {
             return GetDocuments<CouchJsonDocument>(documentIds);
         }
-
-        public IList<CouchJsonDocument> GetDocuments(string[] documentIds)
+        
+        public IEnumerable<T> GetDocuments<T>(IEnumerable<string> documentIds) where T : ICouchDocument, new()
         {
-            return GetDocuments<CouchJsonDocument>(documentIds);
-        }
-
-        public IList<T> GetDocuments<T>(string[] documentIds) where T : ICouchDocument, new()
-        {
-            var bulk = new CouchBulkKeys(documentIds);
+            var bulk = new CouchBulkKeys(documentIds.Cast<object>());
             return QueryAllDocuments().Data(CouchDocument.WriteJson(bulk)).IncludeDocuments().GetResult().Documents<T>();
         }
 
@@ -646,9 +632,9 @@ namespace Divan
             return doc.Instance;
         }
 
-        public IList<T> GetArbitraryDocuments<T>(string[] documentIds, Func<T> ctor)
+        public IEnumerable<T> GetArbitraryDocuments<T>(IEnumerable<string> documentIds, Func<T> ctor)
         {
-            var bulk = new CouchBulkKeys(documentIds);
+            var bulk = new CouchBulkKeys(documentIds.Cast<object>());
             return QueryAllDocuments().Data(CouchDocument.WriteJson(bulk)).IncludeDocuments().GetResult().ArbitraryDocuments<T>(ctor);
         }
 
@@ -724,30 +710,21 @@ namespace Divan
         }
 
         /// <summary>
-        /// Delete documents in bulk fashion.
-        /// </summary>
-        /// <param name="documents">List of documents to delete.</param>
-        public void DeleteDocuments(IList<ICouchDocument> documents)
-        {
-            DeleteDocuments(documents.ToArray());
-        }
-
-        /// <summary>
         /// Delete documents in key range. This method needs to retrieve
         /// revisions and then use them to post a bulk delete. Couch can not
         /// delete documents without being told about their revisions.
         /// </summary>
         public void DeleteDocuments(string startKey, string endKey)
         {
-            IList<CouchQueryDocument> docs = QueryAllDocuments().StartKey(startKey).EndKey(endKey).GetResult().RowDocuments();
-            DeleteDocuments(docs.ToArray());
+            var docs = QueryAllDocuments().StartKey(startKey).EndKey(endKey).GetResult().RowDocuments().Cast<ICouchDocument>();
+            DeleteDocuments(docs);
         }
 
         /// <summary>
         /// Delete documents in bulk fashion.
         /// </summary>
         /// <param name="documents">Array of documents to delete.</param>
-        public void DeleteDocuments(ICouchDocument[] documents)
+        public void DeleteDocuments(IEnumerable<ICouchDocument> documents)
         {
             DeleteDocuments(new CouchBulkDeleteDocuments(documents));
         }

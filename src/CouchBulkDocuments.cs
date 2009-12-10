@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace Divan
 {
@@ -10,18 +11,18 @@ namespace Divan
     /// </summary>
     public class CouchBulkDocuments : ICanJson
     {
-        public CouchBulkDocuments(IList<ICouchDocument> docs)
+        public CouchBulkDocuments(IEnumerable<ICouchDocument> docs)
         {
             Docs = docs;
         }
 
-        public IList<ICouchDocument> Docs { get; private set; }
+        public IEnumerable<ICouchDocument> Docs { get; private set; }
 
         #region ICouchBulk Members
 
         public int Count()
         {
-            return Docs.Count;
+            return Docs.Count();
         }
 
         public virtual void WriteJson(JsonWriter writer)
