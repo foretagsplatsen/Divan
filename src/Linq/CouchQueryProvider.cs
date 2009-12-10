@@ -26,7 +26,7 @@ namespace Divan.Linq
         /// <param name="db">The db.</param>
         /// <param name="design">The design.</param>
         /// <param name="view">The view.</param>
-        public CouchQueryProvider(CouchDatabase db, string design, string view)
+        public CouchQueryProvider(ICouchDatabase db, string design, string view)
         {
             this.db = db;
             this.view = view;

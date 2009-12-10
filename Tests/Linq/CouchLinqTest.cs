@@ -131,7 +131,7 @@ namespace Divan.Test.Linq
 
         #endregion
 
-        private CouchServer server;
+        private ICouchServer server;
         private ICouchDatabase db;
         private ICouchViewDefinition tempView;
         private string DbName;

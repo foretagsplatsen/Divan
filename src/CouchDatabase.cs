@@ -25,13 +25,13 @@ namespace Divan
             Name = "default";
         }
 
-        public CouchDatabase(CouchServer server)
+        public CouchDatabase(ICouchServer server)
             : this()
         {
             Server = server;
         }
 
-        public CouchDatabase(string name, CouchServer server)
+        public CouchDatabase(string name, ICouchServer server)
         {
             Name = name;
             Server = server;
@@ -51,7 +51,7 @@ namespace Divan
             }
         }
 
-        public CouchServer Server { get; set; }
+        public ICouchServer Server { get; set; }
 
         public bool RunningOnMono()
         {

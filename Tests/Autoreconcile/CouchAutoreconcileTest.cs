@@ -63,7 +63,7 @@ namespace Divan.Test.Autoreconcile
                 HorsePowers = obj["Hps"].Value<int>();
             }
 
-            public override IReconcilingDocument GetDatabaseCopy(CouchDatabase db)
+            public override IReconcilingDocument GetDatabaseCopy(ICouchDatabase db)
             {
                 return db.GetDocument<Car>(Id);
             }

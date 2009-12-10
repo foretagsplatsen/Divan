@@ -62,7 +62,7 @@ namespace Divan
         void SaveDocuments(System.Collections.Generic.IEnumerable<ICouchDocument> documents, int chunkCount, IEnumerable<ICouchViewDefinition> views, bool allOrNothing);
         void SaveDocuments(System.Collections.Generic.IEnumerable<ICouchDocument> documents, bool allOrNothing);
         void SaveDocuments(System.Collections.Generic.IEnumerable<ICouchDocument> documents, int chunkCount, bool allOrNothing);
-        CouchServer Server { get; set; }
+        ICouchServer Server { get; set; }
         void SynchDesignDocuments();
         void TouchView(string designDocumentId, string viewName);
         void TouchViews(IEnumerable<ICouchViewDefinition> views);

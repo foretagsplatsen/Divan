@@ -17,30 +17,79 @@ namespace Divan
     /// </summary>
     public class CouchServer : Divan.ICouchServer
     {
-        public bool RunningOnMono = Type.GetType("Mono.Runtime") != null;
+        private bool runningOnMono = Type.GetType("Mono.Runtime") != null;
         
         private const string DefaultHost = "localhost";
         private const int DefaultPort = 5984;
         private readonly JsonSerializer serializer = new JsonSerializer(); 
         
-        public readonly string Host;
-        public readonly int Port;
+        private readonly string host;
+        private readonly int port;
 
-        public readonly string UserName;
-        public readonly string Password;
-        public readonly string EncodedCredentials;
+        private readonly string userName;
+        private readonly string password;
+        private readonly string encodedCredentials;
 
-        public string DatabasePrefix = ""; // Used by databases to prefix their names
+        private string databasePrefix = ""; // Used by databases to prefix their names
+        public string EncodedCredentials
+        {
+            get
+            {
+                return encodedCredentials;
+            }
+        }
+        public string Password
+        {
+            get
+            {
+                return password;
+            }
+        }
+        public string UserName
+        {
+            get
+            {
+                return userName;
+            }
+        }
+        public int Port
+        {
+            get
+            {
+                return port;
+            }
+        }
+        public string Host
+        {
+            get
+            {
+                return host;
+            }
+        }
+        
+        public bool RunningOnMono
+        {
+            get
+            {
+                return runningOnMono;
+            }
+        }
+
+        public string DatabasePrefix
+        {
+            get { return databasePrefix; }
+            set { databasePrefix = value; }
+        }
 
         public CouchServer(string host, int port, string user, string pass)
         {
-            Host = host;
-            Port = port;
-            UserName = user;
-            Password = pass;
+            this.host = host;
+            this.port = port;
+            this.userName = user;
+            this.password = pass;
 
             if (!String.IsNullOrEmpty(UserName))
-                EncodedCredentials = "Basic " +
+                encodedCredentials = "Basic " +
                                      Convert.ToBase64String(Encoding.ASCII.GetBytes(UserName + ":" + Password));
 
             Debug(string.Format("CouchServer({0}:{1})", host, port));

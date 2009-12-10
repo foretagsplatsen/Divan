@@ -17,9 +17,9 @@ namespace Divan
     public class CouchRequest
     {
         private const int UploadBufferSize = 100000;
-        private readonly CouchDatabase db;
+        private readonly ICouchDatabase db;
         private Stream postStream;
-        private readonly CouchServer server;
+        private readonly ICouchServer server;
         private string etag, etagToCheck;
         public Dictionary<string, string> headers = new Dictionary<string, string>();
 
@@ -31,12 +31,12 @@ namespace Divan
 
         public JToken result;
 
-        public CouchRequest(CouchServer server)
+        public CouchRequest(ICouchServer server)
         {
             this.server = server;
         }
 
-        public CouchRequest(CouchDatabase db)
+        public CouchRequest(ICouchDatabase db)
         {
             server = db.Server;
             this.db = db;

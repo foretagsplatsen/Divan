@@ -19,5 +19,12 @@ namespace Divan
         bool HasDatabase(string name);
         CouchRequest Request();
         string ServerName { get; }
+        string DatabasePrefix { get; set; }
+        bool RunningOnMono { get; }
+        string Host { get; }
+        int Port { get; }
+        string UserName { get; }
+        string Password { get; }
+        string EncodedCredentials { get; }
     }
 }
