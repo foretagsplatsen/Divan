@@ -10,7 +10,7 @@ namespace Divan
     /// </summary>
     public class CouchBulkDeleteDocuments : CouchBulkDocuments
     {
-        public CouchBulkDeleteDocuments(IList<ICouchDocument> docs) : base(docs)
+        public CouchBulkDeleteDocuments(IEnumerable<ICouchDocument> docs) : base(docs)
         {
         }
 

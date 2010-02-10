@@ -38,7 +38,7 @@ namespace Divan.Linq
         /// <param name="design">The name of the design document.</param>
         /// <param name="view">The name of the view.</param>
         /// <returns></returns>
-        public ExpressionVisitor ProcessExpression(Expression expression, CouchDatabase db, string design, string view)
+        public ExpressionVisitor ProcessExpression(Expression expression, ICouchDatabase db, string design, string view)
         {
             Query = db.Query(design, view);
             VisitExpression(expression);
@@ -52,7 +52,7 @@ namespace Divan.Linq
         /// <param name="db">The db.</param>
         /// <param name="definition">The view definition.</param>
         /// <returns></returns>
-        public ExpressionVisitor ProcessExpression(Expression expression, CouchDatabase db, CouchViewDefinition definition)
+        public ExpressionVisitor ProcessExpression(Expression expression, ICouchDatabase db, ICouchViewDefinition definition)
         {
             Query = db.Query(definition);
             VisitExpression(expression);

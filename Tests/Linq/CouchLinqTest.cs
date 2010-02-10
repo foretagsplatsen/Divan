@@ -74,6 +74,7 @@ namespace Divan.Test.Linq
             var host = ConfigurationManager.AppSettings["CouchHost"] ?? "localhost";
             var port = Convert.ToInt32(ConfigurationManager.AppSettings["CouchPort"] ?? "5984");
             server = new CouchServer(host, port);
+            DbName = GetNewDbName();            
             db = server.GetNewDatabase(DbName);
             Car car = null;
             
@@ -119,14 +120,26 @@ namespace Divan.Test.Linq
         [TearDown]
         public void TearDown()
         {
-            db.Delete();
+            try
+            {
+                db.Delete();
+            }
+            catch
+            {
+            }
         }
 
         #endregion
 
-        private CouchServer server;
-        private CouchDatabase db;
-        private CouchViewDefinition tempView;
-        private const string DbName = "divan_linq_unit_tests";
+        private ICouchServer server;
+        private ICouchDatabase db;
+        private ICouchViewDefinition tempView;
+        private string DbName;
+
+        private static string GetNewDbName()
+        {
+            return "divan_linq_unit_tests" + DateTime.Now.Ticks;
+        }
+        
     }
 }
