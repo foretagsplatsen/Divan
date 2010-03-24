@@ -15,32 +15,81 @@ namespace Divan
     /// One nice approach is to create a specific subclass that knows about its databases.
     /// DatabasePrefix can be used to separate all databases created from other CouchDB databases.
     /// </summary>
-    public class CouchServer
+    public class CouchServer : Divan.ICouchServer
     {
-        public bool RunningOnMono = Type.GetType("Mono.Runtime") != null;
+        private bool runningOnMono = Type.GetType("Mono.Runtime") != null;
         
         private const string DefaultHost = "localhost";
         private const int DefaultPort = 5984;
         private readonly JsonSerializer serializer = new JsonSerializer(); 
         
-        public readonly string Host;
-        public readonly int Port;
+        private readonly string host;
+        private readonly int port;
 
-        public readonly string UserName;
-        public readonly string Password;
-        public readonly string EncodedCredentials;
+        private readonly string userName;
+        private readonly string password;
+        private readonly string encodedCredentials;
 
-        public string DatabasePrefix = ""; // Used by databases to prefix their names
+        private string databasePrefix = ""; // Used by databases to prefix their names
+        public string EncodedCredentials
+        {
+            get
+            {
+                return encodedCredentials;
+            }
+        }
+        public string Password
+        {
+            get
+            {
+                return password;
+            }
+        }
+        public string UserName
+        {
+            get
+            {
+                return userName;
+            }
+        }
+        public int Port
+        {
+            get
+            {
+                return port;
+            }
+        }
+        public string Host
+        {
+            get
+            {
+                return host;
+            }
+        }
+        
+        public bool RunningOnMono
+        {
+            get
+            {
+                return runningOnMono;
+            }
+        }
+
+        public string DatabasePrefix
+        {
+            get { return databasePrefix; }
+            set { databasePrefix = value; }
+        }
 
         public CouchServer(string host, int port, string user, string pass)
         {
-            Host = host;
-            Port = port;
-            UserName = user;
-            Password = pass;
+            this.host = host;
+            this.port = port;
+            this.userName = user;
+            this.password = pass;
 
             if (!String.IsNullOrEmpty(UserName))
-                EncodedCredentials = "Basic " +
+                encodedCredentials = "Basic " +
                                      Convert.ToBase64String(Encoding.ASCII.GetBytes(UserName + ":" + Password));
 
             Debug(string.Format("CouchServer({0}:{1})", host, port));
@@ -65,7 +114,7 @@ namespace Divan
             get { return Host + ":" + Port; }
         }
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             return new CouchRequest(this);
         }
@@ -96,7 +145,7 @@ namespace Divan
         /// Get a CouchDatabase with given name.
         /// We create the database if it does not exist.
         /// </summary>
-        public CouchDatabase GetDatabase(string name)
+        public ICouchDatabase GetDatabase(string name)
         {
             return GetDatabase<CouchDatabase>(name);
         }
@@ -106,7 +155,7 @@ namespace Divan
         /// We check if the database exists and delete
         /// it if it does, then we recreate it.
         /// </summary>
-        public CouchDatabase GetNewDatabase(string name)
+        public ICouchDatabase GetNewDatabase(string name)
         {
             return GetNewDatabase<CouchDatabase>(name);
         }
@@ -116,7 +165,7 @@ namespace Divan
         /// We check if the database exists and delete it if it does,
         /// then we recreate it.
         /// </summary>
-        public T GetNewDatabase<T>(string name) where T : CouchDatabase, new()
+        public T GetNewDatabase<T>(string name) where T : ICouchDatabase, new()
         {
             var db = new T { Name = name, Server = this };
             if (db.Exists())
@@ -131,7 +180,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase. That class should
         /// define its own database name. We presume it is already created.
         /// </summary>
-        public T GetExistingDatabase<T>() where T : CouchDatabase, new()
+        public T GetExistingDatabase<T>() where T : ICouchDatabase, new()
         {
             return new T {Server = this};
         }
@@ -140,7 +189,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase with given name.
         /// We presume it is already created.
         /// </summary>
-        public T GetExistingDatabase<T>(string name) where T : CouchDatabase, new()
+        public T GetExistingDatabase<T>(string name) where T : ICouchDatabase, new()
         {
             return new T {Name = name, Server = this};
         }
@@ -149,7 +198,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase. That class should
         /// define its own database name. We ensure that it is created.
         /// </summary>
-        public T GetDatabase<T>() where T : CouchDatabase, new()
+        public T GetDatabase<T>() where T : ICouchDatabase, new()
         {
             var db = GetExistingDatabase<T>();
             db.Create();
@@ -160,7 +209,7 @@ namespace Divan
         /// Get specialized subclass of CouchDatabase with given name.
         /// We ensure that it is created.
         /// </summary>
-        public T GetDatabase<T>(string name) where T : CouchDatabase, new()
+        public T GetDatabase<T>(string name) where T : ICouchDatabase, new()
         {
             var db = GetExistingDatabase<T>(name);
             db.Create();

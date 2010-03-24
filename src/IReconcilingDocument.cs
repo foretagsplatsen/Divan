@@ -12,6 +12,6 @@ namespace Divan
         /// <param name="databaseCopy"></param>
         void Reconcile(ICouchDocument databaseCopy);
 
-        IReconcilingDocument GetDatabaseCopy(CouchDatabase db);
+        IReconcilingDocument GetDatabaseCopy(ICouchDatabase db);
     }
 }

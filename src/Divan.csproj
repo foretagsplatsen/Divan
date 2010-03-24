@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{37AC0B66-5340-4B81-BC62-3EE80233A011}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -66,7 +66,12 @@
     <Compile Include="CouchViewDefinition.cs" />
     <Compile Include="CouchDesignDocument.cs" />
     <Compile Include="ICanJson.cs" />
+    <Compile Include="ICouchDatabase.cs" />
     <Compile Include="ICouchDocument.cs" />
+    <Compile Include="ICouchRequest.cs" />
+    <Compile Include="ICouchServer.cs" />
+    <Compile Include="ICouchViewDefinition.cs" />
+    <Compile Include="ICouchViewDefinitionBase.cs" />
     <Compile Include="Lucene\CouchLuceneHit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Linq\CouchLinqQuery.cs" />

@@ -13,7 +13,7 @@ namespace Divan
     /// </summary>
     public class CouchQuery
     {
-        public readonly CouchViewDefinition View;
+        public readonly ICouchViewDefinition View;
 
         // Special options
         public bool checkETagUsingHead;
@@ -21,7 +21,7 @@ namespace Divan
         public string postData;
         public CouchViewResult Result;
 
-        public CouchQuery(CouchViewDefinition view)
+        public CouchQuery(ICouchViewDefinition view)
         {
             View = view;
         }
@@ -211,7 +211,7 @@ namespace Divan
             {
                 return false;
             }
-            CouchRequest req = View.Request().QueryOptions(Options);
+            ICouchRequest req = View.Request().QueryOptions(Options);
             req.Etag(Result.etag);
             return req.Head().Send().IsETagValid();
         }
@@ -223,7 +223,7 @@ namespace Divan
         }
 
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             var req = View.Request().QueryOptions(Options);
             if (postData != null)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -15,7 +15,7 @@ namespace Divan
     /// This is the main API to work with CouchDB. One useful approach is to create your own subclasses
     /// for your different databases.
     /// </summary>
-    public class CouchDatabase
+    public class CouchDatabase : Divan.ICouchDatabase
     {
         private string name;
         public readonly IList<CouchDesignDocument> DesignDocuments = new List<CouchDesignDocument>();
@@ -25,13 +25,13 @@ namespace Divan
             Name = "default";
         }
 
-        public CouchDatabase(CouchServer server)
+        public CouchDatabase(ICouchServer server)
             : this()
         {
             Server = server;
         }
 
-        public CouchDatabase(string name, CouchServer server)
+        public CouchDatabase(string name, ICouchServer server)
         {
             Name = name;
             Server = server;
@@ -51,7 +51,7 @@ namespace Divan
             }
         }
 
-        public CouchServer Server { get; set; }
+        public ICouchServer Server { get; set; }
 
         public bool RunningOnMono()
         {
@@ -68,7 +68,7 @@ namespace Divan
         /// <summary>
         /// Only to be used when developing.
         /// </summary>
-        public CouchViewDefinition NewTempView(string designDoc, string viewName, string mapText)
+        public ICouchViewDefinition NewTempView(string designDoc, string viewName, string mapText)
         {
             var doc = NewDesignDocument(designDoc);
             var view = doc.AddView(viewName, "function (doc) {" + mapText + "}");
@@ -89,12 +89,12 @@ namespace Divan
             }
         }
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             return new CouchRequest(this);
         }
 
-        public CouchRequest Request(string path)
+        public ICouchRequest Request(string path)
         {
             return (new CouchRequest(this)).Path(path);
         }
@@ -104,7 +104,7 @@ namespace Divan
             return (Request().Parse())["doc_count"].Value<int>();
         }
 
-        public CouchRequest RequestAllDocuments()
+        public ICouchRequest RequestAllDocuments()
         {
             return Request("_all_docs");
         }
@@ -512,7 +512,7 @@ namespace Divan
             }
         }
 
-        public void SaveArbitraryDocuments<T>(IEnumerable<T> documents, int chunkCount, List<CouchViewDefinition> views, bool allOrNothing)
+        public void SaveArbitraryDocuments<T>(IEnumerable<T> documents, int chunkCount, IEnumerable<ICouchViewDefinition> views, bool allOrNothing)
         {
             SaveDocuments(
                 documents.Select(doc => new CouchDocumentWrapper<T>(doc)).Cast<ICouchDocument>(),
@@ -528,7 +528,7 @@ namespace Divan
         /// <param name="documents">List of documents to store.</param>
         /// <param name="chunkCount">Number of documents to store per "POST"</param>
         /// <param name="views">List of views to touch per chunk.</param>
-        public void SaveDocuments(IEnumerable<ICouchDocument> documents, int chunkCount, List<CouchViewDefinition> views, bool allOrNothing)
+        public void SaveDocuments(IEnumerable<ICouchDocument> documents, int chunkCount, IEnumerable<ICouchViewDefinition> views, bool allOrNothing)
         {
             var chunk = new List<ICouchDocument>(chunkCount);
             int counter = 0;
@@ -558,12 +558,12 @@ namespace Divan
             TouchViews(views);
         }
 
-        public void TouchViews(List<CouchViewDefinition> views)
+        public void TouchViews(IEnumerable<ICouchViewDefinition> views)
         {
             //var timer = new Stopwatch();
             if (views != null)
             {
-                foreach (CouchViewDefinition view in views)
+                foreach (var view in views)
                 {
                     if (view != null)
                     {
@@ -665,7 +665,7 @@ namespace Divan
             return Query(new CouchViewDefinition(viewName, NewDesignDocument(designName)));
         }
 
-        public CouchQuery Query(CouchViewDefinition view)
+        public CouchQuery Query(ICouchViewDefinition view)
         {
             return new CouchQuery(view);
         }

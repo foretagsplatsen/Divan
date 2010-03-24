@@ -18,9 +18,9 @@ namespace Divan
         public IList<CouchLuceneViewDefinition> LuceneDefinitions = new List<CouchLuceneViewDefinition>();
 
         public string Language = "javascript";
-        public CouchDatabase Owner;
+        public ICouchDatabase Owner;
 
-        public CouchDesignDocument(string documentId, CouchDatabase owner)
+        public CouchDesignDocument(string documentId, ICouchDatabase owner)
             : base("_design/" + documentId)
         {
             Owner = owner;

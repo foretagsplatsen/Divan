@@ -31,14 +31,21 @@ namespace Divan.Test.Lucene
         [TearDown]
         public void TearDown()
         {
-            db.Delete();
+            try
+            {
+                db.Delete();
+            }
+            catch
+            {
+            }
         }
 
         #endregion
 
-        private CouchServer server;
-        private CouchDatabase db;
-        private const string DbName = "divan_lucene_unit_tests";
+        private ICouchServer server;
+        private ICouchDatabase db;
+        private string DbName { get { return "divan_lucene_unit_tests" + DateTime.Now.Ticks; } }
+
 
         [Test]
         public void ShouldHandleTrivialQuery()

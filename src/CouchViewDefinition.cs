@@ -10,7 +10,7 @@ namespace Divan
     /// A definition of a CouchDB view with a name, a map and a reduce function and a reference to the
     /// owning CouchDesignDocument. 
     /// </summary>
-    public class CouchViewDefinition : CouchViewDefinitionBase, IEquatable<CouchViewDefinition>
+    public class CouchViewDefinition : CouchViewDefinitionBase, IEquatable<ICouchViewDefinition>, Divan.ICouchViewDefinition
     {
         /// <summary>
         /// Basic constructor used in ReadJson() etc.
@@ -96,7 +96,7 @@ namespace Divan
             return Query().IncludeDocuments().GetResult().Documents<T>();
         }
 
-        public bool Equals(CouchViewDefinition other)
+        public bool Equals(ICouchViewDefinition other)
         {
             return 
                 Name != null && 
