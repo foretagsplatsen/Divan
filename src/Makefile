@@ -81,7 +81,12 @@ FILES =  \
 	CouchViewResult.cs \
 	CouchViewResultStream.cs \
 	ICanJson.cs \
+	ICouchDatabase.cs \
 	ICouchDocument.cs \
+	ICouchRequest.cs \
+	ICouchServer.cs \
+	ICouchViewDefinition.cs \
+	ICouchViewDefinitionBase.cs \
 	IReconcilingDocument.cs \
 	ISelfContained.cs \
 	Linq/CouchLinqQuery.cs \
