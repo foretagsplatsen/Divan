@@ -47,7 +47,7 @@ namespace Divan
 
         #region ICouchDocument Members
 
-        public void WriteJson(JsonWriter writer)
+        public virtual void WriteJson(JsonWriter writer)
         {
             foreach (JToken token in Obj.Children())
             {
