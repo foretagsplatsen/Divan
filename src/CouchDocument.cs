@@ -10,31 +10,6 @@ using System.Reflection;
 namespace Divan
 {
     /// <summary>
-    /// Conflict reconcilliation strategies supported by Divan
-    /// </summary>
-    public enum ReconcileStrategy
-    {
-        /// <summary>
-        /// If a conflict occurs, the exception is propagated to the application
-        /// </summary>
-        None,
-        /// <summary>
-        /// The document will retain additional state information to identify which fields
-        /// have been modified since the last save, and use that to merge with the database
-        /// copy. The merge will be performed automatically, by reflecting over all public
-        /// and non-public fields and properties of the document.
-        /// </summary>
-        AutoMergeFields,
-        /// <summary>
-        /// The document will retain additional state information to identify which fields
-        /// have been modified since the last save, and use that to merge with the database
-        /// copy. The merge will be delegated to the document instance, by invoking the 
-        /// Reconcile() method with the database document.
-        /// </summary>
-        ManualMergeFields
-    }
-
-    /// <summary>
     /// This is a base class that domain objects can inherit in order to get 
     /// Id and Rev instance variables. You can also implement ICouchDocument yourself if
     /// you are not free to pick this class as your base. Some static methods to read and write
@@ -44,7 +19,7 @@ namespace Divan
     /// 
     /// See sample subclasses to understand how to use this class.
     /// </summary>
-    public class CouchDocument : ICouchDocument, IReconcilingDocument
+    public class CouchDocument : IReconcilingDocument
     {
         private ReconcileStrategy reconcileBy = ReconcileStrategy.None;
         private CouchDocument sourceData;
@@ -96,7 +71,7 @@ namespace Divan
 
             if (ReconcileBy != ReconcileStrategy.None)
             {
-                sourceData = GetType().GetConstructor(Type.EmptyTypes).Invoke(new object[0]) as CouchDocument;
+                sourceData = (CouchDocument)GetType().GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
                 
                 // set this to prevent infinite recursion
                 sourceData.ReconcileBy = ReconcileStrategy.None;
@@ -106,7 +81,7 @@ namespace Divan
 
         #endregion
 
-        private bool EqualFields(object v1, object v2)
+        private static bool EqualFields(object v1, object v2)
         {
             if (v1 == null)
                 return v2 == null;
@@ -159,7 +134,7 @@ namespace Divan
 
         protected virtual CouchDocument Clone()
         {
-            var doc = GetType().GetConstructor(Type.EmptyTypes).Invoke(new object[0]) as CouchDocument;
+            var doc = (CouchDocument) GetType().GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
             doc.Rev = Rev;
             doc.Id = Id;
 
@@ -198,7 +173,7 @@ namespace Divan
             Rev = databaseCopy.Rev;
         }
 
-        public virtual IReconcilingDocument GetDatabaseCopy(CouchDatabase db)
+        public virtual IReconcilingDocument GetDatabaseCopy(ICouchDatabase db)
         {
             return db.GetDocument<CouchDocument>(Id);
         }

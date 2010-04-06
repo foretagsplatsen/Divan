@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Divan
 {
     public class CouchRecord<T> where T: ICanJson, new()
     {
-        private JObject record;
+        private readonly JObject record;
 
         public CouchRecord(JObject source)
         {
@@ -27,13 +23,17 @@ namespace Divan
         {
             get
             {
-                JToken val = null;
+                JToken val;
                 if (!record.TryGetValue("doc", out val))
+                {
                     return default(T);
+                }
 
                 var doc = val as JObject;
                 if (doc == null)
+                {
                     return default(T);
+                }
 
                 var ret = new T();
                 ret.ReadJson(doc);

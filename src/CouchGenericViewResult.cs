@@ -17,7 +17,7 @@ namespace Divan
         /// </summary>
         /// <typeparam name="T">Type of value.</typeparam>
         /// <returns>All found values.</returns>
-        public IList<T> Values<T>() where T : new()
+        public IEnumerable<T> Values<T>() where T : new()
         {
             var list = new List<T>();
             foreach (JToken row in Rows())
@@ -32,7 +32,7 @@ namespace Divan
         /// </summary>
         /// <typeparam name="T">Type of value.</typeparam>
         /// <returns>All found values.</returns>
-        public IList<T> ValueDocuments<T>() where T : ICanJson, new()
+        public IEnumerable<T> ValueDocuments<T>() where T : ICanJson, new()
         {
             return RetrieveDocuments<T>("value");
         }
@@ -42,14 +42,14 @@ namespace Divan
         /// </summary>
         /// <typeparam name="T">Type of value.</typeparam>
         /// <returns>All found documents.</returns>
-        public IList<T> ValueDocumentsWithIds<T>() where T : ICouchDocument, new()
+        public IEnumerable<T> ValueDocumentsWithIds<T>() where T : ICouchDocument, new()
         {
             return RetrieveDocumentsWithIds<T>("value");
         }
 		
-        public IList<T> ValueDocuments<T>(Func<T> ctor)
+        public IEnumerable<T> ValueDocuments<T>(Func<T> ctor)
         {
-            return RetrieveArbitraryDocuments<T>("value", ctor);
+            return RetrieveArbitraryDocuments("value", ctor);
         }
 
         /// <summary>
@@ -64,12 +64,12 @@ namespace Divan
 
         public T ArbitraryValueDocument<T>(Func<T> ctor)
         {
-            return RetrieveArbitraryDocument<T>("value", ctor);
+            return RetrieveArbitraryDocument("value", ctor);
         }
 
-        public IList<T> ArbitraryValueDocuments<T>(Func<T> ctor)
+        public IEnumerable<T> ArbitraryValueDocuments<T>(Func<T> ctor)
         {
-            return RetrieveArbitraryDocuments<T>("value", ctor);
+            return RetrieveArbitraryDocuments("value", ctor);
         }
 
         /// <summary>
@@ -77,21 +77,21 @@ namespace Divan
         /// </summary>
         /// <typeparam name="T">Type of documents.</typeparam>
         /// <returns>List of documents found.</returns>
-        public IList<T> Documents<T>() where T : ICouchDocument, new()
+        public IEnumerable<T> Documents<T>() where T : ICouchDocument, new()
         {
             return RetrieveDocuments<T>("doc");
         }
 
-        public IList<T> ArbitraryDocuments<T>(Func<T> ctor)
+        public IEnumerable<T> ArbitraryDocuments<T>(Func<T> ctor)
         {
-            return RetrieveArbitraryDocuments<T>("doc", ctor);
+            return RetrieveArbitraryDocuments("doc", ctor);
         }
 
         /// <summary>
         /// Return all found docs as CouchJsonDocuments.
         /// </summary>
         /// <returns>List of documents found.</returns>
-        public IList<CouchJsonDocument> Documents()
+        public IEnumerable<CouchJsonDocument> Documents()
         {
             return RetrieveDocuments<CouchJsonDocument>("doc");
         }
@@ -108,10 +108,10 @@ namespace Divan
 
         public T ArbitraryDocument<T>(Func<T> ctor)
         {
-            return RetrieveArbitraryDocument<T>("doc", ctor);
+            return RetrieveArbitraryDocument("doc", ctor);
         }
 
-        protected virtual IList<T> RetrieveDocuments<T>(string docOrValue) where T : ICanJson, new()
+        protected virtual IEnumerable<T> RetrieveDocuments<T>(string docOrValue) where T : ICanJson, new()
         {
             var list = new List<T>();
             foreach (JToken row in Rows())
@@ -126,7 +126,7 @@ namespace Divan
             return list;
         }
 		
-		protected virtual IList<T> RetrieveDocumentsWithIds<T>(string docOrValue) where T : ICouchDocument, new()
+		protected virtual IEnumerable<T> RetrieveDocumentsWithIds<T>(string docOrValue) where T : ICouchDocument, new()
         {
             var list = new List<T>();
 			var found = new Dictionary<string, T>();
@@ -156,7 +156,7 @@ namespace Divan
             }
             return default(T);
         }
-        protected virtual IList<T> RetrieveArbitraryDocuments<T>(string docOrValue, Func<T> ctor)
+        protected virtual IEnumerable<T> RetrieveArbitraryDocuments<T>(string docOrValue, Func<T> ctor)
         {
             var list = new List<T>();
             foreach (JToken row in Rows())
@@ -179,12 +179,12 @@ namespace Divan
             return default(T);
         }
 
-        public IList<CouchQueryDocument> RowDocuments()
+        public IEnumerable<CouchQueryDocument> RowDocuments()
         {
             return RowDocuments<CouchQueryDocument>();
         }
 
-        public IList<T> RowDocuments<T>() where T : ICanJson, new()
+        public IEnumerable<T> RowDocuments<T>() where T : ICanJson, new()
         {
             var list = new List<T>();
             foreach (JObject row in Rows())
@@ -196,7 +196,7 @@ namespace Divan
             return list;
         }
 
-        public IList<T> ArbitraryRowDocuments<T>(Func<T> ctor)
+        public IEnumerable<T> ArbitraryRowDocuments<T>(Func<T> ctor)
         {
             var list = new List<T>();
             foreach (JObject row in Rows())

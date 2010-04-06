@@ -10,7 +10,7 @@ namespace Divan
     /// A definition of a CouchDB view with a name, a map and a reduce function and a reference to the
     /// owning CouchDesignDocument. 
     /// </summary>
-    public class CouchViewDefinition : CouchViewDefinitionBase, IEquatable<CouchViewDefinition>
+    public class CouchViewDefinition : CouchViewDefinitionBase, IEquatable<ICouchViewDefinition>, Divan.ICouchViewDefinition
     {
         /// <summary>
         /// Basic constructor used in ReadJson() etc.
@@ -76,27 +76,27 @@ namespace Divan
         /// <summary>
         /// Utility methods to make queries shorter.
         /// </summary>
-        public IList<T> Key<T>(object key) where T : ICouchDocument, new()
+        public IEnumerable<T> Key<T>(object key) where T : ICouchDocument, new()
         {
             return Query().Key(key).IncludeDocuments().GetResult().Documents<T>();
         }
 
-        public IList<T> KeyStartEnd<T>(object start, object end) where T : ICouchDocument, new()
+        public IEnumerable<T> KeyStartEnd<T>(object start, object end) where T : ICouchDocument, new()
         {
             return Query().StartKey(start).EndKey(end).IncludeDocuments().GetResult().Documents<T>();
         }
 
-        public IList<T> KeyStartEnd<T>(object[] start, object[] end) where T : ICouchDocument, new()
+        public IEnumerable<T> KeyStartEnd<T>(object[] start, object[] end) where T : ICouchDocument, new()
         {
             return Query().StartKey(start).EndKey(end).IncludeDocuments().GetResult().Documents<T>();
         }
 
-        public IList<T> All<T>() where T : ICouchDocument, new()
+        public IEnumerable<T> All<T>() where T : ICouchDocument, new()
         {
             return Query().IncludeDocuments().GetResult().Documents<T>();
         }
 
-        public bool Equals(CouchViewDefinition other)
+        public bool Equals(ICouchViewDefinition other)
         {
             return 
                 Name != null && 

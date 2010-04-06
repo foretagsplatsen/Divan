@@ -1,6 +1,6 @@
 namespace Divan
 {
-    public abstract class CouchViewDefinitionBase 
+    public abstract class CouchViewDefinitionBase : Divan.ICouchViewDefinitionBase 
     {
         public CouchDesignDocument Doc { get; set; }
         public string Name { get; set; }
@@ -11,12 +11,12 @@ namespace Divan
             Name = name;
         }
 
-        public CouchDatabase Db()
+        public ICouchDatabase Db()
         {
             return Doc.Owner;
         }
 
-        public CouchRequest Request()
+        public ICouchRequest Request()
         {
             return Db().Request(Path());
         }

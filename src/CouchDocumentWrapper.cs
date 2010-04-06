@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 using Newtonsoft.Json;
-using System.IO;
 using Newtonsoft.Json.Linq;
 
 namespace Divan
@@ -14,31 +10,36 @@ namespace Divan
     {
         class MemberWrapper
         {
-            public FieldInfo field;
-            public PropertyInfo property;
+            public FieldInfo Field;
+            public PropertyInfo Property;
 
             public void SetValue(object instance, object value)
             {
-                if (field == null)
-                    property.SetValue(instance, value, null);
+                if (Field == null)
+                {
+                    Property.SetValue(instance, value, null);
+                }
                 else
-                    field.SetValue(instance, value);
+                {
+                    Field.SetValue(instance, value);
+                }
             }
 
             public object GetValue(object instance)
             {
-                if (field == null)
-                    return property.GetValue(instance, null);
+                if (Field == null)
+                {
+                    return Property.GetValue(instance, null);
+                }
 
-                return field.GetValue(instance);
+                return Field.GetValue(instance);
             }
         }
 
-        private Func<T> ctor;
         private T instance;
-        private MemberWrapper rev;
-        private MemberWrapper id;
-        private JsonSerializer serializer = new JsonSerializer();
+        private readonly MemberWrapper rev;
+        private readonly MemberWrapper id;
+        private readonly JsonSerializer serializer = new JsonSerializer();
 
         protected CouchDocumentWrapper()
         {
@@ -48,7 +49,6 @@ namespace Divan
 
         public CouchDocumentWrapper(Func<T> ctor): this()
         {
-            this.ctor = ctor;
             instance = ctor();
         }
 
@@ -60,9 +60,9 @@ namespace Divan
         /// <summary>
         /// Gets a function that accesses the value of a property or field
         /// </summary>
-        /// <param name="p">The p.</param>
+        /// <param name="name">The name.</param>
         /// <returns></returns>
-        private MemberWrapper GetFunc(string name)
+        private static MemberWrapper GetFunc(string name)
         {
             var members = typeof(T).GetMember(name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             if (members == null || members.Length == 0)
@@ -75,10 +75,10 @@ namespace Divan
                 if (field == null)
                     return null;
 
-                return new MemberWrapper() { field = field };
+                return new MemberWrapper { Field = field };
             }
 
-            return new MemberWrapper() { property = prop };
+            return new MemberWrapper { Property = prop };
         }
 
         #region ICouchDocument Members
@@ -125,13 +125,13 @@ namespace Divan
 
         #region ICanJson Members
 
-        public void WriteJson(Newtonsoft.Json.JsonWriter writer)
+        public void WriteJson(JsonWriter writer)
         {
             if (Id == null)
             {
                 var tokenWriter = new JTokenWriter();
                 serializer.Serialize(tokenWriter, instance);
-                var obj = tokenWriter.Token as JObject;
+                var obj = (JObject)tokenWriter.Token;
                 obj.Remove("_rev");
                 obj.Remove("_id");                
                 obj.WriteTo(writer);
@@ -139,7 +139,7 @@ namespace Divan
                 serializer.Serialize(writer, instance);
         }
 
-        public void ReadJson(Newtonsoft.Json.Linq.JObject obj)
+        public void ReadJson(JObject obj)
         {
             instance = (T)serializer.Deserialize(new JTokenReader(obj), typeof(T));
             id.SetValue(instance, obj["_id"].Value<string>());

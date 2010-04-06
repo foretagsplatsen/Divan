@@ -16,10 +16,10 @@ namespace Divan
     {
         class RecordEnumerator : IEnumerator<CouchRecord<T>>
         {
-            JsonReader reader;
+            readonly JsonReader reader;
             CouchRecord<T> current;
             bool hasMore = true;
-            CouchViewResultStream<T> owner;
+            readonly CouchViewResultStream<T> owner;
 
             public RecordEnumerator(JsonReader reader, CouchViewResultStream<T> owner)
             {
@@ -59,7 +59,7 @@ namespace Divan
             }
         }
 
-        JsonReader reader;
+        readonly JsonReader reader;
         bool hasMore = true;
 
         public CouchViewResultStream(JsonReader reader)

@@ -76,7 +76,7 @@ namespace Divan.Lucene
         /// Return all hits with all meta info. A hit can be told to retrieve its CouchDocument, 
         /// if you used IncludeDocuments() in the query.
         /// </summary>
-        public virtual IList<CouchLuceneHit> Hits()
+        public virtual IEnumerable<CouchLuceneHit> Hits()
         {
             var hits = new List<CouchLuceneHit>();
             foreach (JObject row in Rows())
@@ -90,15 +90,16 @@ namespace Divan.Lucene
 		/// Extract documents from hits or perform a bulk retrieval of the documents
 		/// that was returned by this query. Note that this may be a subset of TotalCount().
 		/// </summary>
-		public virtual IList<T> GetDocuments<T>() where T : ICouchDocument, new()
+		public virtual IEnumerable<T> GetDocuments<T>() where T : ICouchDocument, new()
         {
 		    var docs = new List<T>();
 
 		    var hits = Hits();
-            if (hits.Count == 0)
+            if (!hits.Any())
             {
                 return docs;
             }
+
 		    var firstHit = hits.First();
 		    var db = view.Db();
             if (firstHit.HasDocument())

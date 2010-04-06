@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -60,11 +60,9 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Autoreconcile\CouchAutoreconcileTest.cs" />
     <Compile Include="CouchTest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Linq\CouchLinqTest.cs" />
     <Compile Include="Lucene\CouchLuceneTest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -76,7 +74,7 @@
       <Name>Divan</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -100,4 +98,7 @@
     </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
 </Project>

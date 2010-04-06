@@ -52,10 +52,11 @@ namespace Divan
                     // if we don't get a valid {error:, reason:}, don't worry about it
                     try
                     {
-                        var error = JObject.ReadFrom(stream);
+                        var error = JToken.ReadFrom(stream);
                         msg += String.Format(CultureInfo.InvariantCulture, " error: {0}, reason: {1}", error.Value<string>("error"), error.Value<string>("reason"));
                     }
-                    catch (Exception) { }
+                    catch
+                    { }
 
                     // Create any specific exceptions we care to use
                     if (code == HttpStatusCode.Conflict)
