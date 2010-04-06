@@ -798,6 +798,19 @@ namespace Divan
             return Request(documentId).Head().Send().Etag() != rev;
         }
 
+        public bool HasDocument(string documentId, string revision)
+        {
+            try
+            {
+                Request(documentId).QueryOptions(new Dictionary<string, string> {{"Rev", revision}}).Head().Send();
+                return true;
+            }
+            catch (WebException)
+            {
+                return false;
+            }
+        }
+
         public bool HasDocument(string documentId)
         {
             try
