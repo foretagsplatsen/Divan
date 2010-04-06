@@ -67,7 +67,7 @@ namespace Divan
         /// </summary>
         public CouchQuery Key(object value)
         {
-            Options["key"] = JToken.FromObject(value).ToString();
+            Options["key"] = value == null ? "null" : JToken.FromObject(value).ToString();
             return this;
         }
 
@@ -257,7 +257,16 @@ namespace Divan
                 }
             }
 
-            JObject json = req.Parse();
+            JObject json;
+            try
+            {
+                json = req.Parse();
+            }
+            catch(WebException e)
+            {
+                throw CouchException.Create("Query failed", e);
+            }
+            
             if (json != null) // ETag did not match, view has changed
             {
                 Result.Result(json);

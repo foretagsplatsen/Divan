@@ -21,15 +21,17 @@ namespace Divan
         private Stream postStream;
         private readonly CouchServer server;
         private string etag, etagToCheck;
-        public Dictionary<string, string> headers = new Dictionary<string, string>();
+        private Dictionary<string, string> headers = new Dictionary<string, string>();
 
         // Query options
-        public string method = "GET"; // PUT, DELETE, POST, HEAD
-        public string mimeType;
-        public string path;
-        public string query;
+        private string method = "GET"; // PUT, DELETE, POST, HEAD
+        private string mimeType;
+        private string path;
+        private string query;
 
-        public JToken result;
+        private JToken result;
+
+        #region Contructors
 
         public CouchRequest(CouchServer server)
         {
@@ -42,6 +44,13 @@ namespace Divan
             this.db = db;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Sets the e-tag value
+        /// </summary>
+        /// <param name="value">The e-tag value</param>
+        /// <returns>A CouchRequest with the new e-tag value</returns>
         public CouchRequest Etag(string value)
         {
             etagToCheck = value;
@@ -49,15 +58,25 @@ namespace Divan
             return this;
         }
 
+        /// <summary>
+        /// Sets the absolute path in the query
+        /// </summary>
+        /// <param name="name">The absolute path</param>
+        /// <returns>A <see cref="CouchRequest"/> with the new path set.</returns>
         public CouchRequest Path(string name)
         {
             path = name;
             return this;
         }
 
-        public CouchRequest Query(string name)
+        /// <summary>
+        /// Sets the raw query information in the request. Don't forget to start with a question mark (?).
+        /// </summary>
+        /// <param name="value">The raw query</param>
+        /// <returns>A <see cref="CouchRequest"/> with the new query set.</returns>
+        public CouchRequest Query(string value)
         {
-            query = name;
+            query = value;
             return this;
         }
 
@@ -251,8 +270,6 @@ namespace Divan
 
         public T Parse<T>() where T : JToken
         {
-            //var timer = new Stopwatch();
-            //timer.Start();
             using (WebResponse response = GetResponse())
             {
                 using (Stream stream = response.GetResponseStream())
@@ -274,8 +291,7 @@ namespace Divan
                     }
                 }
             }
-            //timer.Stop();
-            //Trace.WriteLine("Time for Couch HTTP & JSON PARSE: " + timer.ElapsedMilliseconds);
+
             return (T)result;
         }
 
