@@ -464,7 +464,7 @@ namespace Divan
         {
             try
             {
-                JObject result = Request().Data(CouchDocument.WriteJson(document)).Post().Check("Failed to create document").Result();
+                JObject result = Request().Data(CouchDocument.WriteJson(document)).PostJson().Check("Failed to create document").Result();
                 document.Id = result["id"].Value<string>();
                 document.Rev = result["rev"].Value<string>();
                 return document;
