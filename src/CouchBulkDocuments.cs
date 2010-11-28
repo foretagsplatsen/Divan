@@ -31,9 +31,16 @@ namespace Divan
             writer.WriteStartArray();
             foreach (ICouchDocument doc in Docs)
             {
-                writer.WriteStartObject();
-                doc.WriteJson(writer);
-                writer.WriteEndObject();
+                if (doc is ISelfContained)
+                {
+                    doc.WriteJson(writer);
+                }
+                else
+                {
+                    writer.WriteStartObject();
+                    doc.WriteJson(writer);
+                    writer.WriteEndObject();
+                }
             }
             writer.WriteEndArray();
         }
