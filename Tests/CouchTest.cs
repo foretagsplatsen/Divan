@@ -230,6 +230,21 @@ namespace Divan.Test
         }
 
         [Test]
+        public void ShouldSaveArbitraryDocuments()
+        {
+            var littleCar1 = new LittleCar { docType = "car", Make = "Make1" };
+            var littleCar2 = new LittleCar { docType = "car", Make = "Make2" };
+            var docs = new List<LittleCar> { littleCar1, littleCar2 };
+
+            db.SaveArbitraryDocuments(docs, true);
+            var documentIds = db.GetAllDocuments().Select(doc => doc.Id);
+            var loadedCars = db.GetArbitraryDocuments(documentIds, () => new LittleCar());
+            
+            Assert.AreEqual(littleCar1.Make, loadedCars.ElementAt(0).Make);
+            Assert.AreEqual(littleCar2.Make, loadedCars.ElementAt(1).Make);
+        }
+
+        [Test]
         public void ShouldLoadArbitraryDocument()
         {
             var firstCar = new LittleCar() { docType = "car", Make = "Yugo", Model = "Hell if i know" };
