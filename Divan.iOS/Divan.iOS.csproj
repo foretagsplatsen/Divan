@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9334D823-3D5F-4C1D-A40B-53C57939C310}</ProjectGuid>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Divan.iOS</RootNamespace>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>Divan.iOS</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;XAMARIN</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="monotouch" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Components\json.net-4.5.11\lib\ios\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="..\src\CouchBulkDeleteDocuments.cs">
+      <Link>CouchBulkDeleteDocuments.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchBulkDocuments.cs">
+      <Link>CouchBulkDocuments.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchBulkKeys.cs">
+      <Link>CouchBulkKeys.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchConflictException.cs">
+      <Link>CouchConflictException.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchDatabase.cs">
+      <Link>CouchDatabase.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchDesignDocument.cs">
+      <Link>CouchDesignDocument.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchDocument.cs">
+      <Link>CouchDocument.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchDocumentWrapper.cs">
+      <Link>CouchDocumentWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchException.cs">
+      <Link>CouchException.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchGenericViewResult.cs">
+      <Link>CouchGenericViewResult.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchJsonDocument.cs">
+      <Link>CouchJsonDocument.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchNotFoundException.cs">
+      <Link>CouchNotFoundException.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchPermanentViewResult.cs">
+      <Link>CouchPermanentViewResult.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchQuery.cs">
+      <Link>CouchQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchQueryDocument.cs">
+      <Link>CouchQueryDocument.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchRecord.cs">
+      <Link>CouchRecord.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchRequest.cs">
+      <Link>CouchRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchServer.cs">
+      <Link>CouchServer.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchViewDefinition.cs">
+      <Link>CouchViewDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchViewDefinitionBase.cs">
+      <Link>CouchViewDefinitionBase.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchViewResult.cs">
+      <Link>CouchViewResult.cs</Link>
+    </Compile>
+    <Compile Include="..\src\CouchViewResultStream.cs">
+      <Link>CouchViewResultStream.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ICanJson.cs">
+      <Link>ICanJson.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ICouchDatabase.cs">
+      <Link>ICouchDatabase.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ICouchDocument.cs">
+      <Link>ICouchDocument.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ICouchRequest.cs">
+      <Link>ICouchRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ICouchServer.cs">
+      <Link>ICouchServer.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ICouchViewDefinition.cs">
+      <Link>ICouchViewDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ICouchViewDefinitionBase.cs">
+      <Link>ICouchViewDefinitionBase.cs</Link>
+    </Compile>
+    <Compile Include="..\src\IReconcilingDocument.cs">
+      <Link>IReconcilingDocument.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ISelfContained.cs">
+      <Link>ISelfContained.cs</Link>
+    </Compile>
+    <Compile Include="..\src\ReconcileStrategy.cs">
+      <Link>ReconcileStrategy.cs</Link>
+    </Compile>
+    <Compile Include="..\src\Linq\CouchLinqQuery.cs">
+      <Link>Linq\CouchLinqQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\src\Linq\CouchQueryProvider.cs">
+      <Link>Linq\CouchQueryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\src\Linq\ExpressionVisitor.cs">
+      <Link>Linq\ExpressionVisitor.cs</Link>
+    </Compile>
+    <Compile Include="..\src\Linq\TypeSystem.cs">
+      <Link>Linq\TypeSystem.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="json.net">
+      <InstallationInProgress>False</InstallationInProgress>
+      <Version>4.5.11</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+  </ItemGroup>
+</Project>
