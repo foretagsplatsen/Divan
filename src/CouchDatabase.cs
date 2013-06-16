@@ -4,7 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System;
+#if XAMARIN
+#else
 using Divan.Lucene;
+#endif
 using Newtonsoft.Json.Linq;
 using System.IO;
 
@@ -669,11 +672,14 @@ namespace Divan
             return new CouchQuery(view);
         }
 
+		#if XAMARIN
+		#else
 
         public CouchLuceneQuery Query(CouchLuceneViewDefinition view)
         {
             return new CouchLuceneQuery(view);
         }
+		#endif
 
         public CouchQuery QueryAllDocuments()
         {
