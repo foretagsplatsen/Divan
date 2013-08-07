@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+#if XAMARIN
+#else
 using Divan.Lucene;
+#endif
 using Newtonsoft.Json.Linq;
 
 namespace Divan
@@ -48,7 +51,10 @@ namespace Divan
         ICouchViewDefinition NewTempView(string designDoc, string viewName, string mapText);
         CouchQuery Query(ICouchViewDefinition view);
         CouchQuery Query(string designName, string viewName);
-        CouchLuceneQuery Query(CouchLuceneViewDefinition view);
+		#if XAMARIN
+		#else
+		CouchLuceneQuery Query(CouchLuceneViewDefinition view);
+		#endif
         CouchQuery QueryAllDocuments();
         WebResponse ReadAttachment(string documentId, string attachmentName);
         WebResponse ReadAttachment(ICouchDocument document, string attachmentName);

@@ -5,7 +5,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Divan", "src\Divan.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trivial", "samples\Trivial\Trivial.csproj", "{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Divan.Test", "Tests\Divan.Test.csproj", "{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Divan.iOS", "Divan.iOS\Divan.iOS.csproj", "{9334D823-3D5F-4C1D-A40B-53C57939C310}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Divan.Robot", "Divan.Android\Divan.Robot.csproj", "{E48E0CCB-5298-4A72-B85E-868C3841701A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,21 +15,25 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09FB3192-8F25-4112-A8BB-93C83F6C3DDD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{37AC0B66-5340-4B81-BC62-3EE80233A011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37AC0B66-5340-4B81-BC62-3EE80233A011}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37AC0B66-5340-4B81-BC62-3EE80233A011}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37AC0B66-5340-4B81-BC62-3EE80233A011}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9334D823-3D5F-4C1D-A40B-53C57939C310}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9334D823-3D5F-4C1D-A40B-53C57939C310}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9334D823-3D5F-4C1D-A40B-53C57939C310}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9334D823-3D5F-4C1D-A40B-53C57939C310}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDCC7924-F227-46DC-B2E6-2BBE06B84AF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E48E0CCB-5298-4A72-B85E-868C3841701A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E48E0CCB-5298-4A72-B85E-868C3841701A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E48E0CCB-5298-4A72-B85E-868C3841701A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E48E0CCB-5298-4A72-B85E-868C3841701A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = src\Divan.csproj
+		StartupItem = Divan.iOS\Divan.iOS.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = None

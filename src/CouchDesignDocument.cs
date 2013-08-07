@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if XAMARIN
+#else
 using Divan.Lucene;
+#endif
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,9 +17,12 @@ namespace Divan
     {
         public IList<CouchViewDefinition> Definitions = new List<CouchViewDefinition>();
         
-        // This List is only used if you also have Couchdb-Lucene installed
-        public IList<CouchLuceneViewDefinition> LuceneDefinitions = new List<CouchLuceneViewDefinition>();
-
+#if XAMARIN
+#else
+		// This List is only used if you also have Couchdb-Lucene installed
+		public IList<CouchLuceneViewDefinition> LuceneDefinitions = new List<CouchLuceneViewDefinition>();
+#endif
+      
         public string Language = "javascript";
         public ICouchDatabase Owner;
 
@@ -72,27 +78,32 @@ namespace Divan
             Definitions.Remove(view);
         }
 
-        /// <summary>
-        /// Add Lucene fulltext view.
-        /// </summary>
-        /// <param name="name">Name of view</param>
-        /// <param name="index">Index function</param>
-        /// <returns></returns>
-        public CouchLuceneViewDefinition AddLuceneView(string name, string index)
-        {
-            var def = new CouchLuceneViewDefinition(name, index, this);
-            LuceneDefinitions.Add(def);
-            return def;
-        }
 
-        /// <summary>
-        /// Add a Lucene view with a predefined index function that will index EVERYTHING.
-        /// </summary>
-        /// <returns></returns>
-        public CouchLuceneViewDefinition AddLuceneViewIndexEverything(string name)
-        {
-            return AddLuceneView(name,
-                                 @"function(doc) {
+#if XAMARIN
+
+#else
+		
+		/// <summary>
+		/// Add Lucene fulltext view.
+		/// </summary>
+		/// <param name="name">Name of view</param>
+		/// <param name="index">Index function</param>
+		/// <returns></returns>
+		public CouchLuceneViewDefinition AddLuceneView(string name, string index)
+		{
+			var def = new CouchLuceneViewDefinition(name, index, this);
+			LuceneDefinitions.Add(def);
+			return def;
+		}
+
+		/// <summary>
+		/// Add a Lucene view with a predefined index function that will index EVERYTHING.
+		/// </summary>
+		/// <returns></returns>
+		public CouchLuceneViewDefinition AddLuceneViewIndexEverything(string name)
+		{
+			return AddLuceneView(name,
+			                     @"function(doc) {
                                     var ret = new Document();
 
                                     function idx(obj) {
@@ -117,25 +128,26 @@ namespace Divan
                                         ret.attachment(""attachment"", i);
                                     }
                                     }}");
-        }
+		}
 
-        // All these three methods duplicated for Lucene views, perhaps we should hold them all in one List?
-        public void RemoveLuceneViewNamed(string viewName)
-        {
-            RemoveLuceneView(FindLuceneView(viewName));
-        }
+		// All these three methods duplicated for Lucene views, perhaps we should hold them all in one List?
+		public void RemoveLuceneViewNamed(string viewName)
+		{
+			RemoveLuceneView(FindLuceneView(viewName));
+		}
 
-        private CouchLuceneViewDefinition FindLuceneView(string name)
-        {
-            return LuceneDefinitions.Where(x => x.Name == name).First();
-        }
+		private CouchLuceneViewDefinition FindLuceneView(string name)
+		{
+			return LuceneDefinitions.Where(x => x.Name == name).First();
+		}
 
-        public void RemoveLuceneView(CouchLuceneViewDefinition view)
-        {
-            view.Doc = null;
-            LuceneDefinitions.Remove(view);
-        }
+		public void RemoveLuceneView(CouchLuceneViewDefinition view)
+		{
+			view.Doc = null;
+			LuceneDefinitions.Remove(view);
+		}
 
+#endif
         /// <summary>
         /// If this design document is missing in the database,
         /// or if it is different - then we save it overwriting the one in the db.
@@ -167,18 +179,21 @@ namespace Divan
                 definition.WriteJson(writer);
             }
             writer.WriteEndObject();
-            
-            // If we have Lucene definitions we write them too
-            if (LuceneDefinitions.Count > 0)
-            {
-                writer.WritePropertyName("fulltext");
-                writer.WriteStartObject();
-                foreach (var definition in LuceneDefinitions)
-                {
-                    definition.WriteJson(writer);
-                }
-                writer.WriteEndObject();
-            }
+#if XAMARIN
+
+#else
+			// If we have Lucene definitions we write them too
+			if (LuceneDefinitions.Count > 0)
+			{
+				writer.WritePropertyName("fulltext");
+				writer.WriteStartObject();
+				foreach (var definition in LuceneDefinitions)
+				{
+					definition.WriteJson(writer);
+				}
+				writer.WriteEndObject();
+			}
+#endif
         }
 
         public override void ReadJson(JObject obj)
@@ -196,6 +211,10 @@ namespace Divan
                 Definitions.Add(v);
             }
 
+#if XAMARIN
+
+#else
+
             var fulltext = (JObject)obj["fulltext"];
             // If we have Lucene definitions we read them too
             if (fulltext != null)
@@ -207,6 +226,7 @@ namespace Divan
                     LuceneDefinitions.Add(v);
                 }
             }
+#endif
         }
 
         public bool Equals(CouchDesignDocument other)
