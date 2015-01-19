@@ -61,11 +61,11 @@ namespace Divan
                     // Create any specific exceptions we care to use
                     if (code == HttpStatusCode.Conflict)
                     {
-                        return new CouchConflictException(msg, e);
+                        return new CouchConflictException(msg, e, code);
                     }
                     if (code == HttpStatusCode.NotFound)
                     {
-                        return new CouchNotFoundException(msg, e);
+                        return new CouchNotFoundException(msg, e, code);
                     }
                 }
             }
