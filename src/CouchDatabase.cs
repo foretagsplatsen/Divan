@@ -503,6 +503,11 @@ namespace Divan
                 int index = 0;
                 foreach (var document in documents)
                 {
+                    JObject obj = (JObject)result[index];
+                    JToken token;
+                    if (obj.TryGetValue("error", out token)) {
+                        throw new CouchConflictException("Error saving document: " + token.Value<string>(), new CouchException());
+                    }
                     document.Id = (result[index])["id"].Value<string>();
                     document.Rev = (result[index])["rev"].Value<string>();
                     ++index;
