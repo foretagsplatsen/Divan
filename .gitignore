@@ -13,6 +13,8 @@ _ReSharper.*
 *.usertasks
 *.pidb
 *.config
+!packages.config
 config.log
 TestResult.xml
 test-results
+packages/

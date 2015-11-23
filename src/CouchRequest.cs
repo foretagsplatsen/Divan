@@ -97,7 +97,14 @@ namespace Divan
                 }
                 sb.Append(HttpUtility.UrlEncode(q.Key));
                 sb.Append("=");
-                sb.Append(HttpUtility.UrlEncode(q.Value));
+                if (q.Key == "key")
+                {
+                    sb.Append(HttpUtility.UrlEncode(string.Format("\"{0}\"", q.Value)));
+                }
+                else
+                {
+                    sb.Append(HttpUtility.UrlEncode(q.Value));
+                }
             }
 
             return Query(sb.ToString());
