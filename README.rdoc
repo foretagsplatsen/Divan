@@ -28,7 +28,7 @@ in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 
 == Getting started
 1. Install git of course... and clone Divan. The "official" repository is the one from Foretagsplatsen and we only have one branch there so far, and no tags yet:
-	git clone git://github.com/foretagsplatsen/Divan.git
+	git clone git://github.com/vchyzhevskyi/Divan.git
 3. If you are on VS2008 or Monodevelop then I suggest double clicking the Divan.sln. Hopefully the rest works out fine.
 4. If you are on Mono "CLI style" then the configure/Makefile should work as expected, it is "vanilla generated" from Monodevelop. Then you can also run the basic unit tests, but note that these rely on a couchdb running locally:
 	nunit-console2 --labels -run=Divan.Test.CouchTest Tests/bin/Debug/Divan.Test.dll
@@ -50,8 +50,8 @@ There is also one sample project "Trivial" showing basic usage. More samples wit
 == Dependencies
 The only dependencies and their tested versions are:
 
-* Newtonsoft.JSON (3.5 Beta 4), MIT-licensed fast library for JSON, see: http://json.codeplex.com
-* NUnit (2.4.8). Unit testing framework, see: http://www.nunit.org
+* Newtonsoft.JSON (7.0.1), MIT-licensed fast library for JSON, see: https://github.com/JamesNK/Newtonsoft.Json
+* NUnit (3.0.0). Unit testing framework, see: http://www.nunit.org
 * CouchDB (0.9.1, 0.9). Running on a server somewhere, see: http://www.couchdb.org
 * If you want to use the Lucene parts of Divan, you also need CouchDB-Lucene (0.4) installed on the server, see: http://github.com/rnewson/couchdb-lucene/tree/v0.4
 
