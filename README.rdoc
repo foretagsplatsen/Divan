@@ -3,9 +3,10 @@ Divan is a C# library under the MIT license for using CouchDB[http://www.couchdb
 It should be more or less API complete including bulk operations, attachments, views
 and design documents etc. It is quite fast and designed to be flexible but not bloated. 
 
-Divan has mainly been developed in-house at Foretagsplatsen[http://www.foretagsplatsen.se] and is
-being used in the new core system at Foretagsplatsen. It has unit tests (although could
-benefit from more) and at least one sample console project included.
+This repository originaly forked from Foretagsplatsen/Divan[https://github.com/foretagsplatsen/Divan]
+repo when to upgrade solution for CouchDB v1.6.1 and newest dependencies such as
+Newtonsoft.Json v7.0.0 and NUnit v3.0.0. It has unit tests (although could benefit 
+from more) and at least one sample console project included.
 
 == License
 Divan is under the MIT-license, see file LICENSE.txt.
@@ -27,16 +28,14 @@ Note that this bug has been <b>reported and fixed</b> in Mono trunk and should b
 in any mono release after 2.4.2.3 (I guess). Then we will remove that check.
 
 == Getting started
-1. Install git of course... and clone Divan. The "official" repository is the one from Foretagsplatsen and we only have one branch there so far, and no tags yet:
-	git clone git://github.com/vchyzhevskyi/Divan.git
-3. If you are on VS2008 or Monodevelop then I suggest double clicking the Divan.sln. Hopefully the rest works out fine.
+1. Install git of course... and clone Divan.
+	`git clone git://github.com/vchyzhevskyi/Divan.git`
+3. If you use older versions of Visual Studio then 2013 or Monodevelop then I suggest double clicking the Divan.sln. Hopefully the rest works out fine.
 4. If you are on Mono "CLI style" then the configure/Makefile should work as expected, it is "vanilla generated" from Monodevelop. Then you can also run the basic unit tests, but note that these rely on a couchdb running locally:
-	nunit-console2 --labels -run=Divan.Test.CouchTest Tests/bin/Debug/Divan.Test.dll
+	`nunit-console2 --labels -run=Divan.Test.CouchTest Tests/bin/Debug/Divan.Test.dll`
 5. Run the "Trivial" sample console app. You can point it at a running CouchDB server:
-
-	C:\Divan\samples\Trivial>bin\Debug\Trivial.exe 192.168.9.205 5984
-
-6. Happy coding! And ask any questions on the mailinglist.
+	`C:\Divan\samples\Trivial>bin\Debug\Trivial.exe 192.168.9.205 5984`
+6. Happy coding!
 
 == What about documentation?
 At the moment documentation is... this file! :) But there are also unit tests in the separate Tests project:
@@ -52,7 +51,7 @@ The only dependencies and their tested versions are:
 
 * Newtonsoft.JSON (7.0.1), MIT-licensed fast library for JSON, see: https://github.com/JamesNK/Newtonsoft.Json
 * NUnit (3.0.0). Unit testing framework, see: http://www.nunit.org
-* CouchDB (0.9.1, 0.9). Running on a server somewhere, see: http://www.couchdb.org
+* CouchDB (1.6.1). Running on a server somewhere, see: http://www.couchdb.org
 * If you want to use the Lucene parts of Divan, you also need CouchDB-Lucene (0.4) installed on the server, see: http://github.com/rnewson/couchdb-lucene/tree/v0.4
 
 The two needed dlls are included in the lib directory.
