@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace Divan.Test.Lucene
 {

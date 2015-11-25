@@ -6,7 +6,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace Divan.Test
 {
@@ -116,12 +115,12 @@ namespace Divan.Test
             Assert.That(doc1.Rev, Is.Not.Null);
         }
 
-        [Test, ExpectedException(typeof(CouchNotFoundException))]
+        [Test]
         public void ShouldDeleteDatabase()
         {
             db.Delete();
             Assert.That(server.HasDatabase(db.Name), Is.EqualTo(false));
-            server.DeleteDatabase(db.Name); // one more time should fail
+            Assert.Throws<CouchNotFoundException>(() => server.DeleteDatabase(db.Name)); // one more time should fail
         }
 
         [Test]
@@ -142,10 +141,10 @@ namespace Divan.Test
             Assert.That(db.HasDocument(doc2.Id), Is.False);
         }
 
-        [Test, ExpectedException(typeof(CouchException))]
+        [Test]
         public void ShouldFailCreateDatabase()
         {
-            server.CreateDatabase(db.Name); // one more time should fail
+            Assert.Throws<CouchException>(() => server.CreateDatabase(db.Name)); // one more time should fail
         }
 
         [Test]
@@ -288,16 +287,16 @@ namespace Divan.Test
             Assert.That(db.HasAttachment(cd, attachmentName), Is.False);
         }
 
-        [Test, ExpectedException(typeof(CouchConflictException))]
+        [Test]
         public void ShouldThrowConflictExceptionOnAlreadyExists()
         {
             const string doc = "{\"CPU\": \"Intel\"}";
             CouchJsonDocument doc1 = db.CreateDocument(doc);
             var doc2 = new CouchJsonDocument(doc) { Id = doc1.Id };
-            db.WriteDocument(doc2);
+            Assert.Throws<CouchConflictException>(() => db.WriteDocument(doc2));
         }
 
-        [Test, ExpectedException(typeof(CouchConflictException))]
+        [Test]
         public void ShouldThrowConflictExceptionOnStaleWrite()
         {
             const string doc = "{\"CPU\": \"Intel\"}";
@@ -306,15 +305,15 @@ namespace Divan.Test
             doc1.Obj["CPU"] = JToken.FromObject("AMD");
             db.SaveDocument(doc1);
             doc2.Obj["CPU"] = JToken.FromObject("Via");
-            db.SaveDocument(doc2);
+            Assert.Throws<CouchConflictException>(() => db.SaveDocument(doc2));
         }
 
-        [Test, ExpectedException(typeof(CouchNotFoundException))]
+        [Test]
         public void ShouldHaveExtendedExceptionMessages()
         {
             try
             {
-                db.Query("invalid", "view").GetResult();
+                Assert.Throws<CouchNotFoundException>(() => db.Query("invalid", "view").GetResult());
             }
             catch (CouchException ex)
             {
@@ -427,7 +426,7 @@ namespace Divan.Test
             Assert.That(json.Equals("[\"one\",\"two\"]"));
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void ShouldHandleStreaming()
         {
             var design = new CouchDesignDocument("test", db);
@@ -444,7 +443,7 @@ namespace Divan.Test
             try
             {
                 // this should throw an invalid operation exception
-                result.FirstOrDefault();
+                Assert.Throws<InvalidOperationException>(() => result.FirstOrDefault());
             }
             finally
             {
