@@ -97,7 +97,7 @@ namespace Divan
                 }
                 sb.Append(HttpUtility.UrlEncode(q.Key));
                 sb.Append("=");
-                if (q.Key == "key")
+                if (q.Key.Contains("key"))
                 {
                     sb.Append(HttpUtility.UrlEncode(string.Format("\"{0}\"", q.Value)));
                 }
