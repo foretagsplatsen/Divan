@@ -37,7 +37,9 @@ namespace Divan
         T GetArbitraryDocument<T>(string documentId, Func<T> ctor);
         IEnumerable<T> GetArbitraryDocuments<T>(IEnumerable<string> documentIds, Func<T> ctor);
         T GetDocument<T>(string documentId) where T : ICouchDocument, new();
+        T GetDocument<T>(string documentId, bool includeRevisionInfo) where T : ICouchDocument, new();
         CouchJsonDocument GetDocument(string documentId);
+        CouchJsonDocument GetDocument(string documentId, bool includeRevisionInfo);
         IEnumerable<CouchJsonDocument> GetDocuments(IEnumerable<string> documentIds);
         IEnumerable<T> GetDocuments<T>(IEnumerable<string> documentIds) where T : ICouchDocument, new();
         bool HasAttachment(string documentId, string attachmentName);
@@ -59,7 +61,9 @@ namespace Divan
         WebResponse ReadAttachment(string documentId, string attachmentName);
         WebResponse ReadAttachment(ICouchDocument document, string attachmentName);
         void ReadDocument(ICouchDocument document);
+        void ReadDocument(ICouchDocument document, bool includeRevisionInfo);
         JObject ReadDocument(string documentId);
+        JObject ReadDocument(string documentId, bool includeRevisionInfo);
         void ReadDocumentIfChanged(ICouchDocument document);
         string ReadDocumentString(string documentId);
         ICouchRequest Request(string path);

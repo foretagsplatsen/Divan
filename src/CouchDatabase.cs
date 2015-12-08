@@ -416,6 +416,27 @@ namespace Divan
         /// Read a couch document given an id, this method does not have enough information to do caching.
         /// </summary>
         /// <param name="documentId">Document identifier</param>
+        /// <param name="includeRevisionInfo">Include revision info</para>
+        /// <returns>Document Json as JObject</returns>
+        public JObject ReadDocument(string documentId, bool includeRevisionInfo)
+        {
+            try
+            {
+                var request = Request(documentId);
+                return includeRevisionInfo
+                    ? request.QueryOptions(new Dictionary<string, string> {{"revs_info", "true"}}).Parse()
+                    : request.Parse();
+            }
+            catch (WebException e)
+            {
+                throw CouchException.Create("Failed to read document", e);
+            }
+        }
+
+        /// <summary>
+        /// Read a couch document given an id, this method does not have enough information to do caching.
+        /// </summary>
+        /// <param name="documentId">Document identifier</param>
         /// <returns>Document Json as string</returns>
         public string ReadDocumentString(string documentId)
         {
@@ -593,7 +614,45 @@ namespace Divan
         {
             SaveArbitraryDocuments(documents, chunkCount, null, allOrNothing);
         }
-                
+
+        public T GetDocument<T>(string documentId, bool includeRevisionInfo) where T : ICouchDocument, new()
+        {
+            var doc = new T { Id = documentId };
+            try
+            {
+                ReadDocument(doc, includeRevisionInfo);
+            }
+            catch (CouchNotFoundException)
+            {
+                return default(T);
+            }
+            return doc;
+        }
+
+        public CouchJsonDocument GetDocument(string documentId)
+        {
+            try
+            {
+                try
+                {
+                    return new CouchJsonDocument(Request(documentId).Parse());
+                }
+                catch (WebException e)
+                {
+                    throw CouchException.Create("Failed to get document", e);
+                }
+            }
+            catch (CouchNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        public void ReadDocument(ICouchDocument document, bool includeRevisionInfo)
+        {
+            document.ReadJson(ReadDocument(document.Id, includeRevisionInfo));
+        }
+
         public IEnumerable<CouchJsonDocument> GetDocuments(IEnumerable<string> documentIds)
         {
             return GetDocuments<CouchJsonDocument>(documentIds);
@@ -640,13 +699,18 @@ namespace Divan
             return QueryAllDocuments().Data(CouchDocument.WriteJson(bulk)).IncludeDocuments().GetResult().ArbitraryDocuments(ctor);
         }
 
-        public CouchJsonDocument GetDocument(string documentId)
+        public CouchJsonDocument GetDocument(string documentId, bool includeRevisionInfo)
         {
+            if (!includeRevisionInfo)
+            {
+                return GetDocument(documentId);
+            }
+
             try
             {
                 try
                 {
-                    return new CouchJsonDocument(Request(documentId).Parse());
+                    return new CouchJsonDocument(Request(documentId).QueryOptions(new Dictionary<string, string>{{"revs_info", "true"}}).Parse());
                 }
                 catch (WebException e)
                 {
